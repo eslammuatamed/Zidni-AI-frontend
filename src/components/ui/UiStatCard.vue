@@ -1,5 +1,5 @@
 <template>
-  <section class="ui-stat-card" :class="[toneClass, { 'ui-stat-card--hover': isHover } ]">
+  <section class="ui-stat-card" :class="[toneClass, variantClass, { 'ui-stat-card--hover': isHover }]">
     <div class="ui-stat-card__meta">
       <div class="ui-stat-card__info">
         <div class="ui-stat-card__label">{{ label }}</div>
@@ -7,7 +7,7 @@
       </div>
       <div class="ui-stat-card__icon">
         <slot name="icon">
-          <UiIcon :name="iconName" :size="28" />
+          <UiIcon :name="iconName" :size="iconSize" />
         </slot>
       </div>
     </div>
@@ -31,19 +31,23 @@ const props = withDefaults(
     color?: UiTone | string;
     description?: string;
     hover?: boolean;
+    variant?: 'default' | 'soft';
   }>(),
   {
     icon: 'DashboardOutlined',
     color: 'primary',
     description: '',
-    hover: true
+    hover: true,
+    variant: 'default'
   }
 );
 
 const isHover = computed(() => props.hover);
 const iconName = computed(() => props.icon);
+const iconSize = computed(() => props.variant === 'soft' ? 36 : 28);
 const descriptionText = computed(() => props.description);
 const toneClass = computed(() => `ui-stat-card--tone-${props.color}`);
+const variantClass = computed(() => `ui-stat-card--${props.variant}`);
 </script>
 
 <style scoped>
@@ -132,5 +136,62 @@ const toneClass = computed(() => `ui-stat-card--tone-${props.color}`);
 .ui-stat-card--tone-danger {
   --ui-stat-color: var(--sakai-danger);
   --ui-stat-gradient: var(--sakai-gradient-danger);
+}
+
+/* ── Soft / Modernize-style variant ─────────────────────────────────── */
+.ui-stat-card--soft {
+  background: color-mix(in srgb, var(--ui-stat-color) 10%, white);
+  border-color: transparent;
+  box-shadow: none;
+  align-items: center;
+  text-align: center;
+  padding: var(--sakai-space-6) var(--sakai-space-5);
+}
+
+.ui-stat-card--soft .ui-stat-card__meta {
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sakai-space-4);
+  width: 100%;
+}
+
+.ui-stat-card--soft .ui-stat-card__info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sakai-space-1);
+}
+
+.ui-stat-card--soft .ui-stat-card__icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ui-stat-color) 18%, white);
+  color: var(--ui-stat-color);
+  box-shadow: none;
+}
+
+.ui-stat-card--soft .ui-stat-card__label {
+  color: var(--ui-stat-color);
+  font-size: 0.95rem;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: var(--sakai-font-weight-semibold);
+}
+
+.ui-stat-card--soft .ui-stat-card__value {
+  color: var(--ui-stat-color);
+  font-size: 2rem;
+}
+
+.ui-stat-card--soft .ui-stat-card__description {
+  color: color-mix(in srgb, var(--ui-stat-color) 75%, var(--sakai-text-color-tertiary));
+  font-size: 0.82rem;
+}
+
+.ui-stat-card--soft.ui-stat-card--hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px color-mix(in srgb, var(--ui-stat-color) 20%, transparent);
 }
 </style>
