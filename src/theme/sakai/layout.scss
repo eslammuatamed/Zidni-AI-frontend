@@ -20,8 +20,8 @@
 
 .theme-app-shell__sidebar {
   width: var(--sakai-sidebar-width);
-  background: var(--sakai-surface-card);
-  border-inline-end: 0.0625rem solid var(--sakai-border-color);
+  background: var(--brand-sidebar-bg);
+  border-inline-end: 0.0625rem solid var(--brand-sidebar-border);
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -58,8 +58,11 @@
   width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  scrollbar-gutter: stable;
-  @include sakai-scrollbar;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .theme-app-shell.is-sidebar-collapsed .theme-app-shell__sidebar {
@@ -73,7 +76,7 @@
   gap: var(--sakai-space-3);
   font-weight: var(--sakai-font-weight-semibold);
   font-size: 1.15rem;
-  color: var(--sakai-text-color);
+  color: var(--brand-sidebar-text);
 }
 
 .theme-app-shell.is-sidebar-collapsed .theme-app-shell__logo {
@@ -88,12 +91,12 @@
 
 .theme-app-shell__brand-name {
   font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
+  color: var(--brand-sidebar-text);
 }
 
 .theme-app-shell__brand-tagline {
   font-size: var(--sakai-font-size-sm);
-  color: var(--sakai-text-color-tertiary);
+  color: var(--brand-sidebar-label);
 }
 
 .theme-app-shell__brand-mark {
@@ -102,9 +105,10 @@
   width: 2.5rem;
   height: 2.5rem;
   border-radius: var(--sakai-border-radius-pill);
-  background: var(--sakai-gradient-primary);
-  color: var(--sakai-primary-contrast);
+  background: var(--brand-mark-gradient);
+  color: #fff;
   font-weight: var(--sakai-font-weight-bold);
+  box-shadow: 0 2px 8px var(--brand-mark-shadow);
 }
 
 .theme-app-shell__nav {
@@ -120,9 +124,7 @@
 .theme-app-shell__sidebar-upgrade {
   margin-top: auto;
   padding-top: var(--sakai-space-4);
-  border-top: 0.0625rem solid var(--sakai-border-color);
-  /* Fallback */
-  border-top: 0.0625rem solid color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
+  border-top: 0.0625rem solid var(--brand-sidebar-border);
   display: flex;
   flex-direction: column;
   gap: var(--sakai-space-2);
@@ -140,19 +142,15 @@
   gap: var(--sakai-space-3);
   padding: 0.75rem 1rem;
   border-radius: var(--sakai-border-radius-md);
-  background: var(--sakai-primary-tint-12, #eee);
-  /* Fallback */
-  background: color-mix(in srgb, var(--sakai-primary) 12%, transparent);
-  color: var(--sakai-primary-800);
+  background: var(--brand-nav-hover-bg);
+  color: var(--brand-primary);
   font-weight: var(--sakai-font-weight-semibold);
   text-decoration: none;
   @include sakai-transition(background-color, color, transform);
 
   &:hover {
-    background: var(--sakai-primary-tint-16, #ddd);
-    /* Fallback */
-    background: color-mix(in srgb, var(--sakai-primary) 18%, transparent);
-    color: var(--sakai-primary-900);
+    background: rgba(30, 58, 138, 0.14);
+    color: var(--brand-primary-light);
     transform: translateX(var(--theme-nav-hover-translate));
   }
 }
@@ -165,49 +163,51 @@
 
 .theme-app-shell__plan-label {
   font-size: var(--sakai-font-size-sm);
-  color: var(--sakai-text-color-tertiary);
+  color: var(--brand-sidebar-label);
 }
 
 .theme-app-shell__close {
   align-self: flex-end;
   border: none;
   background: transparent;
-  color: var(--sakai-text-color-tertiary);
+  color: var(--brand-sidebar-text-muted);
   padding: 0.4rem;
   border-radius: var(--sakai-border-radius-md);
   display: none;
 }
 
 .theme-app-shell__nav-group {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--sakai-text-color-muted);
+  color: var(--brand-sidebar-text-muted);
+  font-weight: 600;
   margin-bottom: var(--sakai-space-2);
+  padding-inline-start: 1rem;
 }
 
 .theme-app-shell__nav-item {
   display: flex;
   align-items: center;
   gap: var(--sakai-space-3);
-  padding: 0.75rem 1rem;
-  border-radius: var(--sakai-border-radius-md);
-  color: var(--sakai-text-color-secondary);
-  font-weight: var(--sakai-font-weight-medium);
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  color: var(--brand-sidebar-text);
+  font-weight: 500;
+  font-size: 0.84375rem;
+  min-height: 2.625rem;
   @include sakai-transition(background-color, color, transform);
 
   &.is-active {
-    background: var(--sakai-primary-tint-12, #eee);
-    /* Fallback */
-    background: color-mix(in srgb, var(--sakai-primary) 14%, transparent);
-    color: var(--sakai-primary-700);
+    background: var(--brand-nav-active-bg);
+    color: var(--brand-nav-active-text);
+    font-weight: 600;
+    box-shadow: 0 2px 8px var(--brand-nav-active-shadow);
   }
 
-  &:hover {
-    background: var(--sakai-primary-tint-08, #f5f5f5);
-    /* Fallback */
-    background: color-mix(in srgb, var(--sakai-primary) 12%, transparent);
-    color: var(--sakai-primary-700);
+  &:hover:not(.is-active) {
+    background: var(--brand-nav-hover-bg);
+    color: var(--brand-nav-hover-text);
     transform: translateX(var(--theme-nav-hover-translate));
   }
 }

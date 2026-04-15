@@ -178,10 +178,10 @@ ol {
   line-height: var(--lh-relaxed);
 }
 
-section+section,
+/* section+section,
 article+article {
   margin-block-start: var(--sp-7);
-}
+} */
 
 .container {
   width: min(100%, var(--container-max));

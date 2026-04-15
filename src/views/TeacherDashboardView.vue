@@ -5,7 +5,7 @@
   surfacing inline loading, error, and contextual guidance states.
 -->
 <template>
-  <ThemePage :title="t('teacher.dashboard')" :subtitle="pageSubtitle">
+  <ThemePage>
     <div class="teacher-dashboard">
       <div
         v-if="profileError || overviewError || activityError"
@@ -69,7 +69,6 @@
       </div>
 
       <div class="teacher-dashboard__toolbar">
-        test
         <UiButton
           size="sm"
           variant="ghost"
@@ -83,40 +82,6 @@
         <span v-if="lastUpdatedLabel" class="teacher-dashboard__toolbar-meta">
           {{ lastUpdatedLabel }}
         </span>
-      </div>
-
-      <!-- Modernize-style welcome banner -->
-      <div class="teacher-dashboard__banner">
-        <div class="teacher-dashboard__banner-body">
-          <div class="teacher-dashboard__banner-text">
-            <h2 class="teacher-dashboard__banner-title">
-              {{ t("teacher.welcome", { name: profile?.name || t("teacher.dashboard") }) }}
-            </h2>
-            <p class="teacher-dashboard__banner-subtitle">
-              {{ t("teacher.profileCompletenessHint") }}
-            </p>
-          </div>
-          <div class="teacher-dashboard__banner-kpi">
-            <div class="teacher-dashboard__banner-kpi-item">
-              <span class="teacher-dashboard__banner-kpi-value">{{ formatNumber(safeOverview.activeStudents ?? 0) }}</span>
-              <span class="teacher-dashboard__banner-kpi-label">{{ t("teacher.activeStudents") }}</span>
-            </div>
-            <div class="teacher-dashboard__banner-kpi-divider" aria-hidden="true"></div>
-            <div class="teacher-dashboard__banner-kpi-item">
-              <span class="teacher-dashboard__banner-kpi-value">{{ formatNumber(safeOverview.totalEnrollments ?? 0) }}</span>
-              <span class="teacher-dashboard__banner-kpi-label">{{ t("teacher.newEnrollments") }}</span>
-            </div>
-            <div class="teacher-dashboard__banner-kpi-divider" aria-hidden="true"></div>
-            <div class="teacher-dashboard__banner-kpi-item">
-              <span class="teacher-dashboard__banner-kpi-value">{{ profileCompleteness }}%</span>
-              <span class="teacher-dashboard__banner-kpi-label">{{ t("teacher.profileCompleteness") }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="teacher-dashboard__banner-decoration" aria-hidden="true">
-          <span class="teacher-dashboard__banner-circle teacher-dashboard__banner-circle--lg"></span>
-          <span class="teacher-dashboard__banner-circle teacher-dashboard__banner-circle--sm"></span>
-        </div>
       </div>
 
       <div class="teacher-dashboard__metrics">
@@ -177,6 +142,13 @@
           >
             {{ t("teacher.paymentMethodsConfiguredHint") }}
           </UiStatCard>
+          <UiStatCard
+            variant="soft"
+            :label="t('teacher.totalViews')"
+            :value="formatNumber(viewsSummarySafe.totalViews)"
+            icon="EyeOutlined"
+            color="primary"
+          />
           <UiAlert
             v-if="showPaymentMethodsWarning"
             class="teacher-dashboard__payments-warning"
@@ -219,7 +191,7 @@
         </div>
       </UiCard>
 
-      <div class="teacher-dashboard__content">
+      <div dir="rtl" class="teacher-dashboard__content">
         <UiCard
           class="teacher-dashboard__insights"
           :title="t('teacher.insightsTitle')"
@@ -2137,6 +2109,10 @@ const refreshAll = async () => {
 </script>
 
 <style scoped>
+/* .teacher-dashboard__welcome {
+  display: none;
+} */
+
 .teacher-dashboard {
   display: flex;
   flex-direction: column;
@@ -2267,8 +2243,8 @@ const refreshAll = async () => {
 
 .teacher-dashboard__metrics {
   display: grid;
-  gap: var(--sakai-space-4);
-  grid-template-columns: repeat(5, 1fr);
+  gap: var(--sakai-space-3);
+  grid-template-columns: repeat(6, 1fr);
 }
 
 @media (max-width: 1280px) {
@@ -2277,9 +2253,15 @@ const refreshAll = async () => {
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .teacher-dashboard__metrics {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .teacher-dashboard__metrics {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -2319,7 +2301,35 @@ const refreshAll = async () => {
 .teacher-dashboard__content {
   display: grid;
   gap: var(--sakai-space-5);
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+}
+
+/* Main column (col 1) — explicit row to avoid auto-placement gaps */
+.teacher-dashboard__plan-usage {
+  grid-column: 2;
+  grid-row: 1;
+}
+.teacher-dashboard__views {
+  grid-column: 2;
+  grid-row: 2;
+}
+.teacher-dashboard__activity {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+/* Sidebar column (col 2) */
+.teacher-dashboard__insights {
+  grid-column: 1;
+  grid-row: 1;
+}
+.teacher-dashboard__next {
+  grid-column: 1;
+  grid-row: 2;
+}
+.teacher-dashboard__assistants-card {
+  grid-column: 1;
+  grid-row: 3;
 }
 
 .teacher-dashboard__insights-grid {
@@ -2453,9 +2463,11 @@ const refreshAll = async () => {
 
 .teacher-dashboard__activity-header h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: var(--sakai-font-weight-semibold);
   color: var(--sakai-text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .teacher-dashboard__activity-list {
@@ -2472,6 +2484,16 @@ const refreshAll = async () => {
   align-items: center;
   justify-content: space-between;
   gap: var(--sakai-space-4);
+  padding: var(--sakai-space-3) var(--sakai-space-4);
+  border-radius: var(--sakai-border-radius-md);
+  background: var(--sakai-surface-subtle);
+  border-inline-start: 3px solid var(--sakai-primary);
+  transition: background var(--sakai-transition-duration)
+    var(--sakai-transition-ease);
+}
+
+.teacher-dashboard__activity-item:hover {
+  background: var(--sakai-primary-tint-04);
 }
 
 .teacher-dashboard__activity-title {
@@ -2516,11 +2538,15 @@ const refreshAll = async () => {
   padding-bottom: 0;
 }
 
+.teacher-dashboard__account {
+  border-top: 3px solid var(--sakai-primary);
+}
+
 .teacher-dashboard__account-label {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--sakai-text-color-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
 }
 
 .teacher-dashboard__account-value {
@@ -2796,6 +2822,16 @@ const refreshAll = async () => {
 @media (max-width: 960px) {
   .teacher-dashboard__content {
     grid-template-columns: 1fr;
+  }
+
+  .teacher-dashboard__views,
+  .teacher-dashboard__activity,
+  .teacher-dashboard__plan-usage,
+  .teacher-dashboard__insights,
+  .teacher-dashboard__next,
+  .teacher-dashboard__assistants-card {
+    grid-column: 1;
+    grid-row: auto;
   }
 
   .teacher-dashboard__alert-content {

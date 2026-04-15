@@ -44,7 +44,7 @@ const props = withDefaults(
 
 const isHover = computed(() => props.hover);
 const iconName = computed(() => props.icon);
-const iconSize = computed(() => props.variant === 'soft' ? 36 : 28);
+const iconSize = computed(() => props.variant === 'soft' ? 32 : 28);
 const descriptionText = computed(() => props.description);
 const toneClass = computed(() => `ui-stat-card--tone-${props.color}`);
 const variantClass = computed(() => `ui-stat-card--${props.variant}`);
@@ -141,11 +141,12 @@ const variantClass = computed(() => `ui-stat-card--${props.variant}`);
 /* ── Soft / Modernize-style variant ─────────────────────────────────── */
 .ui-stat-card--soft {
   background: color-mix(in srgb, var(--ui-stat-color) 10%, white);
-  border-color: transparent;
+  border-color: color-mix(in srgb, var(--ui-stat-color) 22%, transparent);
   box-shadow: none;
   align-items: center;
   text-align: center;
-  padding: var(--sakai-space-6) var(--sakai-space-5);
+  padding: var(--sakai-space-5) var(--sakai-space-4);
+  min-height: 170px;
 }
 
 .ui-stat-card--soft .ui-stat-card__meta {
@@ -163,18 +164,19 @@ const variantClass = computed(() => `ui-stat-card--${props.variant}`);
   gap: var(--sakai-space-1);
 }
 
+/* Large circular icon container — matches Modernize illustration style */
 .ui-stat-card--soft .ui-stat-card__icon {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--ui-stat-color) 18%, white);
+  background: color-mix(in srgb, var(--ui-stat-color) 14%, white);
   color: var(--ui-stat-color);
   box-shadow: none;
 }
 
 .ui-stat-card--soft .ui-stat-card__label {
   color: var(--ui-stat-color);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   text-transform: none;
   letter-spacing: 0;
   font-weight: var(--sakai-font-weight-semibold);
@@ -182,12 +184,14 @@ const variantClass = computed(() => `ui-stat-card--${props.variant}`);
 
 .ui-stat-card--soft .ui-stat-card__value {
   color: var(--ui-stat-color);
-  font-size: 2rem;
+  font-size: 1.6rem;
+  font-weight: var(--sakai-font-weight-bold);
+  line-height: 1.1;
 }
 
+/* Hide description — Modernize cards show only icon/label/value */
 .ui-stat-card--soft .ui-stat-card__description {
-  color: color-mix(in srgb, var(--ui-stat-color) 75%, var(--sakai-text-color-tertiary));
-  font-size: 0.82rem;
+  display: none;
 }
 
 .ui-stat-card--soft.ui-stat-card--hover:hover {

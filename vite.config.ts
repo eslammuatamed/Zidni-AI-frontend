@@ -36,7 +36,8 @@ export default defineConfig(() => ({
     allowedHosts: [
       '127.0.0.1.nip.io',
       'app.127.0.0.1.nip.io',
-      'app-test.72.61.18.248.nip.io'
+      'app-test.72.61.18.248.nip.io',
+      '.72.61.18.248.nip.io'
     ],
         proxy: {
       '/api': {
