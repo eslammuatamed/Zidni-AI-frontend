@@ -9,8 +9,8 @@
       border="e"
       width="280"
     >
-      <div class="d-flex align-center justify-center pa-4">
-         <div class="text-h6 font-weight-bold text-secondary">ASSISTANT</div>
+      <div class="flex items-center justify-center pa-4">
+         <div class="text-h6 font-weight-bold text-sakai-secondary">ASSISTANT</div>
       </div>
 
       <v-list density="compact" nav class="px-2">

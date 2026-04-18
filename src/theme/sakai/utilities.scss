@@ -1,12 +1,3 @@
-.theme-grid {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.theme-grid--responsive {
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-}
-
 .theme-chip {
   display: inline-flex;
   align-items: center;
@@ -17,23 +8,4 @@
   font-weight: var(--sakai-font-weight-medium);
   background: color-mix(in srgb, var(--sakai-primary) 12%, transparent);
   color: var(--sakai-primary-700);
-}
-
-.theme-surface-card {
-  background: var(--sakai-surface-card);
-  border-radius: var(--sakai-border-radius-xl);
-  border: 0.0625rem solid color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
-  box-shadow: var(--sakai-shadow-sm);
-  padding: var(--sakai-card-padding);
-}
-
-.theme-section-title {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-  margin-bottom: var(--sakai-space-4);
-}
-
-.theme-section-title__subtitle {
-  color: var(--sakai-text-color-tertiary);
 }

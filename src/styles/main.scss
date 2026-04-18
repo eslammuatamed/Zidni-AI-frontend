@@ -17,38 +17,8 @@ body.rtl {
   direction: rtl;
 }
 
-.ms-2 {
-  margin-inline-start: var(--sakai-space-2) !important;
-}
-
-.me-2 {
-  margin-inline-end: var(--sakai-space-2) !important;
-}
-
-.text-xs {
-  font-size: 0.75rem !important;
-  line-height: var(--sakai-line-height-sm);
-}
-
-.text-muted {
-  color: var(--sakai-text-color-tertiary) !important;
-}
-
 .text-medium-emphasis {
   color: var(--sakai-text-color-secondary) !important;
-}
-
-.font-weight-medium {
-  font-weight: var(--sakai-font-weight-medium) !important;
-}
-
-.font-semibold {
-  font-weight: var(--sakai-font-weight-semibold) !important;
-}
-
-.font-bold,
-.font-weight-bold {
-  font-weight: var(--sakai-font-weight-bold) !important;
 }
 
 .auth-page {
@@ -212,68 +182,9 @@ body.rtl {
   }
 }
 
-.argon-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-5);
-}
-
-.argon-grid--two {
-  display: grid;
-  gap: var(--sakai-space-5);
-  grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr));
-}
-
-.argon-metric-row {
-  display: grid;
-  gap: var(--sakai-space-4);
-  grid-template-columns: repeat(auto-fit, minmax(13.75rem, 1fr));
-}
-
-.argon-card__subtitle {
-  margin: 0;
-  color: var(--sakai-text-color-tertiary);
-}
-
-.argon-card__body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.argon-card__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-3);
-}
-
-.argon-card__list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.argon-card__list-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-3);
-  padding: var(--sakai-space-3) 0;
-  border-bottom: 0.0625rem solid color-mix(in srgb, var(--sakai-border-color) 65%, transparent);
-}
-
-.argon-card__list-item:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
 @media (max-width: 720px) {
   .auth-card {
     padding: clamp(2rem, 8vw, 2.5rem);
-  }
-
-  .argon-grid--two {
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
   }
 }
 

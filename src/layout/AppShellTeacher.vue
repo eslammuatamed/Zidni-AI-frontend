@@ -9,9 +9,9 @@
       class="app-drawer-dark"
       width="280"
     >
-      <div class="d-flex align-center pa-4 gap-3 drawer-divider-b">
+      <div class="flex items-center pa-4 gap-3 drawer-divider-b">
         <div
-          class="brand-logo-mark d-flex align-center justify-center rounded-lg flex-shrink-0"
+          class="brand-logo-mark flex items-center justify-center rounded-lg flex-shrink-0"
         >
           <v-icon icon="pi pi-graduation-cap" color="white" size="18"></v-icon>
         </div>
@@ -108,7 +108,7 @@
                 userInitials
               }}</span>
             </v-avatar>
-            <div class="d-none d-md-flex flex-column ms-2">
+            <div class="d-none d-md-flex flex-col ms-2">
               <span class="header-user-name">{{ auth.user?.name }}</span>
               <span class="header-user-role">{{ auth.user?.email }}</span>
             </div>
@@ -143,7 +143,7 @@
       </v-menu>
 
       <!-- Utility icons -->
-      <div class="d-flex align-center ms-2">
+      <div class="flex items-center ms-2">
         <v-btn
           icon
           size="small"
@@ -187,7 +187,7 @@
       <v-spacer></v-spacer>
 
       <!-- Search — right side -->
-      <div class="d-none d-sm-flex align-center me-4" style="width: 240px">
+      <div class="d-none d-sm-flex items-center me-4" style="width: 240px">
         <v-text-field
           prepend-inner-icon="pi pi-search"
           :placeholder="t('nav.searchPlaceholder') || 'Search...'"

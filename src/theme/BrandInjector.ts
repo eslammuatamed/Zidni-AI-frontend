@@ -70,6 +70,12 @@ const CSS_VAR_MAP: Record<string, (branding: BrandingConfig) => string> = {
 
 const FONT_VAR = '--font-family-base';
 
+const hexToRgbChannels = (hex: string): string => {
+  const match = hex.replace('#', '').match(/^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+  if (!match) return '0 0 0';
+  return `${parseInt(match[1], 16)} ${parseInt(match[2], 16)} ${parseInt(match[3], 16)}`;
+};
+
 const normalizeHex = (value?: string | null, fallback?: string) => {
   if (typeof value !== 'string') return fallback ?? '';
   const trimmed = value.trim();
@@ -128,12 +134,16 @@ export function applyCssVars(branding: BrandingConfig): void {
   });
   const legacyMap: Record<string, string> = {
     '--sakai-primary': branding.theme.primary,
+    '--sakai-primary-rgb': hexToRgbChannels(branding.theme.primary),
     '--sakai-secondary': branding.theme.secondary,
+    '--sakai-secondary-rgb': hexToRgbChannels(branding.theme.secondary),
     '--sakai-text-color': branding.theme.text,
+    '--sakai-text-color-rgb': hexToRgbChannels(branding.theme.text),
     '--sakai-border-radius-md': branding.theme.radius,
     '--sakai-border-radius-pill': branding.theme.radius,
     '--sakai-shadow-md': branding.theme.shadow,
     '--sakai-surface': branding.theme.bg,
+    '--sakai-surface-rgb': hexToRgbChannels(branding.theme.bg),
     '--sakai-surface-alt': branding.theme.bg,
     '--sakai-border-color': branding.theme.secondary
   };

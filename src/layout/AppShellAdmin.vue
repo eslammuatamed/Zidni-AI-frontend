@@ -11,13 +11,13 @@
       color="surface"
       elevation="0"
     >
-      <div class="d-flex flex-column h-100">
+      <div class="flex flex-col h-100">
         <!-- Logo Area -->
-        <div class="px-4 py-4 d-flex align-center gap-3 border-b">
+        <div class="px-4 py-4 flex items-center gap-3 border-b">
            <v-avatar color="primary" variant="tonal" rounded size="40" class="font-weight-bold text-h6">
               {{ brandInitials }}
            </v-avatar>
-           <div v-if="!rail || mobile" class="d-flex flex-column overflow-hidden transition-swing">
+           <div v-if="!rail || mobile" class="flex flex-col overflow-hidden transition-swing">
               <span class="text-subtitle-1 font-weight-bold text-truncate">{{ brandName }}</span>
               <span v-if="brandTagline" class="text-caption text-medium-emphasis text-truncate">{{ brandTagline }}</span>
            </div>
@@ -90,7 +90,7 @@
     <v-app-bar flat border-b color="background" height="64" class="px-4">
         <v-app-bar-nav-icon v-if="mobile" @click="drawer = !drawer"></v-app-bar-nav-icon>
         
-        <div class="d-none d-md-flex align-center ml-2">
+        <div class="d-none d-md-flex items-center ml-2">
             <span class="text-h6 font-weight-bold">{{ pageTitle }}</span>
         </div>
         <v-badge content="Admin" color="error" class="ml-4" inline></v-badge>
@@ -98,7 +98,7 @@
         <v-spacer></v-spacer>
 
         <!-- Actions -->
-        <div class="d-flex align-center gap-2">
+        <div class="flex items-center gap-2">
             <v-btn icon min-width="40" height="40" rounded="lg" variant="text" @click="toggleLanguage">
                 <UiIcon name="GlobalOutlined" :size="20" />
             </v-btn>

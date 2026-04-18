@@ -1,3 +1,4 @@
+/* LEGACY: These tokens are superseded by --sakai-* in src/theme/sakai/tokens.scss. Do not add new tokens here. */
 :root {
   --font-sans: var(--sakai-font-family-base, 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif);
   --fs-h1: clamp(2.5rem, 4.8vw, 3rem);
@@ -190,21 +191,8 @@ article+article {
   padding-inline: clamp(var(--sp-4), 5vw, var(--sp-7));
 }
 
-.gap-sm {
-  gap: var(--sp-3);
-}
-
-.gap-md {
-  gap: var(--sp-5);
-}
-
-.gap-lg {
-  gap: var(--sp-7);
-}
-
 .v-card,
-.ui-card,
-.app-card {
+.ui-card {
   border-radius: var(--radius-md) !important;
   box-shadow: var(--shadow-md);
   background-color: var(--color-surface);
@@ -214,8 +202,7 @@ article+article {
 }
 
 .v-card:hover,
-.ui-card.ui-card--hover:hover,
-.app-card:hover {
+.ui-card.ui-card--hover:hover {
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
@@ -225,8 +212,7 @@ article+article {
 }
 
 .v-theme--dark .v-card,
-.v-theme--dark .ui-card,
-.v-theme--dark .app-card {
+.v-theme--dark .ui-card {
   box-shadow: var(--shadow-sm);
   background-color: color-mix(in srgb, var(--color-surface) 94%, transparent);
 }
@@ -318,10 +304,6 @@ article+article {
 .v-data-table__wrapper::-webkit-scrollbar-thumb {
   border-radius: 999px;
   background: color-mix(in srgb, var(--color-on-surface) 22%, transparent);
-}
-
-.ring-focus {
-  box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.25) !important;
 }
 
 .v-btn,

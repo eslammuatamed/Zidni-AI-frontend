@@ -1,5 +1,5 @@
 <template>
-  <div class="filter-bar d-flex flex-column flex-md-row gap-3 align-start align-md-center mb-4">
+  <div class="filter-bar flex flex-col flex-md-row gap-3 align-start align-md-center mb-4">
     <!-- Search -->
     <div class="filter-bar__search flex-grow-1 w-100" style="max-width: 400px">
       <UiInput
@@ -15,12 +15,12 @@
     </div>
 
     <!-- Filters Slot -->
-    <div class="filter-bar__filters d-flex flex-wrap gap-2 align-center flex-grow-1">
+    <div class="filter-bar__filters flex flex-wrap gap-2 items-center flex-grow-1">
       <slot />
     </div>
 
     <!-- Actions/Reset -->
-    <div class="filter-bar__actions d-flex align-center gap-2 ms-auto">
+    <div class="filter-bar__actions flex items-center gap-2 ms-auto">
       <slot name="actions" />
       
       <UiButton
@@ -37,7 +37,7 @@
   </div>
   
   <!-- Active Chips Row (Optional) -->
-  <div v-if="$slots.chips || chips.length > 0" class="filter-bar__chips d-flex flex-wrap gap-2 mb-4">
+  <div v-if="$slots.chips || chips.length > 0" class="filter-bar__chips flex flex-wrap gap-2 mb-4">
      <slot name="chips">
         <v-chip
           v-for="(chip, index) in chips"

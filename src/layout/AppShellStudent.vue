@@ -10,9 +10,9 @@
       width="280"
       elevation="0"
     >
-      <div class="d-flex flex-column h-100">
+      <div class="flex flex-col h-100">
         <!-- Logo Area -->
-        <div class="px-4 py-4 d-flex align-center gap-3 drawer-divider-b">
+        <div class="px-4 py-4 flex items-center gap-3 drawer-divider-b">
           <v-avatar
             rounded
             size="40"
@@ -22,7 +22,7 @@
           </v-avatar>
           <div
             v-if="!rail || mobile"
-            class="d-flex flex-column overflow-hidden transition-swing"
+            class="flex flex-col overflow-hidden transition-swing"
           >
             <span class="text-subtitle-1 font-weight-bold text-truncate">{{
               brandName
@@ -149,14 +149,14 @@
         <v-avatar size="36" class="user-avatar-mini flex-shrink-0">{{
           brandInitials
         }}</v-avatar>
-        <div class="d-none d-md-flex flex-column ms-2">
+        <div class="d-none d-md-flex flex-col ms-2">
           <span class="header-user-name">{{ headerUserName }}</span>
           <span class="header-user-role">{{ t("nav.student") }}</span>
         </div>
       </div>
 
       <!-- Utility icons -->
-      <div class="d-flex align-center ms-2">
+      <div class="flex items-center ms-2">
         <StudentTenantSwitcher v-if="showStudentTenantSwitcher" />
         <v-btn
           v-if="notificationsUnifiedEnabled"
@@ -202,7 +202,7 @@
       <v-spacer></v-spacer>
 
       <!-- Search — right side -->
-      <div class="d-none d-sm-flex align-center me-4" style="width: 240px">
+      <div class="d-none d-sm-flex items-center me-4" style="width: 240px">
         <v-text-field
           v-model="searchQuery"
           :placeholder="t('nav.searchPlaceholder')"

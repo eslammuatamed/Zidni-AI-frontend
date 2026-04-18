@@ -21,7 +21,6 @@
     "google-libphonenumber": "^3.2.37",
     "pinia": "^2.1.7",
     "primeicons": "^7.0.0",
-    "primevue": "^4.3.9",
     "sockjs-client": "^1.6.1",
     "vue": "^3.4.21",
     "vue-i18n": "^9.9.0",

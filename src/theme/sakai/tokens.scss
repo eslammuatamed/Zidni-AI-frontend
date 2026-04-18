@@ -28,6 +28,7 @@
   --sakai-primary-800: #3730a3;
   --sakai-primary-900: #312e81;
   --sakai-primary: var(--sakai-primary-500);
+  --sakai-primary-rgb: 99 102 241;
   --sakai-primary-contrast: #ffffff;
 
   --sakai-secondary-50: #ecfeff;
@@ -41,16 +42,22 @@
   --sakai-secondary-800: #155e75;
   --sakai-secondary-900: #164e63;
   --sakai-secondary: var(--sakai-secondary-500);
+  --sakai-secondary-rgb: 6 182 212;
   --sakai-secondary-contrast: #031016;
 
   --sakai-success: #22c55e;
+  --sakai-success-rgb: 34 197 94;
   --sakai-info: #3b82f6;
+  --sakai-info-rgb: 59 130 246;
   --sakai-warning: #f59e0b;
+  --sakai-warning-rgb: 245 158 11;
   --sakai-danger: #ef4444;
+  --sakai-danger-rgb: 239 68 68;
   --sakai-muted: #94a3b8;
 
   /* Surfaces */
   --sakai-surface: #ffffff;
+  --sakai-surface-rgb: 255 255 255;
   --sakai-surface-alt: #f8fafc;
   --sakai-surface-strong: #e2e8f0;
   --sakai-surface-overlay: rgba(15, 23, 42, 0.55);
@@ -62,6 +69,7 @@
 
   /* Text */
   --sakai-text-color: #1f2937;
+  --sakai-text-color-rgb: 31 41 55;
   --sakai-text-color-secondary: #4b5563;
   --sakai-text-color-tertiary: #6b7280;
   --sakai-text-color-muted: #94a3b8;
@@ -168,6 +176,7 @@
   --sakai-scale-factor: 0.9;
 
   --sakai-surface: #0f172a;
+  --sakai-surface-rgb: 15 23 42;
   --sakai-surface-alt: #111c34;
   --sakai-surface-strong: #1e293b;
   --sakai-surface-overlay: rgba(2, 6, 23, 0.65);
@@ -178,6 +187,7 @@
   --sakai-surface-hero: linear-gradient(135deg, color-mix(in srgb, var(--sakai-primary) 70%, #1e1b4b), color-mix(in srgb, var(--sakai-secondary) 65%, #0f766e));
 
   --sakai-text-color: #e2e8f0;
+  --sakai-text-color-rgb: 226 232 240;
   --sakai-text-color-secondary: #cbd5f5;
   --sakai-text-color-tertiary: #94a3b8;
   --sakai-text-color-muted: #64748b;

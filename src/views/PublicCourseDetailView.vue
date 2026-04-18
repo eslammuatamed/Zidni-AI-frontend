@@ -555,7 +555,7 @@
                 <div class="profile-pic mb-0">
                   <div>
                     <a href="userprofile.html" class="text-dark"
-                      ><h4 class="mt-3 mb-1 font-weight-semibold">
+                      ><h4 class="mt-3 mb-1 font-semibold">
                         {{ course?.instructor }}
                       </h4></a
                     >

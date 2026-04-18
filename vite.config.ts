@@ -10,10 +10,7 @@ export default defineConfig(() => ({
 
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-      primevue: fileURLToPath(new URL('./src/vendor/primevue/index.ts', import.meta.url)),
-      'primevue/': fileURLToPath(new URL('./src/vendor/primevue/', import.meta.url)),
-      'primeicons/': fileURLToPath(new URL('./src/vendor/primeicons/', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
 

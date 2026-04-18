@@ -1,0 +1,4 @@
+/* Global Tailwind utilities — loaded after Sakai tokens so CSS vars are resolved.
+   Preflight is disabled in tailwind.config.cjs (corePlugins.preflight = false). */
+@tailwind components;
+@tailwind utilities;
