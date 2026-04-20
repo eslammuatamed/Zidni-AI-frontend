@@ -65,11 +65,6 @@
   }
 }
 
-.theme-app-shell.is-sidebar-collapsed .theme-app-shell__sidebar {
-  align-items: center;
-  padding-inline: var(--sakai-space-2);
-}
-
 .theme-app-shell__logo {
   display: flex;
   align-items: center;
@@ -164,16 +159,6 @@
 .theme-app-shell__plan-label {
   font-size: var(--sakai-font-size-sm);
   color: var(--brand-sidebar-label);
-}
-
-.theme-app-shell__close {
-  align-self: flex-end;
-  border: none;
-  background: transparent;
-  color: var(--brand-sidebar-text-muted);
-  padding: 0.4rem;
-  border-radius: var(--sakai-border-radius-md);
-  display: none;
 }
 
 .theme-app-shell__nav-group {
@@ -292,27 +277,11 @@
   background: linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0%, transparent 11.25rem);
 }
 
-.theme-app-shell__footer {
-  margin-top: auto;
-  padding: var(--sakai-space-4) var(--sakai-space-6);
-  display: flex;
-  justify-content: space-between;
-  gap: var(--sakai-space-3);
-  font-size: var(--sakai-font-size-sm);
-  color: var(--sakai-text-color-muted);
-}
-
-.theme-app-shell__overlay {
-  position: fixed;
-  inset: 0;
-  background: color-mix(in srgb, var(--sakai-text-color) 28%, transparent);
-  z-index: 994;
-}
-
 .theme-page {
   display: flex;
   flex-direction: column;
   gap: var(--sakai-space-5);
+  background: var(--theme-page-bg);
 }
 
 .theme-page__header {
@@ -386,6 +355,16 @@
   gap: var(--sakai-space-5);
 }
 
+.theme-page--admin .theme-page__title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--sakai-primary) 0%, var(--sakai-primary-700) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: var(--sakai-space-1);
+}
+
 @media (max-width: 1024px) {
   .theme-app-shell {
     overflow-x: hidden;
@@ -436,8 +415,4 @@
     flex-wrap: wrap;
   }
 
-  .theme-app-shell__footer {
-    flex-direction: column;
-    align-items: flex-start;
-  }
 }

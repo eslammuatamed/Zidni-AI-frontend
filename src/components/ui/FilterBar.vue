@@ -79,12 +79,3 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 </script>
-
-<style scoped>
-.gap-2 {
-  gap: 8px;
-}
-.gap-3 {
-  gap: 12px;
-}
-</style>

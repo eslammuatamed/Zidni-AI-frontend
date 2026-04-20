@@ -6,10 +6,10 @@
 -->
 <template>
   <ThemePage>
-    <div class="teacher-dashboard">
+    <div class="teacher-dashboard flex flex-col gap-6">
       <div
         v-if="profileError || overviewError || activityError"
-        class="teacher-dashboard__alerts"
+        class="teacher-dashboard__alerts flex flex-col gap-3"
         role="status"
       >
         <UiAlert
@@ -18,7 +18,7 @@
           color="danger"
           variant="soft"
         >
-          <div class="teacher-dashboard__alert-content">
+          <div class="teacher-dashboard__alert-content flex items-center justify-between gap-3 flex-wrap">
             <span>{{ t("teacher.profileLoadError") }}</span>
             <UiButton
               size="sm"
@@ -36,7 +36,7 @@
           color="warning"
           variant="soft"
         >
-          <div class="teacher-dashboard__alert-content">
+          <div class="teacher-dashboard__alert-content flex items-center justify-between gap-3 flex-wrap">
             <span>{{ t("teacher.metricsLoadError") }}</span>
             <UiButton
               size="sm"
@@ -54,7 +54,7 @@
           color="info"
           variant="soft"
         >
-          <div class="teacher-dashboard__alert-content">
+          <div class="teacher-dashboard__alert-content flex items-center justify-between gap-3 flex-wrap">
             <span>{{ t("teacher.activityLoadError") }}</span>
             <UiButton
               size="sm"
@@ -68,7 +68,7 @@
         </UiAlert>
       </div>
 
-      <div class="teacher-dashboard__toolbar">
+      <div class="teacher-dashboard__toolbar flex items-center justify-end gap-3 flex-wrap">
         <UiButton
           size="sm"
           variant="ghost"
@@ -79,17 +79,17 @@
         >
           {{ t("teacher.refreshDashboard") }}
         </UiButton>
-        <span v-if="lastUpdatedLabel" class="teacher-dashboard__toolbar-meta">
+        <span v-if="lastUpdatedLabel" class="teacher-dashboard__toolbar-meta text-[0.85rem] text-content-tertiary">
           {{ lastUpdatedLabel }}
         </span>
       </div>
 
-      <div class="teacher-dashboard__metrics">
+      <div class="teacher-dashboard__metrics grid gap-3 grid-cols-6">
         <template v-if="showMetricsSkeleton">
           <UiCard
             v-for="index in 5"
             :key="`metrics-skeleton-${index}`"
-            class="teacher-dashboard__metric-skeleton"
+            class="teacher-dashboard__metric-skeleton flex flex-col gap-3 p-4"
           >
             <UiSkeleton height="0.9rem" width="65%" />
             <UiSkeleton height="2.5rem" width="45%" />
@@ -98,52 +98,41 @@
         </template>
         <template v-else>
           <UiStatCard
-            variant="soft"
             :label="t('teacher.profileCompleteness')"
             :value="`${profileCompleteness}%`"
             icon="DashboardOutlined"
             color="primary"
-          >
-            {{ t("teacher.profileCompletenessHint") }}
-          </UiStatCard>
+            :secondary-stat="t('teacher.profileCompletenessHint')"
+          />
           <UiStatCard
-            variant="soft"
             :label="t('teacher.activeStudents')"
             :value="formatNumber(safeOverview.activeStudents ?? 0)"
             icon="UserSwitchOutlined"
             color="info"
-          >
-            {{ t("teacher.activeStudentsHint") }}
-          </UiStatCard>
+            :secondary-stat="t('teacher.activeStudentsHint')"
+          />
           <UiStatCard
-            variant="soft"
             :label="t('teacher.newEnrollments')"
             :value="formatNumber(safeOverview.totalEnrollments ?? 0)"
             icon="TeamOutlined"
             color="success"
-          >
-            {{ t("teacher.newEnrollmentsHint") }}
-          </UiStatCard>
+            :secondary-stat="t('teacher.newEnrollmentsHint')"
+          />
           <UiStatCard
-            variant="soft"
             :label="t('teacher.completionRate')"
             :value="formatPercent(safeOverview.completionRate ?? 0)"
             icon="PieChartOutlined"
             color="warning"
-          >
-            {{ t("teacher.completionRateHint") }}
-          </UiStatCard>
+            :secondary-stat="t('teacher.completionRateHint')"
+          />
           <UiStatCard
-            variant="soft"
             :label="t('teacher.paymentMethodsConfigured')"
             :value="formatNumber(paymentMethodsCount)"
             icon="CreditCardOutlined"
             :color="paymentMethodsTone"
-          >
-            {{ t("teacher.paymentMethodsConfiguredHint") }}
-          </UiStatCard>
+            :secondary-stat="t('teacher.paymentMethodsConfiguredHint')"
+          />
           <UiStatCard
-            variant="soft"
             :label="t('teacher.totalViews')"
             :value="formatNumber(viewsSummarySafe.totalViews)"
             icon="EyeOutlined"
@@ -151,7 +140,7 @@
           />
           <UiAlert
             v-if="showPaymentMethodsWarning"
-            class="teacher-dashboard__payments-warning"
+            class="teacher-dashboard__payments-warning col-span-full"
             color="warning"
             variant="soft"
           >
@@ -163,7 +152,7 @@
       <UiCard class="teacher-dashboard__welcome" hover>
         <template #title>{{ t("teacher.dashboard") }}</template>
         <template #subtitle>
-          <span class="teacher-dashboard__welcome-subtitle">
+          <span class="teacher-dashboard__welcome-subtitle text-content-tertiary">
             {{
               t("teacher.welcome", {
                 name: profile?.name || t("teacher.dashboard"),
@@ -171,14 +160,14 @@
             }}
           </span>
         </template>
-        <div v-if="isProfilePending" class="teacher-dashboard__bio-skeleton">
+        <div v-if="isProfilePending" class="teacher-dashboard__bio-skeleton flex flex-col gap-2">
           <UiSkeleton height="1rem" width="80%" />
           <UiSkeleton height="1rem" width="60%" />
         </div>
-        <p v-else class="teacher-dashboard__bio">
+        <p v-else class="teacher-dashboard__bio m-0 text-content-secondary leading-[var(--sakai-line-height-lg)]">
           {{ profile?.bio || t("teacher.bioPlaceholder") }}
         </p>
-        <div class="teacher-dashboard__quick-links">
+        <div class="teacher-dashboard__quick-links flex flex-wrap gap-3">
           <UiButton
             v-for="link in quickLinks"
             :key="link.id"
@@ -191,15 +180,15 @@
         </div>
       </UiCard>
 
-      <div dir="rtl" class="teacher-dashboard__content">
+      <div dir="rtl" class="teacher-dashboard__content grid gap-5 [grid-template-columns:minmax(0,1fr)_minmax(0,2fr)]">
         <UiCard
-          class="teacher-dashboard__insights"
+          class="teacher-dashboard__insights [grid-column:1] [grid-row:1]"
           :title="t('teacher.insightsTitle')"
           :subtitle="t('teacher.insightsSubtitle')"
           hover
         >
-          <div class="teacher-dashboard__insights-grid">
-            <div class="teacher-dashboard__progress">
+          <div class="teacher-dashboard__insights-grid flex flex-wrap gap-5 items-center justify-between">
+            <div class="teacher-dashboard__progress flex items-center gap-4">
               <UiProgressCircle
                 :value="profileCompleteness"
                 :size="112"
@@ -207,24 +196,24 @@
               >
                 {{ profileCompleteness }}%
               </UiProgressCircle>
-              <div class="teacher-dashboard__progress-meta">
-                <span class="teacher-dashboard__progress-label">{{
+              <div class="teacher-dashboard__progress-meta flex flex-col gap-2">
+                <span class="teacher-dashboard__progress-label text-[0.85rem] text-content-tertiary uppercase tracking-[0.08em]">{{
                   t("teacher.profileCompleteness")
                 }}</span>
-                <span class="teacher-dashboard__progress-value"
+                <span class="teacher-dashboard__progress-value text-[1.75rem] font-semibold"
                   >{{ profileCompleteness }}%</span
                 >
               </div>
             </div>
             <div
               v-if="showMetricsSkeleton"
-              class="teacher-dashboard__sparkline-skeleton"
+              class="teacher-dashboard__sparkline-skeleton flex-[1_1_200px]"
             >
               <UiSkeleton height="72px" />
             </div>
             <div
               v-else-if="sparklinePointString"
-              class="teacher-dashboard__sparkline"
+              class="teacher-dashboard__sparkline flex-[1_1_200px] text-primary"
               aria-hidden="true"
             >
               <svg viewBox="0 0 100 36" preserveAspectRatio="none">
@@ -255,26 +244,26 @@
         </UiCard>
 
         <UiCard
-          class="teacher-dashboard__next"
+          class="teacher-dashboard__next [grid-column:1] [grid-row:2]"
           :title="t('teacher.nextStepsTitle')"
           :subtitle="t('teacher.nextStepsSubtitle')"
           hover
         >
-          <ul class="teacher-dashboard__steps">
+          <ul class="teacher-dashboard__steps list-none m-0 p-0 flex flex-col gap-4">
             <li
               v-for="step in nextSteps"
               :key="step.id"
-              class="teacher-dashboard__step"
+              class="teacher-dashboard__step flex flex-wrap justify-between items-center gap-3"
             >
-              <div class="teacher-dashboard__step-info">
+              <div class="teacher-dashboard__step-info flex items-center gap-3">
                 <UiAvatar :icon="step.icon" size="sm" />
                 <div class="teacher-dashboard__step-copy">
-                  <span class="teacher-dashboard__step-title">{{
+                  <span class="teacher-dashboard__step-title font-semibold text-content">{{
                     step.title
                   }}</span>
                   <span
                     v-if="step.description"
-                    class="teacher-dashboard__step-description"
+                    class="teacher-dashboard__step-description block text-content-tertiary text-[0.85rem]"
                     >{{ step.description }}</span
                   >
                 </div>
@@ -292,7 +281,7 @@
         </UiCard>
 
         <UiCard
-          class="teacher-dashboard__plan-usage"
+          class="teacher-dashboard__plan-usage [grid-column:2] [grid-row:1] flex flex-col gap-4"
           :title="planUsageTitle"
           :subtitle="planUsageSubtitle"
           hover
@@ -302,7 +291,7 @@
           </UiAlert>
           <div
             v-else-if="usageLoading"
-            class="teacher-dashboard__plan-usage-skeleton"
+            class="teacher-dashboard__plan-usage-skeleton grid gap-3"
           >
             <UiSkeleton height="1rem" width="50%" />
             <UiSkeleton height="2.5rem" />
@@ -310,18 +299,18 @@
           </div>
           <div
             v-else-if="usageSummary"
-            class="teacher-dashboard__plan-usage-grid"
+            class="teacher-dashboard__plan-usage-grid flex flex-col gap-4"
           >
-            <div class="teacher-dashboard__plan-usage-header">
+            <div class="teacher-dashboard__plan-usage-header flex items-center justify-between gap-3 flex-wrap">
               <div>
-                <span class="teacher-dashboard__plan-usage-plan">
+                <span class="teacher-dashboard__plan-usage-plan font-semibold text-content">
                   {{
                     usageSummary.planName ||
                     usageSummary.planCode ||
                     planUsagePlanFallback
                   }}
                 </span>
-                <span class="teacher-dashboard__plan-usage-resolution">
+                <span class="teacher-dashboard__plan-usage-resolution ml-2 text-content-secondary text-[0.9rem]">
                   {{ planUsageMaxResolutionLabel }}
                   {{
                     usageSummary.maxResolutionHeight
@@ -329,7 +318,7 @@
                       : planUsageUnlimitedLabel
                   }}
                 </span>
-                <span class="teacher-dashboard__plan-usage-resolution">
+                <span class="teacher-dashboard__plan-usage-resolution ml-2 text-content-secondary text-[0.9rem]">
                   {{ planUsageMaxDurationLabel }}
                   {{
                     usageSummary.maxVideoDurationMinutes
@@ -339,7 +328,7 @@
                 </span>
                 <span
                   v-if="usageSummary.resolutionPolicy"
-                  class="teacher-dashboard__plan-usage-resolution"
+                  class="teacher-dashboard__plan-usage-resolution ml-2 text-content-secondary text-[0.9rem]"
                 >
                   {{ planUsageResolutionPolicyLabel }}
                   {{ formatResolutionPolicy(usageSummary.resolutionPolicy) }}
@@ -356,12 +345,12 @@
               {{ streamingWarning }}
             </UiAlert>
 
-            <div class="teacher-dashboard__plan-usage-item">
-              <div class="teacher-dashboard__plan-usage-label">
+            <div class="teacher-dashboard__plan-usage-item flex flex-col gap-2">
+              <div class="teacher-dashboard__plan-usage-label font-medium text-content">
                 {{ planUsageStorageLabel }}
               </div>
               <UiProgressBar :value="storageUsagePercent" color="primary">
-                <div class="teacher-dashboard__plan-usage-meta">
+                <div class="teacher-dashboard__plan-usage-meta flex gap-2 justify-between text-[0.85rem] text-content-secondary">
                   <span>{{
                     formatDurationSeconds(usageSummary.storageSecondsUsed)
                   }}</span>
@@ -379,18 +368,18 @@
               </UiProgressBar>
               <div
                 v-if="storageRemainingLabel"
-                class="teacher-dashboard__plan-usage-remaining"
+                class="teacher-dashboard__plan-usage-remaining text-[0.8rem] text-content-tertiary"
               >
                 {{ storageRemainingLabel }}
               </div>
             </div>
 
-            <div class="teacher-dashboard__plan-usage-item">
-              <div class="teacher-dashboard__plan-usage-label">
+            <div class="teacher-dashboard__plan-usage-item flex flex-col gap-2">
+              <div class="teacher-dashboard__plan-usage-label font-medium text-content">
                 {{ planUsageStorageSizeLabel }}
               </div>
               <UiProgressBar :value="storageSizeUsagePercent" color="secondary">
-                <div class="teacher-dashboard__plan-usage-meta">
+                <div class="teacher-dashboard__plan-usage-meta flex gap-2 justify-between text-[0.85rem] text-content-secondary">
                   <span>{{ formatBytes(usageSummary.storageBytesUsed) }}</span>
                   <span>
                     /
@@ -404,18 +393,18 @@
               </UiProgressBar>
               <div
                 v-if="storageSizeRemainingLabel"
-                class="teacher-dashboard__plan-usage-remaining"
+                class="teacher-dashboard__plan-usage-remaining text-[0.8rem] text-content-tertiary"
               >
                 {{ storageSizeRemainingLabel }}
               </div>
             </div>
 
-            <div class="teacher-dashboard__plan-usage-item">
-              <div class="teacher-dashboard__plan-usage-label">
+            <div class="teacher-dashboard__plan-usage-item flex flex-col gap-2">
+              <div class="teacher-dashboard__plan-usage-label font-medium text-content">
                 {{ planUsageStreamingLabel }}
               </div>
               <UiProgressBar :value="streamingUsagePercent" color="info">
-                <div class="teacher-dashboard__plan-usage-meta">
+                <div class="teacher-dashboard__plan-usage-meta flex gap-2 justify-between text-[0.85rem] text-content-secondary">
                   <span>{{
                     formatMinutes(usageSummary.streamingMinutesUsed)
                   }}</span>
@@ -431,13 +420,13 @@
               </UiProgressBar>
               <div
                 v-if="streamingRemainingLabel"
-                class="teacher-dashboard__plan-usage-remaining"
+                class="teacher-dashboard__plan-usage-remaining text-[0.8rem] text-content-tertiary"
               >
                 {{ streamingRemainingLabel }}
               </div>
             </div>
 
-            <div class="teacher-dashboard__plan-trends">
+            <div class="teacher-dashboard__plan-trends flex flex-col gap-3 mt-2">
               <div class="teacher-dashboard__plan-trends-header">
                 {{ planUsageTrendsTitle }}
               </div>
@@ -446,16 +435,16 @@
               </UiAlert>
               <div
                 v-else-if="trendsLoading"
-                class="teacher-dashboard__plan-trends-skeleton"
+                class="teacher-dashboard__plan-trends-skeleton grid gap-3"
               >
                 <UiSkeleton height="96px" />
                 <UiSkeleton height="96px" />
               </div>
               <div
                 v-else-if="trendPoints.length"
-                class="teacher-dashboard__plan-trends-grid"
+                class="teacher-dashboard__plan-trends-grid grid gap-4"
               >
-                <div class="teacher-dashboard__plan-trend">
+                <div class="teacher-dashboard__plan-trend flex flex-col gap-2">
                   <span class="teacher-dashboard__plan-trend-label">{{
                     planUsageStorageTrendLabel
                   }}</span>
@@ -465,7 +454,7 @@
                     stroke="var(--sakai-primary)"
                   />
                 </div>
-                <div class="teacher-dashboard__plan-trend">
+                <div class="teacher-dashboard__plan-trend flex flex-col gap-2">
                   <span class="teacher-dashboard__plan-trend-label">{{
                     planUsageStreamingTrendLabel
                   }}</span>
@@ -476,7 +465,7 @@
                   />
                 </div>
               </div>
-              <p v-else class="teacher-dashboard__plan-trends-empty">
+              <p v-else class="teacher-dashboard__plan-trends-empty m-0 text-[0.85rem] text-content-tertiary">
                 {{ planUsageTrendsEmptyMessage }}
               </p>
             </div>
@@ -484,21 +473,21 @@
         </UiCard>
 
         <UiCard
-          class="teacher-dashboard__views"
+          class="teacher-dashboard__views [grid-column:2] [grid-row:2] flex flex-col gap-4"
           :title="viewsCardTitle"
           :subtitle="viewsCardSubtitle"
           hover
         >
           <div
             v-if="showViewsSkeleton"
-            class="teacher-dashboard__views-skeleton"
+            class="teacher-dashboard__views-skeleton flex flex-col gap-3"
           >
             <UiSkeleton height="1rem" width="45%" />
             <UiSkeleton height="2.25rem" width="35%" />
             <UiSkeleton height="1rem" width="60%" />
           </div>
           <UiAlert v-else-if="viewsError" color="warning" variant="soft">
-            <div class="teacher-dashboard__views-alert">
+            <div class="teacher-dashboard__views-alert flex items-center justify-between gap-3 flex-wrap">
               <span>{{ viewsErrorMessage }}</span>
               <UiButton
                 v-if="showViewsRetry"
@@ -511,7 +500,7 @@
               </UiButton>
             </div>
           </UiAlert>
-          <div v-else class="teacher-dashboard__views-content">
+          <div v-else class="teacher-dashboard__views-content flex flex-col gap-4">
             <div class="teacher-dashboard__views-stats">
               <div class="teacher-dashboard__views-stat">
                 <span class="teacher-dashboard__views-value">{{
@@ -546,13 +535,13 @@
                 }}</span>
               </div>
             </div>
-            <div class="teacher-dashboard__views-courses">
+            <div class="teacher-dashboard__views-courses flex flex-col gap-2">
               <span class="teacher-dashboard__views-title">{{
                 viewsTopCoursesTitle
               }}</span>
               <ul
                 v-if="viewsSummarySafe.topCourses.length"
-                class="teacher-dashboard__views-list"
+                class="teacher-dashboard__views-list list-none p-0 m-0 flex flex-col gap-2"
               >
                 <li
                   v-for="course in viewsSummarySafe.topCourses"
@@ -566,7 +555,7 @@
                   }}</span>
                 </li>
               </ul>
-              <p v-else class="teacher-dashboard__views-empty">
+              <p v-else class="teacher-dashboard__views-empty m-0 text-content-tertiary">
                 {{ viewsEmptyLabel }}
               </p>
             </div>
@@ -575,15 +564,15 @@
 
         <UiCard
           v-if="teacherAssistantsEnabled"
-          class="teacher-dashboard__assistants-card"
+          class="teacher-dashboard__assistants-card [grid-column:1] [grid-row:3] flex flex-col gap-5"
           :title="t('teacher.assistantsDashboard.title')"
           :subtitle="t('teacher.assistantsDashboard.subtitle')"
           hover
         >
-          <div class="teacher-dashboard__assistants-content">
+          <div class="teacher-dashboard__assistants-content flex flex-col gap-4">
             <div
               v-if="assistantsSummaryLoading"
-              class="teacher-dashboard__assistants-skeleton"
+              class="teacher-dashboard__assistants-skeleton grid gap-3"
             >
               <UiSkeleton height="1rem" width="60%" />
               <UiSkeleton height="2.25rem" width="35%" />
@@ -598,7 +587,7 @@
             </UiAlert>
             <div v-else>
               <div class="teacher-dashboard__assistants-grid">
-                <div class="teacher-dashboard__assistants-stat">
+                <div class="teacher-dashboard__assistants-stat flex flex-col gap-1">
                   <span class="teacher-dashboard__assistants-value">{{
                     formatNumber(assistantCount)
                   }}</span>
@@ -613,7 +602,7 @@
                     }}
                   </span>
                 </div>
-                <div class="teacher-dashboard__assistants-stat">
+                <div class="teacher-dashboard__assistants-stat flex flex-col gap-1">
                   <span class="teacher-dashboard__assistants-value">{{
                     formatNumber(assistantRoleCount)
                   }}</span>
@@ -631,13 +620,13 @@
               </div>
               <p
                 v-if="assistantCount === 0"
-                class="teacher-dashboard__assistants-empty"
+                class="teacher-dashboard__assistants-empty m-0 text-[0.9rem] text-content-tertiary"
               >
                 {{ t("teacher.assistantsDashboard.empty") }}
               </p>
             </div>
           </div>
-          <div class="teacher-dashboard__assistants-actions">
+          <div class="teacher-dashboard__assistants-actions flex flex-wrap gap-3">
             <UiButton
               size="sm"
               color="primary"
@@ -671,27 +660,27 @@
           </div>
         </UiCard>
         <UiCard
-          class="teacher-dashboard__activity"
+          class="teacher-dashboard__activity [grid-column:2] [grid-row:3] flex flex-col gap-5"
           :title="t('teacher.activityTitle')"
           :subtitle="t('teacher.activitySubtitle')"
           hover
         >
           <div
             v-if="showActivitySkeleton"
-            class="teacher-dashboard__activity-skeleton"
+            class="teacher-dashboard__activity-skeleton flex flex-col gap-3"
           >
             <div
               v-for="index in 3"
               :key="`activity-skeleton-${index}`"
-              class="teacher-dashboard__activity-skeleton-row"
+              class="teacher-dashboard__activity-skeleton-row flex flex-col gap-2"
             >
               <UiSkeleton height="0.9rem" width="55%" />
               <UiSkeleton height="0.8rem" width="40%" />
             </div>
           </div>
           <template v-else>
-            <div class="teacher-dashboard__activity-section">
-              <div class="teacher-dashboard__activity-header">
+            <div class="teacher-dashboard__activity-section flex flex-col gap-3">
+              <div class="teacher-dashboard__activity-header flex items-center justify-between gap-3 flex-wrap">
                 <h3>{{ t("teacher.upcomingSessions") }}</h3>
                 <UiButton
                   size="sm"
@@ -702,17 +691,17 @@
                   {{ t("teacher.activityViewAllSessions") }}
                 </UiButton>
               </div>
-              <ul class="teacher-dashboard__activity-list">
+              <ul class="teacher-dashboard__activity-list list-none m-0 p-0 flex flex-col gap-3">
                 <li
                   v-for="session in upcomingSessions"
                   :key="session.id"
                   class="teacher-dashboard__activity-item"
                 >
                   <div>
-                    <span class="teacher-dashboard__activity-title">{{
+                    <span class="teacher-dashboard__activity-title block font-medium text-content">{{
                       session.title
                     }}</span>
-                    <span class="teacher-dashboard__activity-meta">{{
+                    <span class="teacher-dashboard__activity-meta block text-[0.85rem] text-content-tertiary">{{
                       formatDateTime(session.scheduledAt)
                     }}</span>
                   </div>
@@ -728,8 +717,8 @@
                 </li>
               </ul>
             </div>
-            <div class="teacher-dashboard__activity-section">
-              <div class="teacher-dashboard__activity-header">
+            <div class="teacher-dashboard__activity-section flex flex-col gap-3">
+              <div class="teacher-dashboard__activity-header flex items-center justify-between gap-3 flex-wrap">
                 <h3>{{ t("teacher.upcomingAssignments") }}</h3>
                 <UiButton
                   size="sm"
@@ -740,17 +729,17 @@
                   {{ t("teacher.activityReviewAssignments") }}
                 </UiButton>
               </div>
-              <ul class="teacher-dashboard__activity-list">
+              <ul class="teacher-dashboard__activity-list list-none m-0 p-0 flex flex-col gap-3">
                 <li
                   v-for="assignment in upcomingAssignments"
                   :key="assignment.id"
                   class="teacher-dashboard__activity-item"
                 >
                   <div>
-                    <span class="teacher-dashboard__activity-title">{{
+                    <span class="teacher-dashboard__activity-title block font-medium text-content">{{
                       assignment.title
                     }}</span>
-                    <span class="teacher-dashboard__activity-meta">{{
+                    <span class="teacher-dashboard__activity-meta block text-[0.85rem] text-content-tertiary">{{
                       formatDateTime(assignment.dueAt)
                     }}</span>
                   </div>
@@ -775,8 +764,8 @@
         :title="t('teacher.accountCardTitle')"
         hover
       >
-        <div class="teacher-dashboard__account-list">
-          <div class="teacher-dashboard__account-row">
+        <div class="teacher-dashboard__account-list flex flex-col gap-3 mb-4">
+          <div class="teacher-dashboard__account-row flex justify-between items-center gap-3 border-b pb-3">
             <span class="teacher-dashboard__account-label">{{
               t("teacher.accountStatus")
             }}</span>
@@ -791,12 +780,12 @@
               }}
             </UiBadge>
           </div>
-          <div class="teacher-dashboard__account-row">
+          <div class="teacher-dashboard__account-row flex justify-between items-center gap-3 border-b pb-3">
             <span class="teacher-dashboard__account-label">{{
               t("teacher.subjectFocus")
             }}</span>
             <span
-              class="teacher-dashboard__account-value"
+              class="teacher-dashboard__account-value font-semibold"
               :class="{
                 'teacher-dashboard__account-value--muted': !profile?.subject,
               }"
@@ -804,11 +793,11 @@
               {{ profile?.subject || t("teacher.subjectUnset") }}
             </span>
           </div>
-          <div class="teacher-dashboard__account-row">
+          <div class="teacher-dashboard__account-row flex justify-between items-center gap-3 border-b pb-3">
             <span class="teacher-dashboard__account-label">{{
               t("teacher.profileCompleteness")
             }}</span>
-            <span class="teacher-dashboard__account-value"
+            <span class="teacher-dashboard__account-value font-semibold"
               >{{ profileCompleteness }}%</span
             >
           </div>
@@ -2109,144 +2098,7 @@ const refreshAll = async () => {
 </script>
 
 <style scoped>
-/* .teacher-dashboard__welcome {
-  display: none;
-} */
-
-.teacher-dashboard {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-6);
-}
-
-.teacher-dashboard__alerts {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-dashboard__toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--sakai-space-3);
-  flex-wrap: wrap;
-}
-
-.teacher-dashboard__toolbar-meta {
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
-/* ── Welcome banner ────────────────────────────────────────────────── */
-.teacher-dashboard__banner {
-  position: relative;
-  overflow: hidden;
-  border-radius: var(--sakai-border-radius-xl);
-  background: var(--sakai-surface-hero);
-  padding: var(--sakai-space-7) var(--sakai-space-7);
-  color: #fff;
-}
-
-.teacher-dashboard__banner-body {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-6);
-  flex-wrap: wrap;
-}
-
-.teacher-dashboard__banner-title {
-  margin: 0 0 var(--sakai-space-2);
-  font-size: 1.6rem;
-  font-weight: var(--sakai-font-weight-bold);
-  color: #fff;
-  line-height: 1.2;
-}
-
-.teacher-dashboard__banner-subtitle {
-  margin: 0;
-  font-size: 0.95rem;
-  opacity: 0.85;
-}
-
-.teacher-dashboard__banner-kpi {
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-5);
-  flex-shrink: 0;
-}
-
-.teacher-dashboard__banner-kpi-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--sakai-space-1);
-}
-
-.teacher-dashboard__banner-kpi-value {
-  font-size: 2rem;
-  font-weight: var(--sakai-font-weight-bold);
-  line-height: 1;
-  color: #fff;
-}
-
-.teacher-dashboard__banner-kpi-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  opacity: 0.8;
-}
-
-.teacher-dashboard__banner-kpi-divider {
-  width: 1px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* Decorative circles */
-.teacher-dashboard__banner-decoration {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.teacher-dashboard__banner-circle {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.teacher-dashboard__banner-circle--lg {
-  width: 260px;
-  height: 260px;
-  top: -80px;
-  right: -60px;
-}
-
-.teacher-dashboard__banner-circle--sm {
-  width: 140px;
-  height: 140px;
-  bottom: -50px;
-  right: 120px;
-}
-
-.teacher-dashboard__alert-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-3);
-  flex-wrap: wrap;
-}
-
-.teacher-dashboard__metrics {
-  display: grid;
-  gap: var(--sakai-space-3);
-  grid-template-columns: repeat(6, 1fr);
-}
-
+/* ── Metrics grid — responsive breakpoints ─────────────────────────── */
 @media (max-width: 1280px) {
   .teacher-dashboard__metrics {
     grid-template-columns: repeat(3, 1fr);
@@ -2265,110 +2117,7 @@ const refreshAll = async () => {
   }
 }
 
-.teacher-dashboard__payments-warning {
-  grid-column: 1 / -1;
-}
-
-.teacher-dashboard__metric-skeleton {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-  padding: var(--sakai-space-4);
-}
-
-.teacher-dashboard__welcome-subtitle {
-  color: var(--sakai-text-color-tertiary);
-}
-
-.teacher-dashboard__bio {
-  margin: 0;
-  color: var(--sakai-text-color-secondary);
-  line-height: var(--sakai-line-height-lg);
-}
-
-.teacher-dashboard__bio-skeleton {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-dashboard__quick-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-dashboard__content {
-  display: grid;
-  gap: var(--sakai-space-5);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-}
-
-/* Main column (col 1) — explicit row to avoid auto-placement gaps */
-.teacher-dashboard__plan-usage {
-  grid-column: 2;
-  grid-row: 1;
-}
-.teacher-dashboard__views {
-  grid-column: 2;
-  grid-row: 2;
-}
-.teacher-dashboard__activity {
-  grid-column: 2;
-  grid-row: 3;
-}
-
-/* Sidebar column (col 2) */
-.teacher-dashboard__insights {
-  grid-column: 1;
-  grid-row: 1;
-}
-.teacher-dashboard__next {
-  grid-column: 1;
-  grid-row: 2;
-}
-.teacher-dashboard__assistants-card {
-  grid-column: 1;
-  grid-row: 3;
-}
-
-.teacher-dashboard__insights-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-5);
-  align-items: center;
-  justify-content: space-between;
-}
-
-.teacher-dashboard__progress {
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-dashboard__progress-meta {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-dashboard__progress-label {
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.teacher-dashboard__progress-value {
-  font-size: 1.75rem;
-  font-weight: var(--sakai-font-weight-semibold);
-}
-
-.teacher-dashboard__sparkline {
-  flex: 1 1 200px;
-  color: var(--sakai-primary);
-}
-
+/* ── Sparkline SVG — cannot be expressed as Tailwind utilities ──────── */
 .teacher-dashboard__sparkline svg {
   display: block;
   width: 100%;
@@ -2391,76 +2140,7 @@ const refreshAll = async () => {
   fill: currentColor;
 }
 
-.teacher-dashboard__sparkline-skeleton {
-  flex: 1 1 200px;
-}
-
-.teacher-dashboard__steps {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-dashboard__step {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-dashboard__step-info {
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-dashboard__step-title {
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.teacher-dashboard__step-description {
-  display: block;
-  color: var(--sakai-text-color-tertiary);
-  font-size: 0.85rem;
-}
-
-.teacher-dashboard__activity {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-5);
-}
-
-.teacher-dashboard__activity-skeleton {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-dashboard__activity-skeleton-row {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-dashboard__activity-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-dashboard__activity-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-3);
-  flex-wrap: wrap;
-}
-
+/* ── Activity header h3 — scoped child element ──────────────────────── */
 .teacher-dashboard__activity-header h3 {
   margin: 0;
   font-size: 0.9rem;
@@ -2470,15 +2150,7 @@ const refreshAll = async () => {
   letter-spacing: 0.06em;
 }
 
-.teacher-dashboard__activity-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
+/* ── Activity item — hover + border-inline-start + transition ───────── */
 .teacher-dashboard__activity-item {
   display: flex;
   align-items: center;
@@ -2496,18 +2168,7 @@ const refreshAll = async () => {
   background: var(--sakai-primary-tint-04);
 }
 
-.teacher-dashboard__activity-title {
-  display: block;
-  font-weight: var(--sakai-font-weight-medium);
-  color: var(--sakai-text-color);
-}
-
-.teacher-dashboard__activity-meta {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
+/* ── Activity empty — color-mix background ──────────────────────────── */
 .teacher-dashboard__activity-empty {
   padding: var(--sakai-space-3);
   border-radius: var(--sakai-radius-md);
@@ -2516,32 +2177,18 @@ const refreshAll = async () => {
   font-size: 0.9rem;
 }
 
-.teacher-dashboard__account-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-  margin-bottom: var(--sakai-space-4);
-}
-
-.teacher-dashboard__account-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--sakai-space-3);
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--sakai-border-color) 65%, transparent);
-  padding-bottom: var(--sakai-space-3);
-}
-
+/* ── Account row — last-child pseudo-selector ───────────────────────── */
 .teacher-dashboard__account-row:last-child {
   border-bottom: none;
   padding-bottom: 0;
 }
 
+/* ── Account card — top accent border ──────────────────────────────── */
 .teacher-dashboard__account {
   border-top: 3px solid var(--sakai-primary);
 }
 
+/* ── Account label — small uppercase ───────────────────────────────── */
 .teacher-dashboard__account-label {
   font-size: 0.8rem;
   color: var(--sakai-text-color-tertiary);
@@ -2549,43 +2196,19 @@ const refreshAll = async () => {
   letter-spacing: 0.06em;
 }
 
-.teacher-dashboard__account-value {
-  font-weight: var(--sakai-font-weight-semibold);
-}
-
+/* ── Account value muted variant ───────────────────────────────────── */
 .teacher-dashboard__account-value--muted {
   color: var(--sakai-text-color-tertiary);
 }
 
-.teacher-dashboard__assistants-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-5);
-}
-
-.teacher-dashboard__assistants-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-dashboard__assistants-skeleton {
-  display: grid;
-  gap: var(--sakai-space-3);
-}
-
+/* ── Assistants grid — auto-fit columns ─────────────────────────────── */
 .teacher-dashboard__assistants-grid {
   display: grid;
   gap: var(--sakai-space-4);
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }
 
-.teacher-dashboard__assistants-stat {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-1);
-}
-
+/* ── Assistants value / label / summary ─────────────────────────────── */
 .teacher-dashboard__assistants-value {
   font-size: 2rem;
   font-weight: var(--sakai-font-weight-semibold);
@@ -2604,85 +2227,7 @@ const refreshAll = async () => {
   color: var(--sakai-text-color-secondary);
 }
 
-.teacher-dashboard__assistants-empty {
-  margin: 0;
-  font-size: 0.9rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
-.teacher-dashboard__assistants-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-dashboard__plan-usage {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-dashboard__plan-usage-skeleton {
-  display: grid;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-dashboard__plan-usage-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-dashboard__plan-usage-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-3);
-  flex-wrap: wrap;
-}
-
-.teacher-dashboard__plan-usage-plan {
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.teacher-dashboard__plan-usage-resolution {
-  margin-left: var(--sakai-space-2);
-  color: var(--sakai-text-color-secondary);
-  font-size: 0.9rem;
-}
-
-.teacher-dashboard__plan-usage-item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-dashboard__plan-usage-label {
-  font-weight: var(--sakai-font-weight-medium);
-  color: var(--sakai-text-color);
-}
-
-.teacher-dashboard__plan-usage-meta {
-  display: flex;
-  gap: var(--sakai-space-2);
-  justify-content: space-between;
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-secondary);
-}
-
-.teacher-dashboard__plan-usage-remaining {
-  font-size: 0.8rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
-.teacher-dashboard__plan-trends {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-  margin-top: var(--sakai-space-2);
-}
-
+/* ── Plan trends header — uppercase label ───────────────────────────── */
 .teacher-dashboard__plan-trends-header {
   font-size: 0.85rem;
   font-weight: var(--sakai-font-weight-semibold);
@@ -2691,18 +2236,12 @@ const refreshAll = async () => {
   letter-spacing: 0.08em;
 }
 
+/* ── Plan trends grid — auto-fit columns ────────────────────────────── */
 .teacher-dashboard__plan-trends-grid {
-  display: grid;
-  gap: var(--sakai-space-4);
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
-.teacher-dashboard__plan-trend {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
+/* ── Plan trend label — small uppercase ─────────────────────────────── */
 .teacher-dashboard__plan-trend-label {
   font-size: 0.75rem;
   color: var(--sakai-text-color-tertiary);
@@ -2710,49 +2249,14 @@ const refreshAll = async () => {
   letter-spacing: 0.08em;
 }
 
-.teacher-dashboard__plan-trends-skeleton {
-  display: grid;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-dashboard__plan-trends-empty {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
-.teacher-dashboard__views {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-dashboard__views-skeleton {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-dashboard__views-alert {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-3);
-  flex-wrap: wrap;
-}
-
-.teacher-dashboard__views-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
+/* ── Views stats grid — auto-fit columns ────────────────────────────── */
 .teacher-dashboard__views-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: var(--sakai-space-4);
 }
 
+/* ── Views stat box ─────────────────────────────────────────────────── */
 .teacher-dashboard__views-stat {
   display: flex;
   flex-direction: column;
@@ -2763,6 +2267,7 @@ const refreshAll = async () => {
   border: 1px solid var(--sakai-border-color);
 }
 
+/* ── Views value / label ────────────────────────────────────────────── */
 .teacher-dashboard__views-value {
   font-size: 1.5rem;
   font-weight: var(--sakai-font-weight-semibold);
@@ -2775,26 +2280,13 @@ const refreshAll = async () => {
   letter-spacing: 0.08em;
 }
 
-.teacher-dashboard__views-courses {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
+/* ── Views title ────────────────────────────────────────────────────── */
 .teacher-dashboard__views-title {
   font-size: 0.95rem;
   font-weight: var(--sakai-font-weight-semibold);
 }
 
-.teacher-dashboard__views-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
+/* ── Views list li — flex row with surface bg ───────────────────────── */
 .teacher-dashboard__views-list li {
   display: flex;
   align-items: center;
@@ -2814,11 +2306,7 @@ const refreshAll = async () => {
   font-weight: var(--sakai-font-weight-semibold);
 }
 
-.teacher-dashboard__views-empty {
-  margin: 0;
-  color: var(--sakai-text-color-tertiary);
-}
-
+/* ── Responsive content grid ────────────────────────────────────────── */
 @media (max-width: 960px) {
   .teacher-dashboard__content {
     grid-template-columns: 1fr;

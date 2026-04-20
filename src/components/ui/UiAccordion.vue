@@ -18,10 +18,10 @@
         :disabled="item.disabled"
         @click="toggle(item.value)"
       >
-        <div class="ui-accordion__header-content">
+        <div class="ui-accordion__header-content flex flex-col gap-[0.2rem]">
           <slot name="header" :item="item" :index="index">
-            <span class="ui-accordion__title">{{ item.title }}</span>
-            <span v-if="item.subtitle" class="ui-accordion__subtitle">{{ item.subtitle }}</span>
+            <span class="ui-accordion__title text-[1rem]">{{ item.title }}</span>
+            <span v-if="item.subtitle" class="ui-accordion__subtitle text-[0.85rem] text-content-tertiary">{{ item.subtitle }}</span>
           </slot>
         </div>
         <UiIcon name="DownOutlined" class="ui-accordion__chevron" :size="16" />
@@ -208,20 +208,6 @@ const toggle = (value: AccordionValue) => {
   background: color-mix(in srgb, var(--sakai-primary) 14%, transparent);
 }
 
-.ui-accordion__header-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.ui-accordion__title {
-  font-size: 1rem;
-}
-
-.ui-accordion__subtitle {
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-tertiary);
-}
 
 .ui-accordion__chevron {
   transition: transform var(--sakai-transition-duration) var(--sakai-transition-ease);

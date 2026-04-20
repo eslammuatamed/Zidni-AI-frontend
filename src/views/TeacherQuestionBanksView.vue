@@ -6,16 +6,16 @@
       </UiButton>
     </template>
 
-    <div class="teacher-banks">
-      <aside class="teacher-banks__sidebar">
+    <div class="teacher-banks grid gap-6">
+      <aside class="teacher-banks__sidebar grid gap-4">
         <UiCard hover>
-          <div class="teacher-banks__sidebar-header">
+          <div class="teacher-banks__sidebar-header flex justify-between items-center gap-3">
             <h3>{{ t('assessments.banksTitle') }}</h3>
             <UiButton variant="outline" color="secondary" prepend-icon="ReloadOutlined" @click="reloadBanks">
               {{ t('assessments.refreshBanks') }}
             </UiButton>
           </div>
-          <div class="teacher-banks__sidebar-controls">
+          <div class="teacher-banks__sidebar-controls grid gap-3">
             <UiInput
               v-model="bankSearch"
               appearance="search"
@@ -28,8 +28,8 @@
               <option value="questions">{{ t('assessments.sortOptions.questions') }}</option>
             </UiSelect>
           </div>
-          <div v-if="availableTags.length || hasActiveFilters" class="teacher-banks__filters">
-            <div class="teacher-banks__filters-header">
+          <div v-if="availableTags.length || hasActiveFilters" class="teacher-banks__filters grid gap-2">
+            <div class="teacher-banks__filters-header flex items-center justify-between text-[0.9rem] text-content-secondary">
               <span v-if="availableTags.length">{{ t('assessments.filterTagsLabel') }}</span>
               <UiButton
                 v-if="hasActiveFilters"
@@ -41,7 +41,7 @@
                 {{ t('assessments.clearFilters') }}
               </UiButton>
             </div>
-            <div v-if="availableTags.length" class="teacher-banks__tag-filters">
+            <div v-if="availableTags.length" class="teacher-banks__tag-filters flex flex-wrap gap-2">
               <button
                 v-for="tag in availableTags"
                 :key="`filter-${tag}`"
@@ -63,22 +63,22 @@
           <UiAlert v-if="banksError" color="danger" variant="soft">
             {{ errorMessage(banksError) }}
           </UiAlert>
-          <div v-if="loadingBanks" class="teacher-banks__skeleton">
+          <div v-if="loadingBanks" class="teacher-banks__skeleton grid gap-3">
             <UiSkeleton v-for="index in 4" :key="index" height="48px" />
           </div>
           <template v-else>
-            <ul v-if="sortedBanks.length" class="teacher-banks__list">
+            <ul v-if="sortedBanks.length" class="teacher-banks__list list-none p-0 m-0 grid gap-2">
               <li
                 v-for="bank in sortedBanks"
                 :key="bank.id"
                 :class="['teacher-banks__item', { 'is-active': bank.id === selectedBankId }]"
                 @click="selectBank(bank.id)"
               >
-                <div class="teacher-banks__item-title">{{ bank.name || t('assessments.untitledBank') }}</div>
-                <div class="teacher-banks__item-meta">
+                <div class="teacher-banks__item-title font-semibold text-content">{{ bank.name || t('assessments.untitledBank') }}</div>
+                <div class="teacher-banks__item-meta flex flex-col gap-2 text-content-tertiary text-[0.9rem]">
                   <span>{{ questionCountLabel(bank.questionCount) }}</span>
                   <span>{{ bankUpdatedLabel(bank.updatedAt) }}</span>
-                  <div v-if="bank.tags.length" class="teacher-banks__item-tags">
+                  <div v-if="bank.tags.length" class="teacher-banks__item-tags flex flex-wrap gap-2">
                     <UiTag v-for="tag in bank.tags" :key="`${bank.id}-${tag}`" color="secondary" size="sm">
                       #{{ tag }}
                     </UiTag>
@@ -86,18 +86,18 @@
                 </div>
               </li>
             </ul>
-            <div v-else class="teacher-banks__empty">{{ banksEmptyLabel }}</div>
+            <div v-else class="teacher-banks__empty text-center py-6 px-4 text-content-tertiary">{{ banksEmptyLabel }}</div>
           </template>
         </UiCard>
       </aside>
 
-      <section class="teacher-banks__content">
+      <section class="teacher-banks__content grid gap-5">
         <UiCard hover>
           <template #title>
             {{ selectedBank?.name || t('assessments.selectPrompt') }}
           </template>
           <template #actions>
-            <div v-if="selectedBank" class="teacher-banks__content-actions">
+            <div v-if="selectedBank" class="teacher-banks__content-actions flex items-center gap-3">
               <UiTag color="primary" variant="soft" size="sm">
                 {{ questionCountLabel(selectedBankQuestionCount) }}
               </UiTag>
@@ -118,13 +118,13 @@
           <UiAlert v-if="bankError" color="danger" variant="soft">
             {{ errorMessage(bankError) }}
           </UiAlert>
-          <div v-else-if="loadingBank" class="teacher-banks__skeleton">
+          <div v-else-if="loadingBank" class="teacher-banks__skeleton grid gap-3">
             <UiSkeleton height="220px" />
             <UiSkeleton height="24px" />
           </div>
-          <div v-else-if="selectedBank" class="teacher-banks__details">
-            <div class="teacher-banks__details-header">
-              <div class="teacher-banks__details-actions">
+          <div v-else-if="selectedBank" class="teacher-banks__details grid gap-4">
+            <div class="teacher-banks__details-header grid gap-3">
+              <div class="teacher-banks__details-actions flex flex-wrap gap-2 justify-end">
                 <UiButton color="primary" prepend-icon="PlusOutlined" @click="openQuestionDialog()">
                   {{ t('assessments.addQuestion') }}
                 </UiButton>
@@ -138,7 +138,7 @@
                   {{ t('assessments.ai.openGenerator') }}
                 </UiButton>
               </div>
-              <div class="teacher-banks__details-filters">
+              <div class="teacher-banks__details-filters grid gap-3">
                 <UiInput
                   v-model="questionSearch"
                   appearance="search"
@@ -166,14 +166,14 @@
                 </UiSelect>
               </div>
             </div>
-            <p v-if="selectedBank.description" class="teacher-banks__description">
+            <p v-if="selectedBank.description" class="teacher-banks__description m-0 text-content-secondary">
               {{ selectedBank.description }}
             </p>
-            <p class="teacher-banks__bank-meta">{{ bankUpdatedLabel(selectedBank.updatedAt) }}</p>
-            <p class="teacher-banks__bank-meta">
+            <p class="teacher-banks__bank-meta m-0 text-content-tertiary text-[0.9rem]">{{ bankUpdatedLabel(selectedBank.updatedAt) }}</p>
+            <p class="teacher-banks__bank-meta m-0 text-content-tertiary text-[0.9rem]">
               {{ t('assessments.questionsShown', { shown: filteredQuestionCount, total: selectedBankQuestionCount }) }}
             </p>
-            <div v-if="selectedBankTags.length" class="teacher-banks__tag-group">
+            <div v-if="selectedBankTags.length" class="teacher-banks__tag-group flex flex-wrap gap-2">
               <UiTag v-for="tag in selectedBankTags" :key="`detail-tag-${tag}`" color="secondary" size="sm">
                 #{{ tag }}
               </UiTag>
@@ -194,13 +194,13 @@
               multiple
             >
               <template #header="{ item }">
-                <div class="teacher-banks__question-header">
-                  <span class="teacher-banks__question-title">{{ item.title }}</span>
-                  <div class="teacher-banks__question-meta">
+                <div class="teacher-banks__question-header grid gap-2">
+                  <span class="teacher-banks__question-title font-semibold text-content">{{ item.title }}</span>
+                  <div class="teacher-banks__question-meta flex gap-3 text-[0.85rem] text-content-tertiary">
                     <span>{{ item.typeLabel }}</span>
                     <span>{{ item.points }} {{ t('assessments.pointsLabel') }}</span>
                   </div>
-                  <div v-if="item.tags.length" class="teacher-banks__question-tags">
+                  <div v-if="item.tags.length" class="teacher-banks__question-tags flex flex-wrap gap-2">
                     <UiTag v-for="tag in item.tags" :key="`${item.id}-${tag}`" color="secondary" size="sm">
                       #{{ tag }}
                     </UiTag>
@@ -208,8 +208,8 @@
                 </div>
               </template>
               <template #content="{ item }">
-                <div class="teacher-banks__question-body">
-                  <div class="teacher-banks__question-actions">
+                <div class="teacher-banks__question-body grid gap-4">
+                  <div class="teacher-banks__question-actions flex flex-wrap gap-2 justify-end">
                     <UiButton
                       variant="link"
                       color="primary"
@@ -227,13 +227,13 @@
                       {{ t('common.delete') }}
                     </UiButton>
                   </div>
-                  <div v-if="item.question.currentVersion?.options?.length" class="teacher-banks__options">
+                  <div v-if="item.question.currentVersion?.options?.length" class="teacher-banks__options grid gap-2">
                     <div
                       v-for="(option, index) in item.question.currentVersion?.options"
                       :key="option.id"
                       :class="['teacher-banks__option', { 'is-correct': option.correct }]"
                     >
-                      <div class="teacher-banks__option-text">
+                      <div class="teacher-banks__option-text flex gap-2 text-content">
                         <strong>{{ getDisplayOptionLabel(option.label, option.key, index) }}.</strong>
                         <span>{{ option.text }}</span>
                       </div>
@@ -242,17 +242,17 @@
                       </UiTag>
                     </div>
                   </div>
-                  <div v-else class="teacher-banks__freeform">
+                  <div v-else class="teacher-banks__freeform text-content-tertiary">
                     {{ t('assessments.freeFormAnswer') }}
                   </div>
-                  <p class="teacher-banks__version-meta">
+                  <p class="teacher-banks__version-meta text-content-tertiary text-[0.85rem]">
                     {{ t('assessments.versionCreated', { date: formatTimestamp(item.question.currentVersion?.createdAt) }) }}
                   </p>
-                  <div v-if="item.question.history.length > 1" class="teacher-banks__history">
+                  <div v-if="item.question.history.length > 1" class="teacher-banks__history grid gap-2">
                     <h4>{{ t('assessments.versionHistory') }}</h4>
-                    <ul class="teacher-banks__history-list">
+                    <ul class="teacher-banks__history-list list-none p-0 m-0 grid gap-2">
                       <li v-for="version in item.question.history" :key="version.id">
-                        <div class="teacher-banks__history-row">
+                        <div class="teacher-banks__history-row flex justify-between gap-2 text-[0.9rem] text-content">
                           <span>
                             {{ questionTypeLabel(version.type) }} · {{ version.points }} {{ t('assessments.pointsLabel') }}
                           </span>
@@ -273,7 +273,7 @@
               </template>
             </UiAccordion>
           </div>
-          <div v-else class="teacher-banks__placeholder">{{ t('assessments.selectPrompt') }}</div>
+          <div v-else class="teacher-banks__placeholder text-center py-6 px-4 text-content-tertiary">{{ t('assessments.selectPrompt') }}</div>
         </UiCard>
       </section>
     </div>
@@ -283,11 +283,11 @@
       :title="bankDialog.mode === 'edit' ? t('assessments.editBank') : t('assessments.createBank')"
       width="480px"
     >
-      <form class="teacher-banks__form" @submit.prevent="submitBank">
+      <form class="teacher-banks__form grid gap-4" @submit.prevent="submitBank">
         <UiAlert v-if="bankDialog.error" color="danger" variant="soft">{{ bankDialog.error }}</UiAlert>
         <UiInput v-model="bankDialog.name" :label="t('assessments.bankName')" required />
         <UiTextarea v-model="bankDialog.description" :label="t('assessments.bankDescription')" :rows="3" />
-        <div class="teacher-banks__dialog-actions">
+        <div class="teacher-banks__dialog-actions flex justify-end gap-3">
           <UiButton variant="link" color="secondary" @click="closeBankDialog">{{ t('assessments.cancel') }}</UiButton>
           <UiButton button-type="submit" color="primary" :disabled="bankDialog.loading">
             {{ t('assessments.save') }}
@@ -297,12 +297,12 @@
     </UiDialog>
 
     <UiDialog v-model="bankDeleteDialog.open" :title="t('assessments.deleteBankTitle')" width="420px">
-      <div class="teacher-banks__dialog-body">
+      <div class="teacher-banks__dialog-body grid gap-3">
         <UiAlert v-if="bankDeleteDialog.error" color="danger" variant="soft">{{ bankDeleteDialog.error }}</UiAlert>
         <p>{{ t('assessments.deleteBankConfirm', { name: bankDeleteDialog.name }) }}</p>
       </div>
       <template #footer>
-        <div class="teacher-banks__dialog-actions">
+        <div class="teacher-banks__dialog-actions flex justify-end gap-3">
           <UiButton variant="link" color="secondary" @click="closeBankDelete">{{ t('assessments.cancel') }}</UiButton>
           <UiButton color="danger" :disabled="bankDeleteDialog.loading" @click="confirmDeleteBank">
             {{ t('assessments.delete') }}
@@ -312,8 +312,8 @@
     </UiDialog>
 
     <UiDialog v-model="aiDialog.open" :title="t('assessments.ai.dialogTitle')" width="980px">
-      <div class="teacher-banks__ai-layout">
-        <form class="teacher-banks__form teacher-banks__ai-form" @submit.prevent="submitAiGeneration">
+      <div class="teacher-banks__ai-layout grid gap-4">
+        <form class="teacher-banks__form grid gap-4 teacher-banks__ai-form content-start" @submit.prevent="submitAiGeneration">
           <UiAlert v-if="aiDialog.error" color="danger" variant="soft">{{ aiDialog.error }}</UiAlert>
           <UiInput v-model="aiDialog.subject" :label="t('assessments.ai.subject')" required />
           <UiTextarea
@@ -329,7 +329,7 @@
             :label="t('assessments.ai.objectives')"
             :placeholder="t('assessments.ai.objectivesHint')"
           />
-          <div class="teacher-banks__ai-grid">
+          <div class="teacher-banks__ai-grid grid gap-3">
             <UiInput
               v-model.number="aiDialog.questionCount"
               type="number"
@@ -350,7 +350,7 @@
           </div>
           <div class="teacher-banks__ai-presets">
             <span>{{ t('assessments.ai.quickDifficulty') }}</span>
-            <div class="teacher-banks__ai-chip-row">
+            <div class="teacher-banks__ai-chip-row flex flex-wrap gap-2">
               <button
                 v-for="preset in aiDifficultyPresets"
                 :key="`ai-difficulty-${preset}`"
@@ -362,7 +362,7 @@
               </button>
             </div>
           </div>
-          <div class="teacher-banks__dialog-actions">
+          <div class="teacher-banks__dialog-actions flex justify-end gap-3">
             <UiButton variant="link" color="secondary" @click="closeAiDialog">{{ t('assessments.cancel') }}</UiButton>
             <UiButton button-type="submit" color="primary" :disabled="aiDialog.loading">
               {{ aiDialog.loading ? t('ai.common.generating') : t('assessments.ai.generate') }}
@@ -370,7 +370,7 @@
           </div>
         </form>
         <div class="teacher-banks__ai-panel">
-          <div class="teacher-banks__ai-results-header">
+          <div class="teacher-banks__ai-results-header flex justify-between items-start gap-3">
             <div>
               <h4>{{ t('assessments.ai.resultsTitle', { count: aiDialog.result?.questions.length ?? 0 }) }}</h4>
               <p class="teacher-banks__ai-results-meta">
@@ -381,21 +381,21 @@
           <div v-if="aiDialog.loading" class="teacher-banks__ai-loading">
             {{ t('ai.common.generating') }}
           </div>
-          <p v-else-if="!aiDialog.result || !aiDialog.result.questions.length" class="teacher-banks__ai-empty">
+          <p v-else-if="!aiDialog.result || !aiDialog.result.questions.length" class="teacher-banks__ai-empty m-0 text-content-secondary">
             {{ t('assessments.ai.emptyResults') }}
           </p>
-          <ul v-else class="teacher-banks__ai-list">
+          <ul v-else class="teacher-banks__ai-list grid gap-3 m-0 p-0 list-none">
             <li v-for="question in aiDialog.result.questions" :key="question.stem" class="teacher-banks__ai-item">
-              <div class="teacher-banks__ai-content">
+              <div class="teacher-banks__ai-content flex flex-col gap-2">
                 <strong>{{ question.stem }}</strong>
                 <p class="teacher-banks__ai-meta">{{ formatGeneratedMeta(question) }}</p>
-                <ul v-if="question.options.length" class="teacher-banks__ai-options">
+                <ul v-if="question.options.length" class="teacher-banks__ai-options m-0 pl-4 grid gap-1">
                   <li v-for="option in question.options" :key="option.key">
                     <strong>{{ option.key }}.</strong>
                     <span>{{ option.text }}</span>
                   </li>
                 </ul>
-                <p v-if="question.explanation" class="teacher-banks__ai-explanation">{{ question.explanation }}</p>
+                <p v-if="question.explanation" class="teacher-banks__ai-explanation m-0 text-content-secondary italic">{{ question.explanation }}</p>
               </div>
               <UiButton variant="outline" color="primary" @click="useGeneratedQuestion(question)">
                 {{ t('assessments.ai.useQuestion') }}
@@ -411,7 +411,7 @@
       :title="questionDialog.mode === 'edit' ? t('assessments.editQuestion') : t('assessments.addQuestion')"
       width="720px"
     >
-      <form class="teacher-banks__form" @submit.prevent="submitQuestion">
+      <form class="teacher-banks__form grid gap-4" @submit.prevent="submitQuestion">
         <UiAlert v-if="questionDialog.error" color="danger" variant="soft">{{ questionDialog.error }}</UiAlert>
         <UiInput v-model="questionDialog.stem" :label="t('assessments.questionStem')" required />
         <UiSelect
@@ -434,21 +434,21 @@
           :disabled="questionDialog.type === 'short' || questionDialog.type === 'truefalse'"
         />
 
-        <div v-if="questionDialog.type === 'mcq_single'" class="teacher-banks__option-editor">
+        <div v-if="questionDialog.type === 'mcq_single'" class="teacher-banks__option-editor grid gap-3">
           <div
             v-for="(option, index) in questionDialog.options"
             :key="option.key"
-            class="teacher-banks__option-editor-row"
+            class="teacher-banks__option-editor-row grid gap-3 items-center [grid-template-columns:auto_1fr_1fr_auto]"
           >
             <UiInput
               v-model="option.label"
               :label="t('assessments.optionLabel', { index: index + 1 })"
-              class="teacher-banks__option-field teacher-banks__option-field--label"
+              class="teacher-banks__option-field w-full teacher-banks__option-field--label max-w-[120px]"
             />
             <UiInput
               v-model="option.text"
               :label="t('assessments.optionText')"
-              class="teacher-banks__option-field"
+              class="teacher-banks__option-field w-full"
             />
             <UiButton
               variant="link"
@@ -472,22 +472,22 @@
           </UiButton>
         </div>
 
-        <div v-else-if="questionDialog.type === 'mcq_multi'" class="teacher-banks__option-editor">
+        <div v-else-if="questionDialog.type === 'mcq_multi'" class="teacher-banks__option-editor grid gap-3">
           <div
             v-for="(option, index) in questionDialog.options"
             :key="option.key"
-            class="teacher-banks__option-editor-row"
+            class="teacher-banks__option-editor-row grid gap-3 items-center [grid-template-columns:auto_1fr_1fr_auto]"
           >
             <UiCheckbox v-model="option.correct" />
             <UiInput
               v-model="option.label"
               :label="t('assessments.optionLabel', { index: index + 1 })"
-              class="teacher-banks__option-field teacher-banks__option-field--label"
+              class="teacher-banks__option-field w-full teacher-banks__option-field--label max-w-[120px]"
             />
             <UiInput
               v-model="option.text"
               :label="t('assessments.optionText')"
-              class="teacher-banks__option-field"
+              class="teacher-banks__option-field w-full"
             />
             <UiButton
               variant="link"
@@ -515,7 +515,7 @@
 
         <UiAlert v-else color="info" variant="soft">{{ t('assessments.shortAnswerHint') }}</UiAlert>
 
-        <div class="teacher-banks__dialog-actions">
+        <div class="teacher-banks__dialog-actions flex justify-end gap-3">
           <UiButton variant="link" color="secondary" @click="closeQuestionDialog">{{ t('assessments.cancel') }}</UiButton>
           <UiButton button-type="submit" color="primary" :disabled="questionDialog.loading">
             {{ t('assessments.save') }}
@@ -525,14 +525,14 @@
     </UiDialog>
 
     <UiDialog v-model="questionDeleteDialog.open" :title="t('assessments.deleteQuestionTitle')" width="420px">
-      <div class="teacher-banks__dialog-body">
+      <div class="teacher-banks__dialog-body grid gap-3">
         <UiAlert v-if="questionDeleteDialog.error" color="danger" variant="soft">
           {{ questionDeleteDialog.error }}
         </UiAlert>
         <p>{{ t('assessments.deleteQuestionConfirm', { title: questionDeleteDialog.stem }) }}</p>
       </div>
       <template #footer>
-        <div class="teacher-banks__dialog-actions">
+        <div class="teacher-banks__dialog-actions flex justify-end gap-3">
           <UiButton variant="link" color="secondary" @click="closeQuestionDelete">{{ t('assessments.cancel') }}</UiButton>
           <UiButton color="danger" :disabled="questionDeleteDialog.loading" @click="confirmDeleteQuestion">
             {{ t('assessments.delete') }}
@@ -1512,41 +1512,6 @@ const errorMessage = (kind: AssessmentError | null) => {
 </script>
 
 <style scoped>
-.teacher-banks {
-  display: grid;
-  gap: var(--sakai-space-6);
-  grid-template-columns: 1fr;
-}
-
-.teacher-banks__sidebar {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-banks__sidebar-controls {
-  display: grid;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-banks__filters {
-  display: grid;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-banks__filters-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  color: var(--sakai-text-color-secondary);
-}
-
-.teacher-banks__tag-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-}
-
 .teacher-banks__filter-toggle {
   border: none;
   background: transparent;
@@ -1558,26 +1523,6 @@ const errorMessage = (kind: AssessmentError | null) => {
   outline: 2px solid color-mix(in srgb, var(--sakai-primary) 55%, transparent);
   outline-offset: 2px;
   border-radius: var(--sakai-border-radius-lg);
-}
-
-.teacher-banks__sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-banks__skeleton {
-  display: grid;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-banks__list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: var(--sakai-space-2);
 }
 
 .teacher-banks__item {
@@ -1600,122 +1545,6 @@ const errorMessage = (kind: AssessmentError | null) => {
   background: color-mix(in srgb, var(--sakai-primary) 12%, transparent);
 }
 
-.teacher-banks__item-title {
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.teacher-banks__item-meta {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-  color: var(--sakai-text-color-tertiary);
-  font-size: 0.9rem;
-}
-
-.teacher-banks__item-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-banks__empty,
-.teacher-banks__placeholder {
-  text-align: center;
-  padding: var(--sakai-space-6) var(--sakai-space-4);
-  color: var(--sakai-text-color-tertiary);
-}
-
-.teacher-banks__content {
-  display: grid;
-  gap: var(--sakai-space-5);
-}
-
-.teacher-banks__content-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-banks__details {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-banks__details-header {
-  display: grid;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-banks__details-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-  justify-content: flex-end;
-}
-
-.teacher-banks__details-filters {
-  display: grid;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-banks__description {
-  margin: 0;
-  color: var(--sakai-text-color-secondary);
-}
-
-.teacher-banks__bank-meta {
-  margin: 0;
-  color: var(--sakai-text-color-tertiary);
-  font-size: 0.9rem;
-}
-
-.teacher-banks__tag-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-banks__question-header {
-  display: grid;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-banks__question-title {
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.teacher-banks__question-meta {
-  display: flex;
-  gap: var(--sakai-space-3);
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
-.teacher-banks__question-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-banks__question-body {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-banks__question-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-  justify-content: flex-end;
-}
-
-.teacher-banks__options {
-  display: grid;
-  gap: var(--sakai-space-2);
-}
-
 .teacher-banks__option {
   display: flex;
   justify-content: space-between;
@@ -1731,61 +1560,6 @@ const errorMessage = (kind: AssessmentError | null) => {
   background: color-mix(in srgb, var(--sakai-success) 12%, transparent);
 }
 
-.teacher-banks__option-text {
-  display: flex;
-  gap: var(--sakai-space-2);
-  color: var(--sakai-text-color);
-}
-
-.teacher-banks__freeform {
-  color: var(--sakai-text-color-tertiary);
-}
-
-.teacher-banks__version-meta {
-  color: var(--sakai-text-color-tertiary);
-  font-size: 0.85rem;
-}
-
-.teacher-banks__history {
-  display: grid;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-banks__history-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-banks__history-row {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--sakai-space-2);
-  font-size: 0.9rem;
-  color: var(--sakai-text-color);
-}
-
-.teacher-banks__form {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-banks__dialog-body {
-  display: grid;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-banks__ai-layout {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-banks__ai-form {
-  align-content: start;
-}
-
 .teacher-banks__ai-panel {
   display: flex;
   flex-direction: column;
@@ -1799,11 +1573,6 @@ const errorMessage = (kind: AssessmentError | null) => {
   overflow: auto;
 }
 
-.teacher-banks__ai-grid {
-  display: grid;
-  gap: var(--sakai-space-3);
-}
-
 .teacher-banks__ai-presets {
   display: grid;
   gap: var(--sakai-space-2);
@@ -1814,12 +1583,6 @@ const errorMessage = (kind: AssessmentError | null) => {
   font-size: var(--sakai-font-size-sm);
 }
 
-.teacher-banks__ai-chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-}
-
 .teacher-banks__ai-chip {
   border: 1px solid color-mix(in srgb, var(--sakai-primary) 30%, transparent);
   border-radius: var(--sakai-border-radius-pill);
@@ -1828,20 +1591,6 @@ const errorMessage = (kind: AssessmentError | null) => {
   color: var(--sakai-text-color);
   font-size: var(--sakai-font-size-sm);
   cursor: pointer;
-}
-
-.teacher-banks__ai-results {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-  margin-top: var(--sakai-space-4);
-}
-
-.teacher-banks__ai-results-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--sakai-space-3);
 }
 
 .teacher-banks__ai-loading {
@@ -1858,19 +1607,6 @@ const errorMessage = (kind: AssessmentError | null) => {
   font-size: var(--sakai-font-size-sm);
 }
 
-.teacher-banks__ai-empty {
-  margin: 0;
-  color: var(--sakai-text-color-secondary);
-}
-
-.teacher-banks__ai-list {
-  display: grid;
-  gap: var(--sakai-space-3);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
 .teacher-banks__ai-item {
   display: flex;
   flex-direction: column;
@@ -1885,35 +1621,10 @@ const errorMessage = (kind: AssessmentError | null) => {
   align-self: flex-end;
 }
 
-.teacher-banks__ai-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
 .teacher-banks__ai-meta {
   margin: 0;
   color: var(--sakai-text-color-secondary);
   font-size: var(--sakai-font-size-sm);
-}
-
-.teacher-banks__ai-options {
-  margin: 0;
-  padding-left: var(--sakai-space-4);
-  display: grid;
-  gap: var(--sakai-space-1);
-}
-
-.teacher-banks__ai-explanation {
-  margin: 0;
-  color: var(--sakai-text-color-secondary);
-  font-style: italic;
-}
-
-.teacher-banks__dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--sakai-space-3);
 }
 
 @media (min-width: 768px) {
@@ -1937,26 +1648,6 @@ const errorMessage = (kind: AssessmentError | null) => {
   .teacher-banks__ai-item > .ui-button {
     margin-left: auto;
   }
-}
-
-.teacher-banks__option-editor {
-  display: grid;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-banks__option-editor-row {
-  display: grid;
-  gap: var(--sakai-space-3);
-  align-items: center;
-  grid-template-columns: auto 1fr 1fr auto;
-}
-
-.teacher-banks__option-field {
-  width: 100%;
-}
-
-.teacher-banks__option-field--label {
-  max-width: 120px;
 }
 
 @media (min-width: 1024px) {

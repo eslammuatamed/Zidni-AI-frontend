@@ -1,5 +1,5 @@
 <template>
-  <div class="ui-progress" :class="[`ui-progress--tone-${props.color}`, { 'ui-progress--striped': props.striped, 'ui-progress--animated': props.animated }]">
+  <div class="ui-progress flex flex-col gap-2" :class="[`ui-progress--tone-${props.color}`, { 'ui-progress--striped': props.striped, 'ui-progress--animated': props.animated }]">
     <div class="ui-progress__track">
       <div
         class="ui-progress__value"
@@ -12,7 +12,7 @@
         <span v-if="props.showValue" class="ui-progress__label">{{ displayValue }}</span>
       </div>
     </div>
-    <div v-if="props.label || $slots.default" class="ui-progress__meta">
+    <div v-if="props.label || $slots.default" class="ui-progress__meta text-[0.85rem] text-content-secondary">
       <slot>{{ props.label }}</slot>
     </div>
   </div>
@@ -63,12 +63,6 @@ const displayValue = computed(() => {
 </script>
 
 <style scoped>
-.ui-progress {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
 .ui-progress__track {
   position: relative;
   width: 100%;
@@ -126,11 +120,6 @@ const displayValue = computed(() => {
 
 .ui-progress--animated.ui-progress--striped .ui-progress__value {
   animation: ui-progress-stripes 1.2s linear infinite;
-}
-
-.ui-progress__meta {
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-secondary);
 }
 
 @keyframes ui-progress-stripes {

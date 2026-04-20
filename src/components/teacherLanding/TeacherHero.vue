@@ -399,7 +399,7 @@ const socialLinks = computed(() => {
   width: clamp(12rem, 34vw, 20rem);
   height: clamp(12rem, 34vw, 20rem);
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.28), transparent 65%);
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.28), transparent 65%);
   filter: blur(36px);
   bottom: -18%;
   right: -8%;
@@ -425,7 +425,7 @@ const socialLinks = computed(() => {
   border-radius: var(--teacher-hero-radius, 24px);
   overflow: hidden;
   background: rgba(255,255,255,0.04);
-  box-shadow: var(--teacher-hero-photo-shadow, 0 24px 56px rgba(15,23,42,0.22)), var(--teacher-hero-photo-glow, 0 28px 80px rgba(99,102,241,0.08));
+  box-shadow: var(--teacher-hero-photo-shadow, 0 24px 56px rgba(15,23,42,0.22)), var(--teacher-hero-photo-glow, 0 28px 80px rgba(6,182,212,0.08));
   display: grid;
   place-items: center;
   z-index: 1;

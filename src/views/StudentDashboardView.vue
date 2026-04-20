@@ -25,10 +25,10 @@
       :title="t('student.courseAccessDialogTitle', { course: courseAccessDialog.courseTitle })"
       :mask-closable="false"
     >
-      <p class="course-access-dialog__lead">{{ t('student.courseAccessDialogMessage') }}</p>
-      <ul class="course-access-dialog__list">
+      <p class="course-access-dialog__lead mb-4 text-content-secondary">{{ t('student.courseAccessDialogMessage') }}</p>
+      <ul class="course-access-dialog__list list-none p-0 m-0 flex flex-col gap-3">
         <li
-          class="course-access-dialog__item"
+          class="course-access-dialog__item p-4 rounded-lg flex flex-col gap-1 bg-surface-alt border-l-4 border-l-[var(--sakai-border-color)]"
           :class="courseAccessDialog.hasEnrollment
             ? courseAccessDialog.enrollmentActive
               ? 'is-complete'
@@ -41,7 +41,7 @@
           <span v-else>{{ t('student.courseAccessComplete') }}</span>
         </li>
         <li
-          class="course-access-dialog__item"
+          class="course-access-dialog__item p-4 rounded-lg flex flex-col gap-1 bg-surface-alt border-l-4 border-l-[var(--sakai-border-color)]"
           :class="normalizeManualStatus(courseAccessDialog.paymentStatus) === 'approved'
             ? 'is-complete'
             : normalizeManualStatus(courseAccessDialog.paymentStatus) === 'pending'
@@ -54,14 +54,14 @@
           <span v-else-if="normalizeManualStatus(courseAccessDialog.paymentStatus) === 'rejected'">{{ t('student.courseAccessHintPaymentRejected') }}</span>
           <span
             v-if="normalizeManualStatus(courseAccessDialog.paymentStatus) === 'rejected' && courseAccessDialog.paymentNotes"
-            class="course-access-dialog__note"
+            class="course-access-dialog__note text-[0.85rem] text-content-secondary"
           >
             {{ courseAccessDialog.paymentNotes }}
           </span>
           <span v-else>{{ t('student.courseAccessHintPayment') }}</span>
         </li>
         <li
-          class="course-access-dialog__item"
+          class="course-access-dialog__item p-4 rounded-lg flex flex-col gap-1 bg-surface-alt border-l-4 border-l-[var(--sakai-border-color)]"
           :class="courseAccessDialog.teacherActive ? 'is-complete' : 'is-missing'"
         >
           <strong>{{ t('student.courseAccessStepTeacher') }}</strong>
@@ -79,22 +79,22 @@
       </template>
     </UiDialog>
 
-    <div class="student-dashboard">
+    <div class="student-dashboard flex flex-col gap-6 pb-8">
       <header class="student-dashboard__header">
-        <UiCard class="student-hero-card" hover>
-          <div class="student-hero-card__inner">
-            <div class="student-hero-card__copy">
+        <UiCard class="student-hero-card overflow-hidden relative" hover>
+          <div class="student-hero-card__inner flex justify-between items-center gap-6 flex-wrap">
+            <div class="student-hero-card__copy flex-1 min-w-[300px] flex flex-col gap-3">
               <UiBadge variant="soft" color="primary" size="sm">{{ t('student.profile') }}</UiBadge>
               <h2 class="student-hero-card__title">{{ welcomeMessage }}</h2>
-              <p class="student-hero-card__subtitle">
+              <p class="student-hero-card__subtitle text-base text-content-secondary flex items-center gap-3 flex-wrap">
                 <span>{{ t('student.enrollments') }} · {{ totalEnrollments }}</span>
-                <span class="dot-divider"></span>
+                <span class="dot-divider w-[4px] h-[4px] bg-[var(--sakai-border-color)] rounded-full"></span>
                 <span>{{ t('student.payments') }} · {{ totalPaymentsCount }}</span>
-                <span v-if="showTenantSwitching" class="student-hero-card__switching" aria-live="polite">
+                <span v-if="showTenantSwitching" class="student-hero-card__switching inline-flex items-center" aria-live="polite">
                   <span class="student-hero-card__spinner" aria-hidden="true"></span>
                 </span>
               </p>
-              <div class="student-hero-card__actions">
+              <div class="student-hero-card__actions flex flex-wrap gap-3 mt-4">
                 <UiButton
                   v-if="quickActions[0]"
                   color="primary"
@@ -114,20 +114,20 @@
                 </UiButton>
               </div>
             </div>
-            <div class="student-hero-card__insights">
-              <div class="student-progress-circle-wrap">
+            <div class="student-hero-card__insights flex items-center gap-6 p-5 bg-surface-alt rounded-[var(--sakai-border-radius-2xl)] border border-border flex-wrap justify-center">
+              <div class="student-progress-circle-wrap flex flex-col items-center gap-2">
                 <UiProgressCircle :value="completionRate" :size="96" :stroke-width="10" show-value />
-                <span class="student-progress-circle-wrap__label">{{ t('student.tableProgress') }}</span>
+                <span class="student-progress-circle-wrap__label text-[0.75rem] uppercase font-bold text-content-muted">{{ t('student.tableProgress') }}</span>
               </div>
-              <div class="student-hero-card__stats">
-                <div class="stat-mini">
-                  <span class="stat-mini__label">{{ t('student.tableStatus') }}</span>
-                  <strong class="stat-mini__value">{{ activeEnrollments }}</strong>
+              <div class="student-hero-card__stats flex-1 grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(120px,1fr))]">
+                <div class="stat-mini flex flex-col">
+                  <span class="stat-mini__label text-[0.7rem] uppercase text-content-muted font-semibold">{{ t('student.tableStatus') }}</span>
+                  <strong class="stat-mini__value text-[1.5rem] text-content">{{ activeEnrollments }}</strong>
                   <small>{{ t('student.enrollments') }}</small>
                 </div>
-                <div class="stat-mini">
-                  <span class="stat-mini__label">{{ t('student.payments') }}</span>
-                  <strong class="stat-mini__value">{{ pendingPayments }}</strong>
+                <div class="stat-mini flex flex-col">
+                  <span class="stat-mini__label text-[0.7rem] uppercase text-content-muted font-semibold">{{ t('student.payments') }}</span>
+                  <strong class="stat-mini__value text-[1.5rem] text-content">{{ pendingPayments }}</strong>
                   <small>{{ t('student.tableStatus') }}</small>
                 </div>
               </div>
@@ -136,13 +136,13 @@
         </UiCard>
       </header>
 
-      <section class="student-dashboard__metrics">
+      <section class="student-dashboard__metrics grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(240px,1fr))]">
         <UiStatCard
           :label="t('student.enrollments')"
           :value="totalEnrollments.toString()"
           icon="SchoolOutlined"
           color="primary"
-          :description="`${t('student.tableStatus')} · ${activeEnrollments}`"
+          :secondary-stat="`${t('student.tableStatus')} · ${activeEnrollments}`"
         />
 
         <UiStatCard
@@ -150,7 +150,7 @@
           :value="pendingPayments.toString()"
           icon="CreditCardOutlined"
           color="warning"
-          :description="`${t('student.tableStatus')} · ${pendingPaymentRate}%`"
+          :secondary-stat="`${t('student.tableStatus')} · ${pendingPaymentRate}%`"
         />
 
         <UiStatCard
@@ -158,7 +158,7 @@
           :value="notificationsCount.toString()"
           icon="BellOutlined"
           color="info"
-          :description="`${t('student.notifications')} · ${notificationsCount}`"
+          :secondary-stat="`${t('student.notifications')} · ${notificationsCount}`"
         />
 
         <UiStatCard
@@ -166,24 +166,24 @@
           :value="achievementsStore.data?.certificates?.length?.toString() || '0'"
           icon="TrophyOutlined"
           color="success"
-          :description="t('certificates.student.title')"
+          :secondary-stat="t('certificates.student.title')"
         />
       </section>
 
-      <div class="student-dashboard__layout">
-        <main class="student-dashboard__main">
-          <UiCard :title="t('student.enrollments')" class="student-dashboard__card">
-            <div class="student-dashboard__table-wrap">
+      <div class="student-dashboard__layout flex gap-6 items-start">
+        <main class="student-dashboard__main flex-1 flex flex-col gap-6 min-w-0">
+          <UiCard :title="t('student.enrollments')" class="student-dashboard__card h-fit">
+            <div class="student-dashboard__table-wrap w-full overflow-x-auto">
               <UiTable :headers="enrollmentHeaders" :items="studentStore.enrollments">
               <template #item.courseTitle="{ item }">
-                 <span class="course-cell-title">{{ item.courseTitle }}</span>
+                 <span class="course-cell-title font-semibold text-content">{{ item.courseTitle }}</span>
               </template>
               <template #item.teacherName="{ item }">
-                <div class="teacher-cell">
+                <div class="teacher-cell flex items-center gap-3">
                   <UiAvatar :src="item.teacherPhotoUrl" :size="32" :label="item.teacherName" />
-                  <div class="teacher-cell__info">
-                    <span class="teacher-cell__name">{{ item.teacherName || t('student.unknownTeacher') }}</span>
-                    <small v-if="item.teacherSubject" class="teacher-cell__subject">{{ item.teacherSubject }}</small>
+                  <div class="teacher-cell__info flex flex-col leading-[1.2]">
+                    <span class="teacher-cell__name font-medium text-[0.9rem]">{{ item.teacherName || t('student.unknownTeacher') }}</span>
+                    <small v-if="item.teacherSubject" class="teacher-cell__subject text-[0.75rem] text-content-muted">{{ item.teacherSubject }}</small>
                   </div>
                 </div>
               </template>
@@ -197,9 +197,9 @@
                 <span class="date-cell">{{ formatDate(item.endAt) }}</span>
               </template>
               <template #item.progress="{ item }">
-                <div class="progress-cell">
+                <div class="progress-cell flex items-center gap-3 min-w-[140px]">
                   <UiProgressBar :value="item.progress" size="sm" :color="item.progress >= 100 ? 'success' : 'primary'" />
-                  <span class="progress-cell__value">{{ Math.round(Number(item.progress || 0)) }}%</span>
+                  <span class="progress-cell__value text-[0.8rem] font-semibold text-content-secondary w-[2.5rem] text-right">{{ Math.round(Number(item.progress || 0)) }}%</span>
                 </div>
               </template>
               </UiTable>
@@ -211,44 +211,44 @@
                 class="student-dashboard__list-item"
                 role="listitem"
               >
-                <header class="student-dashboard__list-header">
+                <header class="student-dashboard__list-header flex flex-wrap items-center justify-between gap-2">
                   <h3>{{ item.courseTitle }}</h3>
                   <UiBadge :color="statusTone(item.status)" variant="soft" size="sm">{{ item.status }}</UiBadge>
                 </header>
-                <div class="student-dashboard__list-field">
+                <div class="student-dashboard__list-field grid gap-2">
                   <label>{{ t('student.teacher') }}</label>
                   <span>{{ item.teacherName || t('student.unknownTeacher') }}</span>
                 </div>
-                <div class="student-dashboard__list-field">
+                <div class="student-dashboard__list-field grid gap-2">
                   <label>{{ t('student.tableProgress') }}</label>
-                  <div class="student-dashboard__list-progress">
+                  <div class="student-dashboard__list-progress flex items-center gap-2">
                     <UiProgressBar :value="item.progress" :show-value="false" size="sm" />
                     <span>{{ Math.round(Number(item.progress || 0)) }}%</span>
                   </div>
                 </div>
-                <div class="student-dashboard__list-field">
+                <div class="student-dashboard__list-field grid gap-2">
                   <label>{{ t('student.startDate') }}</label>
                   <span>{{ formatDate(item.startAt) }}</span>
                 </div>
-                <div class="student-dashboard__list-field">
+                <div class="student-dashboard__list-field grid gap-2">
                   <label>{{ t('student.endDate') }}</label>
                   <span>{{ formatDate(item.endAt) }}</span>
                 </div>
               </article>
             </div>
           </UiCard>
-          <UiCard :title="t('student.payments')" class="student-dashboard__card">
-            <div class="student-dashboard__payments-filter">
+          <UiCard :title="t('student.payments')" class="student-dashboard__card h-fit">
+            <div class="student-dashboard__payments-filter mb-3">
               <UiSegmentedControl
                 v-model="paymentStatusFilter"
                 :options="paymentFilterOptions"
                 size="sm"
               />
             </div>
-            <div class="student-dashboard__table-wrap">
+            <div class="student-dashboard__table-wrap w-full overflow-x-auto">
               <UiTable :headers="paymentHeaders" :items="filteredPayments">
               <template #item.courseTitle="{ item }">
-                 <span class="course-cell-title">{{ item.courseTitle }}</span>
+                 <span class="course-cell-title font-semibold text-content">{{ item.courseTitle }}</span>
               </template>
               <template #item.method="{ item }">
                 <span class="method-cell">{{ formatManualMethod(item.method) }}</span>
@@ -265,7 +265,7 @@
                 >
                   {{ t('student.viewProof') }}
                 </UiButton>
-                <span v-else class="text-muted">—</span>
+                <span v-else class="text-content-muted">—</span>
               </template>
               <template #item.status="{ item }">
                 <UiBadge :color="statusTone(item.status)" variant="soft" size="sm">
@@ -273,7 +273,7 @@
                 </UiBadge>
               </template>
               <template #item.notes="{ item }">
-                <span class="text-muted">{{ item.notes || '—' }}</span>
+                <span class="text-content-muted">{{ item.notes || '—' }}</span>
               </template>
               <template #item.action="{ item }">
                 <UiButton
@@ -295,25 +295,25 @@
                 class="student-dashboard__list-item"
                 role="listitem"
               >
-                <header class="student-dashboard__list-header">
+                <header class="student-dashboard__list-header flex flex-wrap items-center justify-between gap-2">
                   <h3>{{ item.courseTitle }}</h3>
                   <UiBadge :color="statusTone(item.status)" variant="soft" size="sm">
                     {{ formatPaymentStatus(item.status) }}
                   </UiBadge>
                 </header>
-                <div class="student-dashboard__list-field">
+                <div class="student-dashboard__list-field grid gap-2">
                   <label>{{ t('student.amount') }}</label>
                   <span>{{ item.amount }}</span>
                 </div>
-                <div class="student-dashboard__list-field">
+                <div class="student-dashboard__list-field grid gap-2">
                   <label>{{ t('student.paymentMethod') }}</label>
                   <span>{{ formatManualMethod(item.method) }}</span>
                 </div>
-                <div class="student-dashboard__list-field">
+                <div class="student-dashboard__list-field grid gap-2">
                   <label>{{ t('student.notes') }}</label>
                   <span>{{ item.notes || '—' }}</span>
                 </div>
-                <div v-if="normalizeManualStatus(item.status) === 'rejected'" class="student-dashboard__list-action">
+                <div v-if="normalizeManualStatus(item.status) === 'rejected'" class="student-dashboard__list-action flex justify-start">
                   <UiButton
                     size="sm"
                     variant="outline"
@@ -328,41 +328,41 @@
           </UiCard>
         </main>
 
-        <aside class="student-dashboard__sidebar">
-          <UiCard :title="t('student.myCourses')" class="student-dashboard__card">
-            <div class="course-mini-list">
-              <div v-if="!courseSummaries.length" class="empty-state">
-                <UiIcon name="BookOutlined" :size="32" class="text-muted" />
+        <aside class="student-dashboard__sidebar w-[320px] flex flex-col gap-6 shrink-0">
+          <UiCard :title="t('student.myCourses')" class="student-dashboard__card h-fit">
+            <div class="course-mini-list flex flex-col gap-2">
+              <div v-if="!courseSummaries.length" class="empty-state flex flex-col items-center justify-center gap-3 p-6 text-center text-content-muted">
+                <UiIcon name="BookOutlined" :size="32" class="text-content-muted" />
                 <p>{{ t('student.noCourses') }}</p>
               </div>
               <button
                 v-for="course in courseSummaries"
                 :key="course.id"
-                class="course-mini-item"
+                class="course-mini-item flex items-center justify-between py-3 px-4 bg-surface-alt border border-border rounded-lg cursor-pointer transition-all text-left"
                 @click="handleCourseClick(course)"
               >
-                <div class="course-mini-item__info">
-                  <span class="course-mini-item__title">{{ course.title }}</span>
+                <div class="course-mini-item__info flex flex-col gap-1 min-w-0 flex-1">
+                  <span class="course-mini-item__title font-semibold text-[0.9rem] text-content overflow-hidden text-ellipsis whitespace-nowrap">{{ course.title }}</span>
                   <UiBadge :color="course.badgeColor" size="sm" variant="soft">
                     {{ course.statusLabel }}
                   </UiBadge>
                 </div>
-                <UiIcon name="RightOutlined" :size="14" class="course-mini-item__arrow" />
+                <UiIcon name="RightOutlined" :size="14" class="course-mini-item__arrow text-content-muted transition-transform duration-200" />
               </button>
             </div>
           </UiCard>
 
-          <UiCard :title="t('certificates.student.title')" class="student-dashboard__card">
-            <div class="certificate-mini-list">
-              <div v-if="!certificateItems.length" class="empty-state">
-                <UiIcon name="SafetyCertificateOutlined" :size="32" class="text-muted" />
+          <UiCard :title="t('certificates.student.title')" class="student-dashboard__card h-fit">
+            <div class="certificate-mini-list flex flex-col gap-3">
+              <div v-if="!certificateItems.length" class="empty-state flex flex-col items-center justify-center gap-3 p-6 text-center text-content-muted">
+                <UiIcon name="SafetyCertificateOutlined" :size="32" class="text-content-muted" />
                 <p>{{ t('certificates.student.empty') }}</p>
               </div>
-              <div v-else class="certificate-mini-list__items">
-                <div v-for="certificate in certificateItems" :key="certificate.id" class="certificate-mini-item">
-                  <div class="certificate-mini-item__info">
-                    <span class="certificate-mini-item__title">{{ certificate.courseTitle }}</span>
-                    <small class="certificate-mini-item__date">{{ formatDate(certificate.issuedAt) }}</small>
+              <div v-else class="certificate-mini-list__items flex flex-col gap-2">
+                <div v-for="certificate in certificateItems" :key="certificate.id" class="certificate-mini-item flex items-center justify-between gap-3 p-2 rounded-lg border border-border bg-surface-alt">
+                  <div class="certificate-mini-item__info flex flex-col gap-[2px]">
+                    <span class="certificate-mini-item__title font-semibold text-content">{{ certificate.courseTitle }}</span>
+                    <small class="certificate-mini-item__date text-[0.75rem] text-content-secondary">{{ formatDate(certificate.issuedAt) }}</small>
                   </div>
                   <UiButton
                     size="xs"
@@ -380,7 +380,7 @@
                   variant="link"
                   color="secondary"
                   size="sm"
-                  class="certificate-mini-list__view-all"
+                  class="certificate-mini-list__view-all self-start ps-0"
                   @click="router.push({ name: 'student-achievements' })"
                 >
                   {{ t('certificates.student.viewAll') }}
@@ -389,15 +389,15 @@
             </div>
           </UiCard>
 
-          <UiCard :title="t('student.profile')" class="student-dashboard__card">
-            <div class="profile-summary">
+          <UiCard :title="t('student.profile')" class="student-dashboard__card h-fit">
+            <div class="profile-summary flex items-center gap-4 mb-5 p-2">
               <UiAvatar :size="64" :label="studentStore.profile?.name" />
-              <div class="profile-summary__info">
+              <div class="profile-summary__info flex flex-col gap-[2px]">
                 <strong>{{ studentStore.profile?.name }}</strong>
-                <span class="text-muted">{{ studentStore.profile?.email }}</span>
+                <span class="text-content-muted">{{ studentStore.profile?.email }}</span>
               </div>
             </div>
-            <div class="profile-grid-actions">
+            <div class="profile-grid-actions grid grid-cols-2 gap-2">
               <UiButton
                 v-for="action in quickActions.slice(2)"
                 :key="action.label"
@@ -415,17 +415,17 @@
             </div>
           </UiCard>
 
-          <UiCard :title="t('student.notifications')" class="student-dashboard__card">
-            <div class="notification-feed">
-              <div v-if="!studentStore.notifications.length" class="empty-state">
-                 <UiIcon name="BellOutlined" :size="32" class="text-muted" />
+          <UiCard :title="t('student.notifications')" class="student-dashboard__card h-fit">
+            <div class="notification-feed flex flex-col gap-4">
+              <div v-if="!studentStore.notifications.length" class="empty-state flex flex-col items-center justify-center gap-3 p-6 text-center text-content-muted">
+                 <UiIcon name="BellOutlined" :size="32" class="text-content-muted" />
                 <p>{{ t('student.noNotifications') }}</p>
               </div>
-              <div v-for="notification in studentStore.notifications.slice(0, 5)" :key="notification.id" class="notification-feed__item">
-                <div class="notification-feed__dot"></div>
-                <div class="notification-feed__content">
-                  <p class="notification-feed__message">{{ notificationMessage(notification) }}</p>
-                  <p v-if="notificationNote(notification.context)" class="notification-feed__note">
+              <div v-for="notification in studentStore.notifications.slice(0, 5)" :key="notification.id" class="notification-feed__item flex gap-3 relative">
+                <div class="notification-feed__dot w-2 h-2 bg-primary rounded-full mt-[6px] shrink-0"></div>
+                <div class="notification-feed__content flex flex-col gap-[2px]">
+                  <p class="notification-feed__message m-0 text-[0.85rem] leading-[1.4] text-content">{{ notificationMessage(notification) }}</p>
+                  <p v-if="notificationNote(notification.context)" class="notification-feed__note m-0 text-[0.75rem] text-content-secondary">
                     {{ t('notifications.reasonLabel') }}: {{ notificationNote(notification.context) }}
                   </p>
                   <UiButton
@@ -433,12 +433,12 @@
                     size="xs"
                     variant="outline"
                     color="primary"
-                    class="notification-feed__action"
+                    class="notification-feed__action self-start"
                     @click="routeToCheckout(notificationCourseId(notification.context))"
                   >
                     {{ t('student.resubmitPaymentAction') }}
                   </UiButton>
-                  <small class="notification-feed__date">{{ formatDate(notification.createdAt) }}</small>
+                  <small class="notification-feed__date text-[0.75rem] text-content-muted">{{ formatDate(notification.createdAt) }}</small>
                 </div>
               </div>
             </div>
@@ -940,35 +940,7 @@ const handleLinksLoaded = (links: unknown) => {
 </script>
 
 <style scoped>
-.student-dashboard {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-6);
-  padding-bottom: var(--sakai-space-8);
-}
-
-/* Hero Section */
-.student-hero-card {
-  overflow: hidden;
-  position: relative;
-}
-
-.student-hero-card__inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--sakai-space-6);
-  flex-wrap: wrap;
-}
-
-.student-hero-card__copy {
-  flex: 1;
-  min-width: 300px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
+/* gradient text: not expressible in TW */
 .student-hero-card__title {
   font-size: 2.25rem;
   font-weight: 800;
@@ -979,405 +951,53 @@ const handleLinksLoaded = (links: unknown) => {
   -webkit-text-fill-color: transparent;
 }
 
-.student-hero-card__subtitle {
-  font-size: 1rem;
-  color: var(--sakai-text-color-secondary);
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-3);
-  flex-wrap: wrap; /* Prevent overlap in long English text */
-}
-
-.student-hero-card__switching {
-  display: inline-flex;
-  align-items: center;
-}
-
+/* CM: color-mix border + animation */
 .student-hero-card__spinner {
-  width: 12px;
-  height: 12px;
-  border: 2px solid color-mix(in srgb, var(--sakai-border-color) 60%, transparent);
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 2px solid color-mix(in srgb, var(--sakai-primary) 60%, transparent);
   border-top-color: var(--sakai-primary);
   border-radius: 50%;
-  animation: student-dashboard-spin 0.8s linear infinite;
-}
-
-.dot-divider {
-  width: 4px;
-  height: 4px;
-  background: var(--sakai-border-color);
-  border-radius: 50%;
-}
-
-.student-hero-card__actions {
-  display: flex;
-  flex-wrap: wrap; /* Prevent overlap of buttons */
-  gap: var(--sakai-space-3);
-  margin-top: var(--sakai-space-4);
-}
-
-.student-hero-card__insights {
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-6);
-  padding: var(--sakai-space-5);
-  background: var(--sakai-surface-alt);
-  border-radius: var(--sakai-border-radius-2xl);
-  border: 1px solid var(--sakai-border-color);
-  flex-wrap: wrap; /* Support for long content on narrow desktops */
-  justify-content: center;
-}
-
-.student-progress-circle-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--sakai-space-2);
-}
-
-.student-progress-circle-wrap__label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  font-weight: 700;
-  color: var(--sakai-text-color-muted);
-}
-
-.student-hero-card__stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: var(--sakai-space-4);
-  flex: 1; /* Allow it to grow and take space */
-}
-
-.certificate-mini-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.certificate-mini-list__items {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
-.certificate-mini-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-3);
-  padding: var(--sakai-space-2);
-  border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid var(--sakai-border-color);
-  background: var(--sakai-surface-alt);
-}
-
-.certificate-mini-item__info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.certificate-mini-item__title {
-  font-weight: 600;
-  color: var(--sakai-text-color);
-}
-
-.certificate-mini-item__date {
-  font-size: 0.75rem;
-  color: var(--sakai-text-color-secondary);
-}
-
-.certificate-mini-list__view-all {
-  align-self: flex-start;
-  padding-inline-start: 0;
-}
-
-.stat-mini {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-mini__label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  color: var(--sakai-text-color-muted);
-  font-weight: 600;
-}
-
-.stat-mini__value {
-  font-size: 1.5rem;
-  color: var(--sakai-text-color);
+  animation: student-dashboard-spin 0.7s linear infinite;
 }
 
 @keyframes student-dashboard-spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
-/* Metrics Grid */
-.student-dashboard__metrics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: var(--sakai-space-4);
-}
-
-.student-dashboard__payments-filter {
-  margin-bottom: var(--sakai-space-3);
-}
-
-/* Content Layout */
-.student-dashboard__layout {
-  display: flex;
-  gap: var(--sakai-space-6);
-  align-items: flex-start;
-}
-
-.student-dashboard__main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-6);
-  min-width: 0; /* Important for flex-child grid/tables */
-}
-
-.student-dashboard__sidebar {
-  width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-6);
-  flex-shrink: 0;
-}
-
-/* Cards & Tables */
-.student-dashboard__card {
-  height: fit-content;
-}
-
-.student-dashboard__table-wrap {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.student-dashboard__table-wrap :deep(table) {
-  min-width: 720px;
-}
-
-.course-cell-title {
-  font-weight: 600;
-  color: var(--sakai-text-color);
-}
-
-.teacher-cell {
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-cell__info {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-}
-
-.teacher-cell__name {
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-
-.teacher-cell__subject {
-  font-size: 0.75rem;
-  color: var(--sakai-text-color-muted);
-}
-
-.progress-cell {
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-3);
-  min-width: 140px;
-}
-
-.progress-cell__value {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--sakai-text-color-secondary);
-  width: 2.5rem;
-  text-align: right;
-}
-
-.date-cell, .method-cell {
+/* CS: comma selector */
+.date-cell,
+.method-cell {
   white-space: nowrap;
   font-size: 0.85rem;
 }
 
-/* Mini Lists */
-.course-mini-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
-.course-mini-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--sakai-space-3) var(--sakai-space-4);
-  background: var(--sakai-surface-alt);
-  border: 1px solid var(--sakai-border-color);
-  border-radius: var(--sakai-border-radius-lg);
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: left;
-}
-
+/* PE: :hover + transform */
 .course-mini-item:hover {
   border-color: var(--sakai-primary);
   background: var(--sakai-surface-card);
   transform: translateX(4px);
 }
 
-.course-mini-item__info {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-1);
-  min-width: 0; /* Allow text to be flexible */
-  flex: 1;
-}
-
-.course-mini-item__title {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--sakai-text-color);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap; /* Keep mini-list tidy */
-}
-
-.course-mini-item__arrow {
-  color: var(--sakai-text-color-muted);
-  transition: transform 0.2s;
-}
-
+/* CS+PE: compound descendant hover */
 .course-mini-item:hover .course-mini-item__arrow {
   color: var(--sakai-primary);
   transform: translateX(2px);
 }
 
-/* Profile Summary */
-.profile-summary {
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-4);
-  margin-bottom: var(--sakai-space-5);
-  padding: var(--sakai-space-2);
-}
+/* CS: element children */
+.profile-summary__info strong { font-size: 1.1rem; }
+.profile-summary__info span   { font-size: 0.85rem; }
 
-.profile-summary__info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
+/* PE: :deep() */
+.profile-action-btn :deep(.ui-button__text) { font-size: 0.75rem; }
+.student-dashboard__table-wrap :deep(table) { min-width: 720px; }
 
-.profile-summary__info strong {
-  font-size: 1.1rem;
-}
-
-.profile-summary__info span {
-  font-size: 0.85rem;
-}
-
-.profile-grid-actions {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--sakai-space-2);
-}
-
-.profile-action-btn :deep(.ui-button__text) {
-  font-size: 0.75rem;
-}
-
-/* Notification Feed */
-.notification-feed {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.notification-feed__item {
-  display: flex;
-  gap: var(--sakai-space-3);
-  position: relative;
-}
-
-.notification-feed__dot {
-  width: 8px;
-  height: 8px;
-  background: var(--sakai-primary);
-  border-radius: 50%;
-  margin-top: 6px;
-  flex-shrink: 0;
-}
-
-.notification-feed__content {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.notification-feed__message {
-  margin: 0;
-  font-size: 0.85rem;
-  line-height: 1.4;
-  color: var(--sakai-text-color);
-}
-
-.notification-feed__note {
-  margin: 0;
-  font-size: 0.75rem;
-  color: var(--sakai-text-color-secondary);
-}
-
-.notification-feed__action {
-  align-self: flex-start;
-}
-
-.notification-feed__date {
-  font-size: 0.75rem;
-  color: var(--sakai-text-color-muted);
-}
-
-.student-dashboard__list {
-  display: none;
-  gap: var(--sakai-space-3);
-}
-
-.student-dashboard__list-item {
-  display: grid;
-  gap: var(--sakai-space-3);
-  padding: var(--sakai-space-4);
-  border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
-  background: color-mix(in srgb, var(--sakai-surface-card) 96%, transparent);
-}
-
-.student-dashboard__list-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-2);
-}
-
+/* CS: element children */
 .student-dashboard__list-header h3 {
   margin: 0;
   font-size: 1rem;
   font-weight: var(--sakai-font-weight-semibold);
-}
-
-.student-dashboard__list-field {
-  display: grid;
-  gap: var(--sakai-space-2);
 }
 
 .student-dashboard__list-field label {
@@ -1387,38 +1007,40 @@ const handleLinksLoaded = (links: unknown) => {
   color: var(--sakai-text-color-muted);
 }
 
-.student-dashboard__list-progress {
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-2);
-}
-
-.student-dashboard__list-action {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+/* CM: color-mix border + bg */
+.student-dashboard__list-item {
+  display: grid;
   gap: var(--sakai-space-3);
-  padding: var(--sakai-space-6);
-  text-align: center;
-  color: var(--sakai-text-color-muted);
+  padding: var(--sakai-space-4);
+  border-radius: var(--sakai-border-radius-lg);
+  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
+  background: color-mix(in srgb, var(--sakai-surface-card) 96%, transparent);
 }
 
-.text-muted {
-  color: var(--sakai-text-color-muted);
+/* MQ toggle: hidden by default, shown at 768px */
+.student-dashboard__list {
+  display: none;
+  gap: var(--sakai-space-3);
 }
 
-/* Responsive */
+/* CM + CS: is-* compound state classes */
+.course-access-dialog__item.is-complete {
+  border-left-color: var(--sakai-success);
+  background: color-mix(in srgb, var(--sakai-success) 5%, transparent);
+}
+.course-access-dialog__item.is-warning {
+  border-left-color: var(--sakai-warning);
+  background: color-mix(in srgb, var(--sakai-warning) 5%, transparent);
+}
+.course-access-dialog__item.is-missing {
+  border-left-color: var(--sakai-danger);
+  background: color-mix(in srgb, var(--sakai-danger) 5%, transparent);
+}
+
+
+/* MQ */
 @media (max-width: 1024px) {
-  .student-dashboard__layout {
-    flex-direction: column;
-  }
-  
+  .student-dashboard__layout { flex-direction: column; }
   .student-dashboard__sidebar {
     width: 100%;
     display: grid;
@@ -1427,91 +1049,14 @@ const handleLinksLoaded = (links: unknown) => {
 }
 
 @media (max-width: 768px) {
-  .student-hero-card__inner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .student-hero-card__copy {
-    min-width: 0;
-    width: 100%;
-  }
-
-  .student-hero-card__actions {
-    width: 100%;
-    flex-direction: column;
-  }
-
-  .student-hero-card__actions :deep(.ui-button) {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .student-hero-card__insights {
-    width: 100%;
-    justify-content: space-between;
-  }
-  
-  .student-dashboard__sidebar {
-    grid-template-columns: 1fr;
-  }
-
-  .profile-grid-actions {
-    grid-template-columns: 1fr;
-  }
-
-  .student-dashboard__table-wrap {
-    display: none;
-  }
-
-  .student-dashboard__list {
-    display: grid;
-  }
-}
-
-/* Course Access Dialog */
-.course-access-dialog__lead {
-  margin-bottom: var(--sakai-space-4);
-  color: var(--sakai-text-color-secondary);
-}
-
-.course-access-dialog__list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.course-access-dialog__item {
-  padding: var(--sakai-space-4);
-  border-radius: var(--sakai-border-radius-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-1);
-  background: var(--sakai-surface-alt);
-  border-left: 4px solid var(--sakai-border-color);
-}
-
-.course-access-dialog__item.is-complete {
-  border-left-color: var(--sakai-success);
-  background: color-mix(in srgb, var(--sakai-success) 5%, transparent);
-}
-
-.course-access-dialog__item.is-warning {
-  border-left-color: var(--sakai-warning);
-  background: color-mix(in srgb, var(--sakai-warning) 5%, transparent);
-}
-
-.course-access-dialog__item.is-missing {
-  border-left-color: var(--sakai-danger);
-  background: color-mix(in srgb, var(--sakai-danger) 5%, transparent);
-}
-
-.course-access-dialog__note {
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-secondary);
+  .student-hero-card__inner { flex-direction: column; align-items: flex-start; }
+  .student-hero-card__actions { flex-direction: column; }
+  .student-hero-card__actions :deep(.ui-button) { width: 100%; }
+  .student-hero-card__insights { width: 100%; }
+  .student-dashboard__sidebar { grid-template-columns: 1fr; }
+  .profile-grid-actions { grid-template-columns: 1fr; }
+  .student-dashboard__table-wrap { display: none; }
+  .student-dashboard__list { display: grid; }
 }
 </style>
 

@@ -1,7 +1,7 @@
 <template>
   <label class="ui-checkbox" :class="checkboxClasses">
     <input
-      class="ui-checkbox__control"
+      class="ui-checkbox__control absolute opacity-0 pointer-events-none"
       type="checkbox"
       :checked="modelValue"
       :disabled="disabled"
@@ -21,8 +21,8 @@
       </svg>
     </span>
     <span v-if="$slots.default || label" class="ui-checkbox__label">
-      <span class="ui-checkbox__text"><slot>{{ label }}</slot></span>
-      <small v-if="description" class="ui-checkbox__description">{{ description }}</small>
+      <span class="ui-checkbox__text font-medium text-content"><slot>{{ label }}</slot></span>
+      <small v-if="description" class="ui-checkbox__description text-content-muted text-[0.825rem] leading-[1.4]">{{ description }}</small>
     </span>
   </label>
 </template>
@@ -67,12 +67,6 @@ const onChange = (event: Event) => {
   user-select: none;
   font-size: 0.95rem;
   transition: opacity var(--sakai-transition-duration) var(--sakai-transition-ease);
-}
-
-.ui-checkbox__control {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
 }
 
 .ui-checkbox__box {
@@ -123,16 +117,6 @@ const onChange = (event: Event) => {
   gap: var(--sakai-space-0-5);
 }
 
-.ui-checkbox__text {
-  font-weight: var(--sakai-font-weight-medium);
-  color: var(--sakai-text-color);
-}
-
-.ui-checkbox__description {
-  color: var(--sakai-text-color-muted);
-  font-size: 0.825rem;
-  line-height: 1.4;
-}
 
 .ui-checkbox--disabled {
   opacity: 0.5;

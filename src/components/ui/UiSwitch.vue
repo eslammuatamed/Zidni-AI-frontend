@@ -1,7 +1,7 @@
 <template>
   <label class="ui-switch" :class="{ 'ui-switch--checked': modelValue }">
     <input
-      class="ui-switch__control"
+      class="ui-switch__control absolute opacity-0 pointer-events-none"
       type="checkbox"
       :checked="modelValue"
       @change="onChange"
@@ -9,7 +9,7 @@
     <span class="ui-switch__track">
       <span class="ui-switch__thumb"></span>
     </span>
-    <span v-if="label" class="ui-switch__label">{{ label }}</span>
+    <span v-if="label" class="ui-switch__label font-medium text-content">{{ label }}</span>
   </label>
 </template>
 
@@ -46,12 +46,6 @@ const onChange = (event: Event) => {
   cursor: pointer;
   user-select: none;
   font-size: 0.95rem;
-}
-
-.ui-switch__control {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
 }
 
 .ui-switch__track {
@@ -97,8 +91,4 @@ const onChange = (event: Event) => {
   transform: translateX(calc(var(--switch-width) - var(--switch-height)));
 }
 
-.ui-switch__label {
-  font-weight: var(--sakai-font-weight-medium);
-  color: var(--sakai-text-color);
-}
 </style>

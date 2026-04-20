@@ -35,15 +35,15 @@
           </label>
           <label class="auth-field">
             <span>{{ t('student.phone') }}</span>
-            <div class="auth-phone">
-              <div class="auth-phone__select">
+            <div class="auth-phone flex gap-2 items-center">
+              <div class="auth-phone__select basis-32 grow-0 shrink-0">
                 <select v-model="form.phoneCountryCode" :aria-label="t('student.phoneCountryCode')">
                   <option v-for="option in phoneCountryOptions" :key="option.value" :value="option.value">
                     {{ option.label }}
                   </option>
                 </select>
               </div>
-              <div class="auth-phone__input">
+              <div class="auth-phone__input flex-1">
                 <input
                   v-model="form.phoneNumber"
                   inputmode="numeric"
@@ -54,7 +54,7 @@
                 />
               </div>
             </div>
-            <small class="auth-phone__hint">{{ t('student.phoneHint') }}</small>
+            <small class="auth-phone__hint block mt-[0.375rem] text-content-tertiary">{{ t('student.phoneHint') }}</small>
             <small v-if="phoneError" class="auth-phone__error">{{ phoneError }}</small>
           </label>
           <label class="auth-field">
@@ -74,13 +74,13 @@
           <span>{{ loading ? t('common.loading') : t('student.registerAction') }}</span>
         </button>
       </form>
-      <section v-else class="auth-success">
-        <UiAlert color="success" variant="soft" class="auth-success__notice">
+      <section v-else class="auth-success flex flex-col gap-6 items-stretch">
+        <UiAlert color="success" variant="soft" class="auth-success__notice flex flex-col gap-2 text-center">
           <strong>{{ t('student.registerSuccessTitle') }}</strong>
           <p>{{ t('student.registerSuccessMessage') }}</p>
         </UiAlert>
-        <div class="auth-success__actions">
-          <button type="button" class="auth-submit auth-success__cta" @click="goToLogin">
+        <div class="auth-success__actions flex justify-center">
+          <button type="button" class="auth-submit auth-success__cta w-full" @click="goToLogin">
             {{ t('student.registerSuccessCta') }}
           </button>
         </div>
@@ -317,16 +317,6 @@ const goToLogin = () => {
 </script>
 
 <style scoped>
-.auth-phone {
-  display: flex;
-  gap: var(--sakai-space-2);
-  align-items: center;
-}
-
-.auth-phone__select {
-  flex: 0 0 8rem;
-}
-
 .auth-phone__select select,
 .auth-phone__input input {
   width: 100%;
@@ -338,35 +328,11 @@ const goToLogin = () => {
   font: inherit;
 }
 
-.auth-phone__input {
-  flex: 1;
-}
-
-.auth-phone__hint {
-  display: block;
-  margin-top: 0.375rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
 .auth-phone__error {
   display: block;
   margin-top: 0.375rem;
   color: var(--sakai-danger-500);
   font-weight: var(--sakai-font-weight-medium);
-}
-
-.auth-success {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: stretch;
-}
-
-.auth-success__notice {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  text-align: center;
 }
 
 .auth-success__notice strong {
@@ -375,15 +341,6 @@ const goToLogin = () => {
 
 .auth-success__notice p {
   margin: 0;
-}
-
-.auth-success__actions {
-  display: flex;
-  justify-content: center;
-}
-
-.auth-success__cta {
-  width: 100%;
 }
 </style>
 

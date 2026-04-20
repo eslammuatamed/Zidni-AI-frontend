@@ -16,34 +16,34 @@
   --sakai-line-height-md: 1.6;
   --sakai-line-height-lg: 1.8;
 
-  /* Palette - inspired by PrimeVue Sakai theme */
-  --sakai-primary-50: #eef2ff;
-  --sakai-primary-100: #e0e7ff;
-  --sakai-primary-200: #c7d2fe;
-  --sakai-primary-300: #a5b4fc;
-  --sakai-primary-400: #818cf8;
-  --sakai-primary-500: #6366f1;
-  --sakai-primary-600: #4f46e5;
-  --sakai-primary-700: #4338ca;
-  --sakai-primary-800: #3730a3;
-  --sakai-primary-900: #312e81;
+  /* Palette — primary: cyan #06B6D4, secondary: navy #1E3A8A */
+  --sakai-primary-50: #ecfeff;
+  --sakai-primary-100: #cffafe;
+  --sakai-primary-200: #a5f3fc;
+  --sakai-primary-300: #67e8f9;
+  --sakai-primary-400: #22d3ee;
+  --sakai-primary-500: #06b6d4;
+  --sakai-primary-600: #0891b2;
+  --sakai-primary-700: #0e7490;
+  --sakai-primary-800: #155e75;
+  --sakai-primary-900: #164e63;
   --sakai-primary: var(--sakai-primary-500);
-  --sakai-primary-rgb: 99 102 241;
-  --sakai-primary-contrast: #ffffff;
+  --sakai-primary-rgb: 6 182 212;
+  --sakai-primary-contrast: #031016;
 
-  --sakai-secondary-50: #ecfeff;
-  --sakai-secondary-100: #cffafe;
-  --sakai-secondary-200: #a5f3fc;
-  --sakai-secondary-300: #67e8f9;
-  --sakai-secondary-400: #22d3ee;
-  --sakai-secondary-500: #06b6d4;
-  --sakai-secondary-600: #0891b2;
-  --sakai-secondary-700: #0e7490;
-  --sakai-secondary-800: #155e75;
-  --sakai-secondary-900: #164e63;
-  --sakai-secondary: var(--sakai-secondary-500);
-  --sakai-secondary-rgb: 6 182 212;
-  --sakai-secondary-contrast: #031016;
+  --sakai-secondary-50: #eff6ff;
+  --sakai-secondary-100: #dbeafe;
+  --sakai-secondary-200: #bfdbfe;
+  --sakai-secondary-300: #93c5fd;
+  --sakai-secondary-400: #60a5fa;
+  --sakai-secondary-500: #3b82f6;
+  --sakai-secondary-600: #2563eb;
+  --sakai-secondary-700: #1d4ed8;
+  --sakai-secondary-800: #1e40af;
+  --sakai-secondary-900: #1e3a8a;
+  --sakai-secondary: var(--sakai-secondary-900);
+  --sakai-secondary-rgb: 30 58 138;
+  --sakai-secondary-contrast: #ffffff;
 
   --sakai-success: #22c55e;
   --sakai-success-rgb: 34 197 94;
@@ -62,7 +62,7 @@
   --sakai-surface-strong: #e2e8f0;
   --sakai-surface-overlay: rgba(15, 23, 42, 0.55);
   --sakai-surface-card: var(--sakai-surface);
-  --sakai-surface-section: #f1f5f9;
+  --sakai-surface-section: #f8fafc;
   --sakai-surface-elevated: color-mix(in srgb, var(--sakai-text-color) 6%, var(--sakai-surface));
   --sakai-surface-subtle: color-mix(in srgb, var(--sakai-text-color) 4%, transparent);
   --sakai-surface-hero: linear-gradient(135deg, var(--sakai-primary-600), var(--sakai-secondary-500));
@@ -77,7 +77,7 @@
 
   /* Borders */
   --sakai-border-color: #e2e8f0;
-  --sakai-border-color-strong: #cbd5f5;
+  --sakai-border-color-strong: #cbd5e1;
   --sakai-border-color-subtle: color-mix(in srgb, var(--sakai-text-color) 8%, transparent);
   --sakai-border-radius-xs: 0.375rem;
   --sakai-border-radius-sm: 0.5rem;
@@ -87,10 +87,10 @@
   --sakai-border-radius-pill: 9999px;
 
   /* Shadows */
-  --sakai-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08);
+  --sakai-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.10);
   --sakai-shadow-md: 0 10px 30px rgba(15, 23, 42, 0.12);
   --sakai-shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.16);
-  --sakai-shadow-focus: 0 0 0 3px rgba(99, 102, 241, 0.25);
+  --sakai-shadow-focus: 0 0 0 3px rgba(6, 182, 212, 0.25);
   --sakai-focus-ring-color: color-mix(in srgb, var(--sakai-primary) 65%, transparent);
 
   /* Gradients */
@@ -184,7 +184,7 @@
   --sakai-surface-section: #0b1220;
   --sakai-surface-elevated: color-mix(in srgb, var(--sakai-text-color) 8%, var(--sakai-surface));
   --sakai-surface-subtle: color-mix(in srgb, var(--sakai-text-color) 6%, transparent);
-  --sakai-surface-hero: linear-gradient(135deg, color-mix(in srgb, var(--sakai-primary) 70%, #1e1b4b), color-mix(in srgb, var(--sakai-secondary) 65%, #0f766e));
+  --sakai-surface-hero: linear-gradient(135deg, color-mix(in srgb, var(--sakai-primary) 70%, #083344), color-mix(in srgb, var(--sakai-secondary) 65%, #1e3a5f));
 
   --sakai-text-color: #e2e8f0;
   --sakai-text-color-rgb: 226 232 240;
@@ -219,15 +219,11 @@
   --muse-info: var(--sakai-info);
   --muse-warning: var(--sakai-warning);
   --muse-danger: var(--sakai-danger);
-  --muse-muted: var(--sakai-text-color-muted);
-  --muse-text-primary: var(--sakai-text-color);
-  --muse-text-secondary: var(--sakai-text-color-secondary);
   --muse-text-heading: var(--sakai-text-color);
   --muse-text-muted: var(--sakai-text-color-tertiary);
   --muse-surface: var(--sakai-surface);
   --muse-surface-alt: var(--sakai-surface-alt);
   --muse-border: var(--sakai-border-color);
-  --muse-border-strong: var(--sakai-border-color-strong);
   --muse-shadow-sm: var(--sakai-shadow-sm);
   --muse-shadow-base: var(--sakai-shadow-md);
   --muse-shadow-lg: var(--sakai-shadow-lg);
@@ -250,17 +246,3 @@
   --muse-font-bold: var(--sakai-font-weight-bold);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root[data-theme='dark'] {
-    --sakai-surface: #0f172a;
-    --sakai-surface-alt: #111c34;
-    --sakai-surface-section: #0b1220;
-    --sakai-text-color: #e2e8f0;
-    --sakai-text-color-secondary: #cbd5f5;
-    --sakai-text-color-tertiary: #94a3b8;
-    --sakai-text-color-muted: #64748b;
-    --sakai-border-color: #1e293b;
-    --sakai-border-color-strong: #334155;
-    --sakai-surface-overlay: rgba(2, 6, 23, 0.65);
-  }
-}

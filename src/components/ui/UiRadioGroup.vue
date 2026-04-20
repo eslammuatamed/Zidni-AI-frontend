@@ -1,7 +1,7 @@
 <template>
-  <fieldset class="ui-radio-group" :class="[`ui-radio-group--${props.orientation}`]" :disabled="props.disabled">
+  <fieldset class="ui-radio-group flex flex-col gap-2 p-0 border-0 m-0" :class="[`ui-radio-group--${props.orientation}`]" :disabled="props.disabled">
     <legend v-if="props.label" class="ui-radio-group__legend">{{ props.label }}</legend>
-    <div class="ui-radio-group__options">
+    <div class="ui-radio-group__options grid gap-2">
       <label
         v-for="option in normalizedOptions"
         :key="option.valueKey"
@@ -12,7 +12,7 @@
         }"
       >
         <input
-          class="ui-radio-group__input"
+          class="ui-radio-group__input absolute opacity-0 pointer-events-none"
           type="radio"
           :name="props.name"
           :value="option.value"
@@ -21,12 +21,12 @@
           @change="onSelect(option.value)"
         />
         <span class="ui-radio-group__control"></span>
-        <span v-if="option.icon" class="ui-radio-group__media">
+        <span v-if="option.icon" class="ui-radio-group__media inline-flex items-center justify-center">
           <img :src="option.icon" :alt="option.iconAlt || option.label" />
         </span>
         <div
           v-else-if="option.logos?.length"
-          class="ui-radio-group__media cardsLogos"
+          class="ui-radio-group__media cardsLogos inline-flex items-center justify-center"
           aria-hidden="true"
         >
           <img v-for="logo in option.logos" :key="logo.src" :src="logo.src" :alt="logo.alt" />
@@ -98,26 +98,12 @@ const onSelect = (value: RadioValue) => {
 </script>
 
 <style scoped>
-.ui-radio-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-  padding: 0;
-  border: none;
-  margin: 0;
-}
-
 .ui-radio-group__legend {
   font-size: 0.875rem;
   font-weight: var(--sakai-font-weight-semibold);
   color: var(--sakai-text-color);
   margin-bottom: var(--sakai-space-1);
   margin-inline-start: 0.125rem;
-}
-
-.ui-radio-group__options {
-  display: grid;
-  gap: var(--sakai-space-2);
 }
 
 .ui-radio-group--horizontal .ui-radio-group__options {
@@ -154,12 +140,6 @@ const onSelect = (value: RadioValue) => {
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--sakai-primary) 12%, transparent);
 }
 
-.ui-radio-group__input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
 .ui-radio-group__control {
   width: 1.2rem;
   height: 1.2rem;
@@ -174,12 +154,6 @@ const onSelect = (value: RadioValue) => {
 .ui-radio-group__option.is-selected .ui-radio-group__control {
   border-color: var(--sakai-primary);
   border-width: 5px;
-}
-
-.ui-radio-group__media {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .ui-radio-group__media img {

@@ -12,7 +12,7 @@
             :key="metric.label"
             :label="metric.label"
             :value="metric.value"
-            :description="metric.description"
+            :secondary-stat="metric.description"
             :icon="metric.icon"
             :color="metric.color"
           />

@@ -6,7 +6,7 @@
   position: relative;
   overflow: hidden;
   background: linear-gradient(135deg, rgba(22, 163, 74, 0.96), rgba(34, 197, 94, 0.85));
-  color: var(--Zidni AI-white);
+  color: var(--nabta-white);
   padding: 6.5rem 0 4.5rem;
 }
 
@@ -58,8 +58,8 @@
   gap: 0.5rem;
   padding: 0.85rem 1.6rem;
   border-radius: 999px;
-  background-color: var(--Zidni AI-white);
-  color: var(--Zidni AI-green);
+  background-color: var(--nabta-white);
+  color: var(--nabta-green);
   font-weight: 600;
   text-decoration: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -73,7 +73,7 @@
 }
 
 .landing-hero__secondary {
-  color: var(--Zidni AI-white);
+  color: var(--nabta-white);
   font-weight: 500;
   text-decoration: none;
   display: inline-flex;
@@ -207,7 +207,7 @@
   display: grid;
   place-items: center;
   font-size: 1.25rem;
-  color: var(--Zidni AI-green);
+  color: var(--nabta-green);
 }
 
 .landing-integrations__title {
@@ -232,7 +232,7 @@
 }
 
 .landing-card {
-  background-color: var(--Zidni AI-white);
+  background-color: var(--nabta-white);
   border-radius: 1.25rem;
   padding: 1.75rem;
   box-shadow: 0 18px 40px rgba(22, 163, 74, 0.12);
@@ -331,7 +331,7 @@
   background: linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(22, 163, 74, 0.9));
   display: grid;
   place-items: center;
-  color: var(--Zidni AI-white);
+  color: var(--nabta-white);
   font-weight: 700;
   font-size: 1.1rem;
 }
@@ -371,7 +371,7 @@
 
 .landing-cta {
   background: linear-gradient(135deg, rgba(22, 163, 74, 0.95), rgba(34, 197, 94, 0.85));
-  color: var(--Zidni AI-white);
+  color: var(--nabta-white);
   padding: 4.5rem 0;
 }
 
@@ -402,8 +402,8 @@
   padding: 0.9rem 1.9rem;
   border-radius: 999px;
   font-weight: 600;
-  background: var(--Zidni AI-white);
-  color: var(--Zidni AI-green);
+  background: var(--nabta-white);
+  color: var(--nabta-green);
   text-decoration: none;
   box-shadow: 0 20px 40px rgba(15, 118, 110, 0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -471,7 +471,7 @@
 
 .landing-legal {
   padding: 4.5rem 0 5.5rem;
-  background-color: var(--Zidni AI-white);
+  background-color: var(--nabta-white);
 }
 
 .landing-legal__container {
@@ -494,20 +494,20 @@
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--Zidni AI-green);
+  color: var(--nabta-green);
 }
 
 .landing-legal__title {
   font-size: clamp(2rem, 4vw + 1rem, 3rem);
   line-height: 1.1;
   font-weight: 700;
-  color: var(--Zidni AI-dark);
+  color: var(--nabta-dark);
 }
 
 .landing-legal__intro {
   font-size: 1.05rem;
   line-height: 1.7;
-  color: var(--Zidni AI-dark);
+  color: var(--nabta-dark);
   opacity: 0.85;
 }
 
@@ -527,7 +527,7 @@
 .landing-legal__section-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--Zidni AI-dark);
+  color: var(--nabta-dark);
 }
 
 .landing-legal__paragraph {
@@ -563,7 +563,7 @@
   padding: 0.75rem 1.4rem;
   border-radius: 999px;
   background: rgba(34, 197, 94, 0.08);
-  color: var(--Zidni AI-green);
+  color: var(--nabta-green);
   font-weight: 600;
   text-decoration: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;

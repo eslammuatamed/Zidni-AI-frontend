@@ -12,7 +12,7 @@
       </UiButton>
     </template>
 
-    <div class="student-teacher-courses">
+    <div class="student-teacher-courses flex flex-col gap-4">
       <UiAlert v-if="error" color="danger" variant="soft">
         {{ t('studentTeacherCourses.error') }}
       </UiAlert>
@@ -22,7 +22,7 @@
 
       <div
         v-if="featureEnabled"
-        class="student-teacher-courses__catalog"
+        class="student-teacher-courses__catalog grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(18rem,1fr))] mt-2"
         :aria-busy="loading"
         role="list"
       >
@@ -33,14 +33,14 @@
           role="listitem"
         >
           <div
-            class="student-teacher-courses__cover"
+            class="student-teacher-courses__cover relative w-full aspect-video bg-cover bg-center bg-no-repeat"
             :style="coverStyle(course)"
             role="img"
             :aria-label="course.title"
           ></div>
-          <div class="student-teacher-courses__card-body">
-            <header class="student-teacher-courses__card-header">
-              <div class="student-teacher-courses__card-titles">
+          <div class="student-teacher-courses__card-body grid gap-4 p-5">
+            <header class="student-teacher-courses__card-header flex flex-wrap items-start justify-between gap-3">
+              <div class="student-teacher-courses__card-titles flex flex-col gap-[0.35rem]">
                 <h3>{{ course.title }}</h3>
                 <span>{{ formatType(course.type) }}</span>
               </div>
@@ -48,10 +48,10 @@
                 {{ course.language.toUpperCase() }}
               </UiBadge>
             </header>
-            <p v-if="course.description" class="student-teacher-courses__card-description">
+            <p v-if="course.description" class="student-teacher-courses__card-description m-0 text-[0.95rem] leading-[1.5] text-content-secondary line-clamp-3">
               {{ course.description }}
             </p>
-            <dl class="student-teacher-courses__card-grid">
+            <dl class="student-teacher-courses__card-grid grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(8rem,1fr))]">
               <div>
                 <dt>{{ t('studentTeacherCourses.tableLevel') }}</dt>
                 <dd>{{ formatLevel(course.level) }}</dd>
@@ -62,7 +62,7 @@
               </div>
             </dl>
             <UiButton
-              class="student-teacher-courses__card-action"
+              class="student-teacher-courses__card-action justify-center"
               color="primary"
               append-icon="RightOutlined"
               @click="goToCourse(course)"
@@ -227,19 +227,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.student-teacher-courses {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.student-teacher-courses__catalog {
-  display: grid;
-  gap: var(--sakai-space-4);
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-  margin-top: var(--sakai-space-2);
-}
-
 .student-teacher-courses__card {
   display: grid;
   grid-template-rows: auto 1fr;
@@ -249,35 +236,6 @@ onMounted(async () => {
   box-shadow: 0 1px 2px color-mix(in srgb, var(--sakai-shadow-color) 15%, transparent);
   min-height: 100%;
   overflow: hidden;
-}
-
-.student-teacher-courses__cover {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.student-teacher-courses__card-body {
-  display: grid;
-  gap: var(--sakai-space-4);
-  padding: var(--sakai-space-5);
-}
-
-.student-teacher-courses__card-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--sakai-space-3);
-}
-
-.student-teacher-courses__card-titles {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
 }
 
 .student-teacher-courses__card-titles h3 {
@@ -290,23 +248,6 @@ onMounted(async () => {
 .student-teacher-courses__card-titles span {
   color: var(--sakai-text-color-tertiary);
   font-size: 0.85rem;
-}
-
-.student-teacher-courses__card-description {
-  margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: var(--sakai-text-color-secondary);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.student-teacher-courses__card-grid {
-  display: grid;
-  gap: var(--sakai-space-4);
-  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
 }
 
 .student-teacher-courses__card-grid div {
@@ -324,10 +265,6 @@ onMounted(async () => {
   margin: 0;
   font-weight: var(--sakai-font-weight-medium);
   color: var(--sakai-text-color);
-}
-
-.student-teacher-courses__card-action {
-  justify-content: center;
 }
 
 .student-teacher-courses__empty {

@@ -1,15 +1,15 @@
 <template>
   <ThemePage :title="t('teacher.paymentSettingsTitle')" :subtitle="t('teacher.paymentSettingsSubtitle')">
-    <div class="teacher-payment-settings">
+    <div class="teacher-payment-settings grid gap-[1.5rem]">
       <UiAlert v-if="errorMessage" color="danger" variant="soft" class="teacher-payment-settings__alert">
         {{ errorMessage }}
       </UiAlert>
 
-      <UiAlert color="info" variant="soft" class="teacher-payment-settings__hint">
+      <UiAlert color="info" variant="soft" class="teacher-payment-settings__hint m-0">
         {{ t('teacher.paymentSettingsCountryHint') }}
       </UiAlert>
 
-      <div v-if="loading" class="teacher-payment-settings__skeleton">
+      <div v-if="loading" class="teacher-payment-settings__skeleton grid gap-4">
         <UiCard v-for="index in 3" :key="`payment-settings-skeleton-${index}`" hover>
           <UiSkeleton height="1.4rem" width="55%" />
           <UiSkeleton height="0.9rem" width="72%" />
@@ -17,32 +17,32 @@
         </UiCard>
       </div>
 
-      <div v-else class="teacher-payment-settings__body">
+      <div v-else class="teacher-payment-settings__body grid gap-[1.5rem]">
         <UiCard class="teacher-payment-settings__overview" hover>
-          <div class="teacher-payment-settings__overview-header">
+          <div class="teacher-payment-settings__overview-header grid gap-[0.35rem] max-w-[480px]">
             <h3>{{ t('teacher.paymentSettingsOverviewTitle') }}</h3>
             <p>{{ t('teacher.paymentSettingsOverviewDescription') }}</p>
           </div>
-          <div class="teacher-payment-settings__overview-meta">
+          <div class="teacher-payment-settings__overview-meta flex flex-col items-end gap-[0.6rem] min-w-[200px]">
             <UiBadge color="info" variant="soft">{{ methodsActiveLabel }}</UiBadge>
-            <div v-if="activeMethods.length" class="teacher-payment-settings__overview-methods">
-              <span class="teacher-payment-settings__overview-label">{{ t('teacher.paymentSettingsActiveMethodsLabel') }}</span>
-              <ul class="teacher-payment-settings__overview-list">
-                <li v-for="method in activeMethods" :key="method.value" class="teacher-payment-settings__overview-chip">
+            <div v-if="activeMethods.length" class="teacher-payment-settings__overview-methods flex flex-col gap-[0.35rem]">
+              <span class="teacher-payment-settings__overview-label text-[0.8rem] text-content-secondary uppercase tracking-[0.08em]">{{ t('teacher.paymentSettingsActiveMethodsLabel') }}</span>
+              <ul class="teacher-payment-settings__overview-list flex flex-wrap justify-end gap-[0.35rem] list-none m-0 p-0">
+                <li v-for="method in activeMethods" :key="method.value" class="teacher-payment-settings__overview-chip flex">
                   <UiBadge color="success" variant="soft">{{ method.label }}</UiBadge>
                 </li>
               </ul>
             </div>
-            <span v-if="lastUpdatedLabel" class="teacher-payment-settings__overview-updated">
+            <span v-if="lastUpdatedLabel" class="teacher-payment-settings__overview-updated inline-flex items-center gap-[0.4rem] text-content-secondary text-[0.85rem] text-right">
               <UiIcon name="ClockCircleOutlined" :size="16" aria-hidden="true" />
               {{ lastUpdatedLabel }}
             </span>
           </div>
         </UiCard>
 
-        <form class="teacher-payment-settings__form" @submit.prevent="onSave">
+        <form class="teacher-payment-settings__form grid gap-[1.5rem]" @submit.prevent="onSave">
           <div
-            class="teacher-payment-settings__language-toggle"
+            class="teacher-payment-settings__language-toggle inline-flex items-center gap-2 flex-wrap mb-2"
             role="group"
             :aria-label="t('teacher.paymentSettingsInstructionsLanguageLabel')"
           >
@@ -57,25 +57,25 @@
               {{ option.label }}
             </button>
           </div>
-          <UiCard class="teacher-payment-settings__section" hover>
+          <UiCard class="teacher-payment-settings__section grid gap-4" hover>
             <template #title>
-              <div class="teacher-payment-settings__section-header">
+              <div class="teacher-payment-settings__section-header flex items-center gap-4">
                 <div class="teacher-payment-settings__section-media" aria-hidden="true">
                   <img :src="bankTransferIcon" :alt="t('teacher.paymentSettingsBankTitle')" />
                 </div>
-                <div class="teacher-payment-settings__section-copy">
+                <div class="teacher-payment-settings__section-copy grid gap-[0.35rem]">
                   <h3>{{ t('teacher.paymentSettingsBankTitle') }}</h3>
-                  <span class="teacher-payment-settings__section-subtitle">
+                  <span class="teacher-payment-settings__section-subtitle text-content-secondary text-[0.9rem]">
                     {{ t('teacher.paymentSettingsBankDescription') }}
                   </span>
                 </div>
-                <div class="teacher-payment-settings__section-meta">
+                <div class="teacher-payment-settings__section-meta flex items-center gap-[0.6rem] ml-auto">
                   <UiBadge color="success" variant="soft">{{ t('teacher.paymentSettingsStatusAlwaysOn') }}</UiBadge>
                 </div>
               </div>
             </template>
 
-            <div class="teacher-payment-settings__fields">
+            <div class="teacher-payment-settings__fields grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
               <UiInput
                 v-model="form.bankTransfer.accountNumber"
                 :label="t('teacher.paymentSettingsAccountNumber')"
@@ -117,7 +117,7 @@
                 :label="t('teacher.paymentSettingsBankDetails')"
                 :rows="3"
                 :disabled="saving"
-                class="teacher-payment-settings__field teacher-payment-settings__field--full"
+                class="teacher-payment-settings__field col-span-full"
                 :hint="t('teacher.paymentSettingsBankDetailsHint')"
                 :error="fieldErrors.bankTransfer.bankDetails"
                 :data-error-field="errorFieldKey('bankTransfer', 'bankDetails')"
@@ -128,7 +128,7 @@
                 :label="t('teacher.paymentSettingsInstructionsAr')"
                 :rows="3"
                 :disabled="saving"
-                class="teacher-payment-settings__field teacher-payment-settings__field--full"
+                class="teacher-payment-settings__field col-span-full"
                 :hint="t('teacher.paymentSettingsInstructionsArHint')"
                 :error="fieldErrors.bankTransfer.instructionsAr"
                 :data-error-field="errorFieldKey('bankTransfer', 'instructionsAr')"
@@ -139,7 +139,7 @@
                 :label="t('teacher.paymentSettingsInstructionsEn')"
                 :rows="3"
                 :disabled="saving"
-                class="teacher-payment-settings__field teacher-payment-settings__field--full"
+                class="teacher-payment-settings__field col-span-full"
                 :hint="t('teacher.paymentSettingsInstructionsEnHint')"
                 :error="fieldErrors.bankTransfer.instructionsEn"
                 :data-error-field="errorFieldKey('bankTransfer', 'instructionsEn')"
@@ -148,19 +148,19 @@
           </UiCard>
 
 
-        <UiCard class="teacher-payment-settings__section" hover>
+        <UiCard class="teacher-payment-settings__section grid gap-4" hover>
           <template #title>
-            <div class="teacher-payment-settings__section-header">
+            <div class="teacher-payment-settings__section-header flex items-center gap-4">
               <div class="teacher-payment-settings__section-media" aria-hidden="true">
                 <img :src="vodafoneCashIcon" :alt="t('teacher.paymentSettingsVodafoneTitle')" />
               </div>
-              <div class="teacher-payment-settings__section-copy">
+              <div class="teacher-payment-settings__section-copy grid gap-[0.35rem]">
                 <h3>{{ t('teacher.paymentSettingsVodafoneTitle') }}</h3>
-                <span class="teacher-payment-settings__section-subtitle">
+                <span class="teacher-payment-settings__section-subtitle text-content-secondary text-[0.9rem]">
                   {{ t('teacher.paymentSettingsVodafoneDescription') }}
                 </span>
               </div>
-              <div class="teacher-payment-settings__section-meta">
+              <div class="teacher-payment-settings__section-meta flex items-center gap-[0.6rem] ml-auto">
                 <UiBadge
                   :color="form.vodafoneCash.enabled ? 'success' : 'secondary'"
                   variant="soft"
@@ -171,21 +171,21 @@
                   v-model="form.vodafoneCash.enabled"
                   :label="t('teacher.paymentSettingsEnableMethod')"
                   :disabled="saving"
-                  class="teacher-payment-settings__toggle"
+                  class="teacher-payment-settings__toggle mb-2"
                 />
               </div>
             </div>
           </template>
 
           <div
-            :class="['teacher-payment-settings__method', { 'teacher-payment-settings__method--disabled': !form.vodafoneCash.enabled }]"
+            :class="['block relative', { 'opacity-[0.55]': !form.vodafoneCash.enabled }]"
             :aria-disabled="!form.vodafoneCash.enabled"
           >
             <div v-if="!form.vodafoneCash.enabled" class="teacher-payment-settings__method-overlay">
               <UiIcon name="UnlockOutlined" :size="16" aria-hidden="true" />
               <span>{{ t('teacher.paymentSettingsEnableToEdit') }}</span>
             </div>
-            <div class="teacher-payment-settings__fields">
+            <div class="teacher-payment-settings__fields grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
               <UiInput
                 v-model="form.vodafoneCash.accountNumber"
                 :label="t('teacher.paymentSettingsAccountNumber')"
@@ -201,7 +201,7 @@
                 :label="t('teacher.paymentSettingsInstructionsAr')"
                 :rows="3"
                 :disabled="saving || !form.vodafoneCash.enabled"
-                class="teacher-payment-settings__field teacher-payment-settings__field--full"
+                class="teacher-payment-settings__field col-span-full"
                 :hint="t('teacher.paymentSettingsInstructionsArHint')"
                 :error="fieldErrors.vodafoneCash.instructionsAr"
                 :data-error-field="errorFieldKey('vodafoneCash', 'instructionsAr')"
@@ -212,7 +212,7 @@
                 :label="t('teacher.paymentSettingsInstructionsEn')"
                 :rows="3"
                 :disabled="saving || !form.vodafoneCash.enabled"
-                class="teacher-payment-settings__field teacher-payment-settings__field--full"
+                class="teacher-payment-settings__field col-span-full"
                 :hint="t('teacher.paymentSettingsInstructionsEnHint')"
                 :error="fieldErrors.vodafoneCash.instructionsEn"
                 :data-error-field="errorFieldKey('vodafoneCash', 'instructionsEn')"
@@ -220,19 +220,19 @@
             </div>
           </div>
         </UiCard>
-        <UiCard class="teacher-payment-settings__section" hover>
+        <UiCard class="teacher-payment-settings__section grid gap-4" hover>
           <template #title>
-            <div class="teacher-payment-settings__section-header">
+            <div class="teacher-payment-settings__section-header flex items-center gap-4">
               <div class="teacher-payment-settings__section-media" aria-hidden="true">
                 <img :src="instaPayIcon" :alt="t('teacher.paymentSettingsInstaPayTitle')" />
               </div>
-              <div class="teacher-payment-settings__section-copy">
+              <div class="teacher-payment-settings__section-copy grid gap-[0.35rem]">
                 <h3>{{ t('teacher.paymentSettingsInstaPayTitle') }}</h3>
-                <span class="teacher-payment-settings__section-subtitle">
+                <span class="teacher-payment-settings__section-subtitle text-content-secondary text-[0.9rem]">
                   {{ t('teacher.paymentSettingsInstaPayDescription') }}
                 </span>
               </div>
-              <div class="teacher-payment-settings__section-meta">
+              <div class="teacher-payment-settings__section-meta flex items-center gap-[0.6rem] ml-auto">
                 <UiBadge
                   :color="form.instaPay.enabled ? 'success' : 'secondary'"
                   variant="soft"
@@ -243,21 +243,21 @@
                   v-model="form.instaPay.enabled"
                   :label="t('teacher.paymentSettingsEnableMethod')"
                   :disabled="saving"
-                  class="teacher-payment-settings__toggle"
+                  class="teacher-payment-settings__toggle mb-2"
                 />
               </div>
             </div>
           </template>
 
           <div
-            :class="['teacher-payment-settings__method', { 'teacher-payment-settings__method--disabled': !form.instaPay.enabled }]"
+            :class="['block relative', { 'opacity-[0.55]': !form.instaPay.enabled }]"
             :aria-disabled="!form.instaPay.enabled"
           >
             <div v-if="!form.instaPay.enabled" class="teacher-payment-settings__method-overlay">
               <UiIcon name="UnlockOutlined" :size="16" aria-hidden="true" />
               <span>{{ t('teacher.paymentSettingsEnableToEdit') }}</span>
             </div>
-            <div class="teacher-payment-settings__fields">
+            <div class="teacher-payment-settings__fields grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
               <UiInput
                 v-model="form.instaPay.accountNumber"
                 :label="t('teacher.paymentSettingsInstaPayMobileLabel')"
@@ -282,7 +282,7 @@
                 :label="t('teacher.paymentSettingsInstructionsAr')"
                 :rows="3"
                 :disabled="saving || !form.instaPay.enabled"
-                class="teacher-payment-settings__field teacher-payment-settings__field--full"
+                class="teacher-payment-settings__field col-span-full"
                 :hint="t('teacher.paymentSettingsInstructionsArHint')"
                 :error="fieldErrors.instaPay.instructionsAr"
                 :data-error-field="errorFieldKey('instaPay', 'instructionsAr')"
@@ -293,7 +293,7 @@
                 :label="t('teacher.paymentSettingsInstructionsEn')"
                 :rows="3"
                 :disabled="saving || !form.instaPay.enabled"
-                class="teacher-payment-settings__field teacher-payment-settings__field--full"
+                class="teacher-payment-settings__field col-span-full"
                 :hint="t('teacher.paymentSettingsInstructionsEnHint')"
                 :error="fieldErrors.instaPay.instructionsEn"
                 :data-error-field="errorFieldKey('instaPay', 'instructionsEn')"
@@ -302,19 +302,19 @@
           </div>
         </UiCard>
 
-        <UiCard class="teacher-payment-settings__section" hover>
+        <UiCard class="teacher-payment-settings__section grid gap-4" hover>
           <template #title>
-            <div class="teacher-payment-settings__section-header">
+            <div class="teacher-payment-settings__section-header flex items-center gap-4">
               <div class="teacher-payment-settings__section-media" aria-hidden="true">
                 <img :src="customLinkIcon" :alt="t('teacher.paymentSettingsCustomLinkTitle')" />
               </div>
-              <div class="teacher-payment-settings__section-copy">
+              <div class="teacher-payment-settings__section-copy grid gap-[0.35rem]">
                 <h3>{{ t('teacher.paymentSettingsCustomLinkTitle') }}</h3>
-                <span class="teacher-payment-settings__section-subtitle">
+                <span class="teacher-payment-settings__section-subtitle text-content-secondary text-[0.9rem]">
                   {{ t('teacher.paymentSettingsCustomLinkDescription') }}
                 </span>
               </div>
-              <div class="teacher-payment-settings__section-meta">
+              <div class="teacher-payment-settings__section-meta flex items-center gap-[0.6rem] ml-auto">
                 <UiBadge
                   :color="form.customLink.enabled ? 'success' : 'secondary'"
                   variant="soft"
@@ -325,21 +325,21 @@
                   v-model="form.customLink.enabled"
                   :label="t('teacher.paymentSettingsEnableMethod')"
                   :disabled="saving"
-                  class="teacher-payment-settings__toggle"
+                  class="teacher-payment-settings__toggle mb-2"
                 />
               </div>
             </div>
           </template>
 
           <div
-            :class="['teacher-payment-settings__method', { 'teacher-payment-settings__method--disabled': !form.customLink.enabled }]"
+            :class="['block relative', { 'opacity-[0.55]': !form.customLink.enabled }]"
             :aria-disabled="!form.customLink.enabled"
           >
             <div v-if="!form.customLink.enabled" class="teacher-payment-settings__method-overlay">
               <UiIcon name="UnlockOutlined" :size="16" aria-hidden="true" />
               <span>{{ t('teacher.paymentSettingsEnableToEdit') }}</span>
             </div>
-            <div class="teacher-payment-settings__fields">
+            <div class="teacher-payment-settings__fields grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
               <UiInput
                 v-model="form.customLink.url"
                 :label="t('teacher.paymentSettingsCustomLinkUrl')"
@@ -355,7 +355,7 @@
                 :label="t('teacher.paymentSettingsInstructionsAr')"
                 :rows="3"
                 :disabled="saving || !form.customLink.enabled"
-                class="teacher-payment-settings__field teacher-payment-settings__field--full"
+                class="teacher-payment-settings__field col-span-full"
                 :hint="t('teacher.paymentSettingsInstructionsArHint')"
                 :error="fieldErrors.customLink.instructionsAr"
                 :data-error-field="errorFieldKey('customLink', 'instructionsAr')"
@@ -366,7 +366,7 @@
                 :label="t('teacher.paymentSettingsInstructionsEn')"
                 :rows="3"
                 :disabled="saving || !form.customLink.enabled"
-                class="teacher-payment-settings__field teacher-payment-settings__field--full"
+                class="teacher-payment-settings__field col-span-full"
                 :hint="t('teacher.paymentSettingsInstructionsEnHint')"
                 :error="fieldErrors.customLink.instructionsEn"
                 :data-error-field="errorFieldKey('customLink', 'instructionsEn')"
@@ -375,12 +375,12 @@
           </div>
         </UiCard>
 
-          <div class="teacher-payment-settings__actions">
-            <span v-if="lastUpdatedLabel" class="teacher-payment-settings__updated">
+          <div class="teacher-payment-settings__actions flex items-center justify-end gap-4">
+            <span v-if="lastUpdatedLabel" class="teacher-payment-settings__updated text-content-secondary text-[0.9rem]">
               <UiIcon name="ClockCircleOutlined" :size="16" aria-hidden="true" />
               {{ lastUpdatedLabel }}
             </span>
-            <UiBadge v-if="isDirty" color="warning" variant="soft" class="teacher-payment-settings__dirty">
+            <UiBadge v-if="isDirty" color="warning" variant="soft" class="teacher-payment-settings__dirty normal-case">
               {{ t('teacher.paymentSettingsUnsaved') }}
             </UiBadge>
             <UiButton type="submit" color="primary" :disabled="saving || !isDirty">
@@ -965,27 +965,8 @@ function resolveErrorMessage(error: unknown): string {
 </script>
 
 <style scoped>
-.teacher-payment-settings {
-  display: grid;
-  gap: 1.5rem;
-}
-
 .teacher-payment-settings__alert {
   margin-bottom: 0 !important;
-}
-
-.teacher-payment-settings__hint {
-  margin: 0;
-}
-
-.teacher-payment-settings__skeleton {
-  display: grid;
-  gap: 1rem;
-}
-
-.teacher-payment-settings__body {
-  display: grid;
-  gap: 1.5rem;
 }
 
 .teacher-payment-settings__overview {
@@ -999,12 +980,6 @@ function resolveErrorMessage(error: unknown): string {
   border: 1px solid color-mix(in srgb, var(--sakai-info-400) 20%, transparent);
 }
 
-.teacher-payment-settings__overview-header {
-  display: grid;
-  gap: 0.35rem;
-  max-width: 480px;
-}
-
 .teacher-payment-settings__overview-header h3 {
   margin: 0;
   font-size: 1.2rem;
@@ -1015,66 +990,6 @@ function resolveErrorMessage(error: unknown): string {
   margin: 0;
   color: var(--sakai-text-color-secondary);
   font-size: 0.95rem;
-}
-
-.teacher-payment-settings__overview-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.6rem;
-  min-width: 200px;
-}
-
-.teacher-payment-settings__overview-methods {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.teacher-payment-settings__overview-label {
-  font-size: 0.8rem;
-  color: var(--sakai-text-color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.teacher-payment-settings__overview-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 0.35rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.teacher-payment-settings__overview-chip {
-  display: flex;
-}
-
-.teacher-payment-settings__overview-updated {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: var(--sakai-text-color-secondary);
-  font-size: 0.85rem;
-  text-align: right;
-}
-
-.teacher-payment-settings__form {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.teacher-payment-settings__section {
-  display: grid;
-  gap: 1rem;
-}
-
-.teacher-payment-settings__section-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
 }
 
 .teacher-payment-settings__section-media {
@@ -1096,37 +1011,10 @@ function resolveErrorMessage(error: unknown): string {
   height: auto;
 }
 
-.teacher-payment-settings__section-copy {
-  display: grid;
-  gap: 0.35rem;
-}
-
-.teacher-payment-settings__section-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-left: auto;
-}
-
 .teacher-payment-settings__section-copy h3 {
   margin: 0;
   font-size: 1.1rem;
   font-weight: var(--sakai-font-weight-semibold);
-}
-
-.teacher-payment-settings__section-subtitle {
-  color: var(--sakai-text-color-secondary);
-  font-size: 0.9rem;
-}
-
-.teacher-payment-settings__fields {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
-.teacher-payment-settings__field--full {
-  grid-column: 1 / -1;
 }
 
 .teacher-payment-settings__field :deep(.ui-input__input),
@@ -1139,19 +1027,6 @@ function resolveErrorMessage(error: unknown): string {
 .teacher-payment-settings__field :deep(.ui-textarea__label) {
   font-size: 0.95rem;
   font-weight: var(--sakai-font-weight-medium);
-}
-
-.teacher-payment-settings__toggle {
-  margin-bottom: 0.5rem;
-}
-
-.teacher-payment-settings__method {
-  display: block;
-  position: relative;
-}
-
-.teacher-payment-settings__method--disabled {
-  opacity: 0.55;
 }
 
 .teacher-payment-settings__method-overlay {
@@ -1168,30 +1043,6 @@ function resolveErrorMessage(error: unknown): string {
   font-weight: var(--sakai-font-weight-medium);
   color: var(--sakai-text-color-secondary);
   pointer-events: none;
-}
-
-.teacher-payment-settings__actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 1rem;
-}
-
-.teacher-payment-settings__updated {
-  color: var(--sakai-text-color-secondary);
-  font-size: 0.9rem;
-}
-
-.teacher-payment-settings__dirty {
-  text-transform: none;
-}
-
-.teacher-payment-settings__language-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 0.5rem;
 }
 
 .teacher-payment-settings__language-button {

@@ -1,5 +1,5 @@
 <template>
-  <div class="ui-tabs" :class="[`ui-tabs--${variant}`, { 'ui-tabs--grow': grow }]">
+  <div class="ui-tabs flex flex-col gap-4" :class="[`ui-tabs--${variant}`, { 'ui-tabs--grow': grow }]">
     <div class="ui-tabs__nav">
       <button
         v-for="tab in tabs"
@@ -13,7 +13,7 @@
         <span v-if="tab.badge" class="ui-tabs__badge">{{ tab.badge }}</span>
       </button>
     </div>
-    <div class="ui-tabs__content">
+    <div class="ui-tabs__content mt-0">
       <slot />
     </div>
   </div>
@@ -48,12 +48,6 @@ const modelValue = computed(() => props.modelValue);
 </script>
 
 <style scoped>
-.ui-tabs {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
 .ui-tabs__nav {
   display: flex;
   gap: var(--sakai-space-2);
@@ -116,9 +110,5 @@ const modelValue = computed(() => props.modelValue);
   color: var(--sakai-primary-700);
   border-radius: var(--sakai-border-radius-pill);
   padding: 0.1rem 0.45rem;
-}
-
-.ui-tabs__content {
-  margin-top: 0;
 }
 </style>

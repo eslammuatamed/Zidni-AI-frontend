@@ -6,34 +6,34 @@
       </UiButton>
     </template>
 
-    <div class="student-checkout">
-      <UiAlert v-if="tutoringError" color="danger" variant="soft" class="student-checkout__empty">
+    <div class="student-checkout flex flex-col gap-5">
+      <UiAlert v-if="tutoringError" color="danger" variant="soft" class="student-checkout__empty grid gap-3 justify-items-start">
         <p>{{ tutoringError }}</p>
       </UiAlert>
 
-      <UiAlert v-else-if="!hasItems" color="neutral" variant="soft" class="student-checkout__empty">
+      <UiAlert v-else-if="!hasItems" color="neutral" variant="soft" class="student-checkout__empty grid gap-3 justify-items-start">
         <p>{{ t('checkout.emptyCart') }}</p>
         <UiButton v-if="catalogRoute" color="primary" :to="catalogRoute">
           {{ t('checkout.backToCatalog') }}
         </UiButton>
       </UiAlert>
 
-      <div v-else class="student-checkout__content">
-        <section v-if="!tutoringSession" class="student-checkout__cart">
+      <div v-else class="student-checkout__content grid gap-5">
+        <section v-if="!tutoringSession" class="student-checkout__cart flex flex-col">
           <CheckoutCartPanel
             :items="checkoutStore.items"
             :currency="checkoutCurrency"
           />
         </section>
 
-        <section class="student-checkout__form">
-          <UiCard class="student-checkout__form-card" hover>
-            <header class="student-checkout__form-header">
+        <section class="student-checkout__form flex flex-col">
+          <UiCard class="student-checkout__form-card grid gap-4 p-5" hover>
+            <header class="student-checkout__form-header grid gap-[0.35rem]">
               <h2>{{ checkoutTitle }}</h2>
               <p>{{ checkoutSubtitle }}</p>
             </header>
 
-            <div class="student-checkout__form-body">
+            <div class="student-checkout__form-body grid">
               <CheckoutPaymentPanel
                 v-if="!tutoringSession"
                 :teacher-slug="teacherSlug"
@@ -256,47 +256,6 @@ const onTutoringSessionUpdated = (session: TutoringSession) => {
 
 
 <style scoped>
-.student-checkout {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-5);
-}
-
-.student-checkout__empty {
-  display: grid;
-  gap: var(--sakai-space-3);
-  justify-items: start;
-}
-
-.student-checkout__content {
-  display: grid;
-  gap: var(--sakai-space-5);
-}
-
-.student-checkout__cart,
-.student-checkout__form {
-  display: flex;
-  flex-direction: column;
-}
-
-@media (min-width: 960px) {
-  .student-checkout__content {
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1.75fr);
-    align-items: start;
-  }
-}
-
-.student-checkout__form-card {
-  display: grid;
-  gap: var(--sakai-space-4);
-  padding: var(--sakai-space-5);
-}
-
-.student-checkout__form-header {
-  display: grid;
-  gap: 0.35rem;
-}
-
 .student-checkout__form-header h2 {
   margin: 0;
   font-size: var(--sakai-font-size-lg);
@@ -307,12 +266,15 @@ const onTutoringSessionUpdated = (session: TutoringSession) => {
   color: var(--sakai-text-color-secondary);
 }
 
-.student-checkout__form-body {
-  display: grid;
-}
-
 .student-checkout__form-body :deep(.checkout-payment-panel) {
   margin-top: 0;
+}
+
+@media (min-width: 960px) {
+  .student-checkout__content {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1.75fr);
+    align-items: start;
+  }
 }
 
 @media (max-width: 600px) {
@@ -320,5 +282,4 @@ const onTutoringSessionUpdated = (session: TutoringSession) => {
     padding: var(--sakai-space-4);
   }
 }
-
 </style>

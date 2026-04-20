@@ -1,19 +1,19 @@
 <template>
   <section class="ui-card" :class="{ 'ui-card--hover': hover }">
     <header v-if="hasHeader" class="ui-card__header">
-      <div class="ui-card__titles">
+      <div class="ui-card__titles flex flex-col gap-2">
         <slot name="title">
-          <h3 v-if="title" class="ui-card__title">{{ title }}</h3>
+          <h3 v-if="title" class="ui-card__title m-0 text-[1.05rem] font-semibold text-content">{{ title }}</h3>
         </slot>
         <slot name="subtitle">
-          <p v-if="subtitle" class="ui-card__subtitle">{{ subtitle }}</p>
+          <p v-if="subtitle" class="ui-card__subtitle m-0 text-content-tertiary text-[0.9rem]">{{ subtitle }}</p>
         </slot>
       </div>
-      <div v-if="$slots.actions" class="ui-card__actions">
+      <div v-if="$slots.actions" class="ui-card__actions flex items-center gap-2">
         <slot name="actions" />
       </div>
     </header>
-    <div class="ui-card__body">
+    <div class="ui-card__body p-5 flex flex-col gap-4">
       <slot />
     </div>
   </section>
@@ -69,35 +69,4 @@ const subtitle = computed(() => props.subtitle);
   border-bottom: 1px solid color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
 }
 
-.ui-card__titles {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
-.ui-card__title {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.ui-card__subtitle {
-  margin: 0;
-  color: var(--sakai-text-color-tertiary);
-  font-size: 0.9rem;
-}
-
-.ui-card__body {
-  padding: var(--sakai-space-5);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.ui-card__actions {
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-2);
-}
 </style>

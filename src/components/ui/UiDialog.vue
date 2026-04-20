@@ -4,7 +4,7 @@
       <div v-if="modelValue" class="ui-dialog__overlay" @click="handleOverlay">
         <div class="ui-dialog" :style="dialogStyle" @click.stop>
           <header class="ui-dialog__header">
-            <h3 class="ui-dialog__title">{{ title }}</h3>
+            <h3 class="ui-dialog__title m-0 text-[1.25rem] font-bold text-content">{{ title }}</h3>
             <button v-if="closable" class="ui-dialog__close" type="button" @click="close">
               <UiIcon name="CloseOutlined" :size="16" />
             </button>
@@ -113,13 +113,6 @@ const handleOverlay = () => {
   padding: var(--sakai-space-5) var(--sakai-space-6) var(--sakai-space-4);
   background: color-mix(in srgb, var(--sakai-surface-card) 98%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
-}
-
-.ui-dialog__title {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: var(--sakai-font-weight-bold);
-  color: var(--sakai-text-color);
 }
 
 .ui-dialog__close {

@@ -2260,11 +2260,11 @@ watch(
     const primary =
       colors.primary ||
       computedStyles.getPropertyValue("--sakai-primary") ||
-      "#6366f1";
+      "#06b6d4";
     const secondary =
       colors.secondary ||
       computedStyles.getPropertyValue("--sakai-secondary") ||
-      "#06b6d4";
+      "#1e3a8a";
     document.documentElement.style.setProperty(
       "--sakai-primary",
       primary.trim(),
@@ -2375,6 +2375,7 @@ const handleNavigate = () => {
 }
 
 .theme-app-shell__close {
+  display: none;
   align-self: flex-end;
   background: transparent;
   border: none;
@@ -2805,6 +2806,7 @@ const handleNavigate = () => {
 }
 
 .theme-app-shell__footer {
+  margin-top: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2813,6 +2815,13 @@ const handleNavigate = () => {
   flex-wrap: wrap;
   border-top: 1px solid
     color-mix(in srgb, var(--sakai-border-color) 60%, transparent);
+}
+
+@media (max-width: 640px) {
+  .theme-app-shell__footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .theme-app-shell__footer-copy {

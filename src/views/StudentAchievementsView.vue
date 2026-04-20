@@ -13,9 +13,9 @@
       />
     </template>
 
-    <div class="student-achievements">
+    <div class="student-achievements grid gap-6">
       <UiCard class="student-achievements__certificates" :title="t('achievements.certificates')">
-        <div v-if="store.loading && !certificates.length" class="student-achievements__loading">
+        <div v-if="store.loading && !certificates.length" class="student-achievements__loading inline-flex items-center gap-2 text-content-tertiary font-medium">
           {{ t('common.loading') }}
         </div>
         <UiAlert v-else-if="!certificates.length" color="info">
@@ -25,15 +25,15 @@
           <li
             v-for="certificate in certificatesWithCache"
             :key="certificate.id"
-            class="student-achievements__timeline-item"
+            class="student-achievements__timeline-item relative pl-8 flex gap-4"
           >
             <div class="student-achievements__timeline-marker" />
             <div class="student-achievements__timeline-content">
-              <span class="student-achievements__timeline-date">{{ formatDate(certificate.issuedAt) }}</span>
-              <h3 class="student-achievements__timeline-title">{{ certificate.courseTitle }}</h3>
-              <p class="student-achievements__timeline-subtitle">{{ t('achievements.certificateLabel') }}</p>
+              <span class="student-achievements__timeline-date text-sm text-content-tertiary">{{ formatDate(certificate.issuedAt) }}</span>
+              <h3 class="student-achievements__timeline-title m-0 font-semibold text-content">{{ certificate.courseTitle }}</h3>
+              <p class="student-achievements__timeline-subtitle m-0 text-content-secondary">{{ t('achievements.certificateLabel') }}</p>
               <UiButton
-                class="student-achievements__timeline-action"
+                class="student-achievements__timeline-action self-start"
                 variant="outline"
                 color="primary"
                 prepend-icon="DownloadOutlined"
@@ -48,9 +48,9 @@
         </ol>
       </UiCard>
 
-      <div class="student-achievements__side">
+      <div class="student-achievements__side flex flex-col gap-6">
         <UiCard :title="t('achievements.leaderboard')">
-          <div v-if="store.loading && !leaderboardEntries.length" class="student-achievements__loading">
+          <div v-if="store.loading && !leaderboardEntries.length" class="student-achievements__loading inline-flex items-center gap-2 text-content-tertiary font-medium">
             {{ t('common.loading') }}
           </div>
           <UiAlert v-else-if="!leaderboardEntries.length" color="info">
@@ -58,13 +58,13 @@
           </UiAlert>
           <UiTable
             v-else
-            class="student-achievements__table"
+            class="student-achievements__table overflow-x-auto"
             :headers="leaderboardHeaders"
             :items="leaderboardEntries"
             density="comfortable"
           >
             <template #item.rank="{ item }">
-              <span class="student-achievements__rank">#{{ item.rank }}</span>
+              <span class="student-achievements__rank font-semibold text-content">#{{ item.rank }}</span>
             </template>
             <template #item.points="{ item }">
               <strong>{{ item.points }}</strong>
@@ -73,20 +73,20 @@
         </UiCard>
 
         <UiCard :title="t('achievements.badges')">
-          <div v-if="store.loading && !badgesWithCache.length" class="student-achievements__loading">
+          <div v-if="store.loading && !badgesWithCache.length" class="student-achievements__loading inline-flex items-center gap-2 text-content-tertiary font-medium">
             {{ t('common.loading') }}
           </div>
           <UiAlert v-else-if="!badgesWithCache.length" color="info">
             {{ t('achievements.noBadges') }}
           </UiAlert>
-          <ul v-else class="student-achievements__badges">
+          <ul v-else class="student-achievements__badges m-0 p-0 list-none grid gap-4">
             <li v-for="badge in badgesWithCache" :key="badge.id" class="student-achievements__badge">
               <div v-if="badge.iconSrc" class="student-achievements__badge-icon">
                 <img :src="badge.iconSrc" alt="" />
               </div>
-              <div class="student-achievements__badge-content">
-                <span class="student-achievements__badge-name">{{ badge.name }}</span>
-                <span class="student-achievements__badge-date">{{ formatDate(badge.earnedAt) }}</span>
+              <div class="student-achievements__badge-content flex flex-col gap-2">
+                <span class="student-achievements__badge-name font-medium text-content">{{ badge.name }}</span>
+                <span class="student-achievements__badge-date text-sm text-content-tertiary">{{ formatDate(badge.earnedAt) }}</span>
               </div>
             </li>
           </ul>
@@ -207,11 +207,6 @@ function formatDate(value: string) {
   display: none;
 }
 
-.student-achievements {
-  display: grid;
-  gap: var(--sakai-space-6);
-}
-
 @media (min-width: 1024px) {
   .student-achievements {
     grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
@@ -222,14 +217,6 @@ function formatDate(value: string) {
 .student-achievements__certificates :deep(.ui-card__body),
 .student-achievements__side :deep(.ui-card__body) {
   gap: var(--sakai-space-5);
-}
-
-.student-achievements__loading {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sakai-space-2);
-  color: var(--sakai-text-color-tertiary);
-  font-weight: var(--sakai-font-weight-medium);
 }
 
 .student-achievements__timeline {
@@ -250,13 +237,6 @@ function formatDate(value: string) {
   left: 0.875rem;
   width: 2px;
   background: color-mix(in srgb, var(--sakai-primary) 25%, transparent);
-}
-
-.student-achievements__timeline-item {
-  position: relative;
-  padding-left: var(--sakai-space-8);
-  display: flex;
-  gap: var(--sakai-space-4);
 }
 
 .student-achievements__timeline-marker {
@@ -281,51 +261,8 @@ function formatDate(value: string) {
   box-shadow: var(--sakai-shadow-sm);
 }
 
-.student-achievements__timeline-date {
-  font-size: var(--sakai-font-size-sm);
-  color: var(--sakai-text-color-tertiary);
-}
-
-.student-achievements__timeline-title {
-  margin: 0;
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.student-achievements__timeline-subtitle {
-  margin: 0;
-  color: var(--sakai-text-color-secondary);
-}
-
-.student-achievements__timeline-action {
-  align-self: flex-start;
-}
-
-.student-achievements__side {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-6);
-}
-
-.student-achievements__table {
-  overflow-x: auto;
-}
-
 .student-achievements__table :deep(table) {
   min-width: calc(var(--sakai-space-12) * 6);
-}
-
-.student-achievements__rank {
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.student-achievements__badges {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: var(--sakai-space-4);
 }
 
 .student-achievements__badge {
@@ -352,21 +289,5 @@ function formatDate(value: string) {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.student-achievements__badge-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
-.student-achievements__badge-name {
-  font-weight: var(--sakai-font-weight-medium);
-  color: var(--sakai-text-color);
-}
-
-.student-achievements__badge-date {
-  font-size: var(--sakai-font-size-sm);
-  color: var(--sakai-text-color-tertiary);
 }
 </style>

@@ -17,9 +17,9 @@
       {{ t('teacher.registrationsDisabled') }}
     </UiAlert>
 
-    <section v-else class="teacher-registrations">
-      <UiCard class="teacher-registrations__filters" hover>
-        <div class="teacher-registrations__filters-grid">
+    <section v-else class="teacher-registrations grid gap-6">
+      <UiCard class="teacher-registrations__filters grid gap-4" hover>
+        <div class="teacher-registrations__filters-grid grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
           <UiSelect
             :model-value="filters.courseId"
             :label="t('teacher.filterCourse')"
@@ -56,12 +56,12 @@
 
           <UiInput v-model="filters.search" :label="t('teacher.filterSearch')" :placeholder="t('teacher.filterSearchPlaceholder')" />
 
-          <div class="teacher-registrations__date-inputs">
+          <div class="teacher-registrations__date-inputs grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(160px,1fr))]">
             <UiInput v-model="filters.dateFrom" type="date" :label="t('teacher.filterDateFrom')" />
             <UiInput v-model="filters.dateTo" type="date" :label="t('teacher.filterDateTo')" />
           </div>
         </div>
-        <div class="teacher-registrations__filters-actions">
+        <div class="teacher-registrations__filters-actions flex justify-end">
           <UiButton variant="link" color="secondary" prepend-icon="ReloadOutlined" @click="resetFilters">
             {{ t('common.refresh') }}
           </UiButton>
@@ -69,7 +69,7 @@
       </UiCard>
 
       <UiTable
-        class="teacher-registrations__table"
+        class="teacher-registrations__table w-full"
         :headers="tableHeaders"
         :items="registrations.items"
         :items-length="registrations.total"
@@ -84,18 +84,18 @@
         @update:sort-by="onSortChange"
       >
         <template #item.sessionTitle="{ item }">
-          <div class="teacher-registrations__cell">
-            <span class="teacher-registrations__primary">{{ item.sessionTitle }}</span>
-            <span class="teacher-registrations__secondary">{{ formatDateTime(item.sessionScheduledAt) }}</span>
+          <div class="teacher-registrations__cell flex flex-col gap-[0.125rem]">
+            <span class="teacher-registrations__primary font-medium">{{ item.sessionTitle }}</span>
+            <span class="teacher-registrations__secondary text-[0.825rem] text-content-tertiary">{{ formatDateTime(item.sessionScheduledAt) }}</span>
           </div>
         </template>
         <template #item.courseTitle="{ item }">
           <span>{{ item.courseTitle }}</span>
         </template>
         <template #item.studentName="{ item }">
-          <div class="teacher-registrations__cell">
-            <span class="teacher-registrations__primary">{{ item.studentName }}</span>
-            <span class="teacher-registrations__secondary">{{ item.studentEmail }}</span>
+          <div class="teacher-registrations__cell flex flex-col gap-[0.125rem]">
+            <span class="teacher-registrations__primary font-medium">{{ item.studentName }}</span>
+            <span class="teacher-registrations__secondary text-[0.825rem] text-content-tertiary">{{ item.studentEmail }}</span>
           </div>
         </template>
         <template #item.status="{ item }">
@@ -127,36 +127,36 @@
           class="teacher-registrations__list-item"
           role="listitem"
         >
-          <header class="teacher-registrations__list-header">
+          <header class="teacher-registrations__list-header flex flex-wrap items-center justify-between gap-2">
             <h3>{{ item.sessionTitle }}</h3>
             <UiTag :color="statusColor(item.status)" size="sm">{{ formatStatus(item.status) }}</UiTag>
           </header>
-          <div class="teacher-registrations__list-field">
+          <div class="teacher-registrations__list-field grid gap-2">
             <label>{{ t('teacher.registrationsCourse') }}</label>
             <span>{{ item.courseTitle }}</span>
           </div>
-          <div class="teacher-registrations__list-field">
+          <div class="teacher-registrations__list-field grid gap-2">
             <label>{{ t('teacher.registrationsStudent') }}</label>
             <span>{{ item.studentName }}</span>
             <small>{{ item.studentEmail }}</small>
           </div>
-          <div class="teacher-registrations__list-field">
+          <div class="teacher-registrations__list-field grid gap-2">
             <label>{{ t('teacher.registrationsRegisteredAt') }}</label>
             <span>{{ formatDateTime(item.registeredAt) }}</span>
           </div>
-          <div class="teacher-registrations__list-field">
+          <div class="teacher-registrations__list-field grid gap-2">
             <label>{{ t('teacher.registrationsAttendedColumn') }}</label>
             <span>{{ item.attended ? t('teacher.attendanceYes') : t('teacher.attendanceNo') }}</span>
           </div>
-          <div class="teacher-registrations__list-field">
+          <div class="teacher-registrations__list-field grid gap-2">
             <label>{{ t('teacher.registrationsJoinCount') }}</label>
             <span>{{ item.joinCount }}</span>
           </div>
-          <div class="teacher-registrations__list-field">
+          <div class="teacher-registrations__list-field grid gap-2">
             <label>{{ t('teacher.registrationsFirstJoin') }}</label>
             <span>{{ formatDateTime(item.firstJoinedAt) }}</span>
           </div>
-          <div class="teacher-registrations__list-field">
+          <div class="teacher-registrations__list-field grid gap-2">
             <label>{{ t('teacher.registrationsLastJoin') }}</label>
             <span>{{ formatDateTime(item.lastJoinedAt) }}</span>
           </div>
@@ -625,52 +625,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.teacher-registrations {
-  display: grid;
-  gap: var(--sakai-space-6);
-}
-
-.teacher-registrations__filters {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-registrations__filters-grid {
-  display: grid;
-  gap: var(--sakai-space-4);
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
-.teacher-registrations__filters-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.teacher-registrations__date-inputs {
-  display: grid;
-  gap: var(--sakai-space-3);
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-}
-
-.teacher-registrations__cell {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-}
-
-.teacher-registrations__primary {
-  font-weight: var(--sakai-font-weight-medium);
-}
-
-.teacher-registrations__secondary {
-  font-size: 0.825rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
-.teacher-registrations__table {
-  width: 100%;
-}
-
 .teacher-registrations__list {
   display: none;
   gap: var(--sakai-space-3);
@@ -685,23 +639,10 @@ onBeforeUnmount(() => {
   background: color-mix(in srgb, var(--sakai-surface-card) 96%, transparent);
 }
 
-.teacher-registrations__list-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-2);
-}
-
 .teacher-registrations__list-header h3 {
   margin: 0;
   font-size: 1rem;
   font-weight: var(--sakai-font-weight-semibold);
-}
-
-.teacher-registrations__list-field {
-  display: grid;
-  gap: var(--sakai-space-2);
 }
 
 .teacher-registrations__list-field label {

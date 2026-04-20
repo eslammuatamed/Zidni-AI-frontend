@@ -1,5 +1,5 @@
 <template>
-  <ThemePage class="public-landing__page">
+  <ThemePage class="public-landing__page" :style="{'--theme-page-bg': '#f4f5fe'}">
   <div class="public-landing">
     <template v-if="landing">
       <TeacherPublicTabs
@@ -371,10 +371,6 @@ watch(
   --landing-shadow-hover: 0 16px 30px rgba(4, 6, 24, 0.12);
   --landing-radius: 1.5rem;
   min-height: 100vh;
-}
-
-.public-landing__page :deep(.theme-page) {
-  background: #f4f5fe;
 }
 
 .public-landing__page :deep(.ui-card) {

@@ -12,11 +12,11 @@
       :disabled="option.disabled"
       @click="selectOption(option.value)"
     >
-      <span class="ui-segmented__label">
+      <span class="ui-segmented__label inline-flex items-center justify-center gap-2">
         <UiIcon v-if="option.icon" :name="option.icon" :size="iconSize" />
         <span>{{ option.label }}</span>
       </span>
-      <small v-if="option.description" class="ui-segmented__description">{{ option.description }}</small>
+      <small v-if="option.description" class="ui-segmented__description text-[0.7rem] text-content-tertiary">{{ option.description }}</small>
     </button>
   </div>
 </template>
@@ -129,15 +129,4 @@ const selectOption = (value: SegmentedValue) => {
   box-shadow: 0 6px 18px color-mix(in srgb, var(--sakai-primary) 22%, transparent);
 }
 
-.ui-segmented__label {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--sakai-space-2);
-}
-
-.ui-segmented__description {
-  font-size: 0.7rem;
-  color: var(--sakai-text-color-tertiary);
-}
 </style>

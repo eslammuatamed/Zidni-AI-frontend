@@ -1,7 +1,7 @@
 <template>
   <ThemePage :title="t('learning.teacher.nav')" :subtitle="t('learning.teacher.manageResources')">
     <template #actions>
-      <div class="teacher-learning__toolbar">
+      <div class="teacher-learning__toolbar flex flex-wrap items-center justify-between gap-4">
         <UiSelect
           :model-value="selectedCourseId"
           :label="t('learning.teacher.courseFilter')"
@@ -11,7 +11,7 @@
           <option value="">{{ t('learning.teacher.courseFilter') }}</option>
           <option v-for="course in courseOptions" :key="course.id" :value="course.id">{{ course.title }}</option>
         </UiSelect>
-        <div class="teacher-learning__toolbar-actions">
+        <div class="teacher-learning__toolbar-actions inline-flex flex-wrap gap-3">
           <UiButton color="primary" prepend-icon="PlusOutlined" @click="openAssignmentDialog">
             {{ t('learning.teacher.newAssignment') }}
           </UiButton>
@@ -36,7 +36,7 @@
 
     <UiTabs v-model="tab" :tabs="tabItems" />
 
-    <section v-if="tab === 'assignments'" class="teacher-learning__grid">
+    <section v-if="tab === 'assignments'" class="teacher-learning__grid grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
       <UiCard :title="t('learning.teacher.assignmentsTitle')" hover>
         <template v-if="!filteredAssignments.length">
           <UiAlert color="info" variant="soft">{{ t('learning.teacher.noAssignments') }}</UiAlert>
@@ -44,17 +44,17 @@
         <template v-else>
           <UiTable :headers="assignmentHeaders" :items="filteredAssignments" density="comfortable">
             <template #item.title="{ item }">
-              <div class="teacher-learning__table-title">
+              <div class="teacher-learning__table-title flex flex-col gap-1">
                 <strong>{{ item.title }}</strong>
-                <span class="teacher-learning__table-subtitle">{{ item.lessonTitle }}</span>
+                <span class="teacher-learning__table-subtitle text-content-tertiary text-[0.85rem]">{{ item.lessonTitle }}</span>
               </div>
             </template>
             <template #item.dueAt="{ item }">
               <span v-if="item.dueAt">{{ formatDateTime(item.dueAt) }}</span>
-              <span v-else class="teacher-learning__empty">—</span>
+              <span v-else class="teacher-learning__empty text-content-tertiary">—</span>
             </template>
             <template #item.actions="{ item }">
-              <div class="teacher-learning__table-actions">
+              <div class="teacher-learning__table-actions flex flex-wrap gap-2">
                 <UiButton variant="link" color="primary" prepend-icon="EyeOutlined" @click="selectAssignment(item.id)">
                   {{ t('learning.teacher.viewSubmissions') }}
                 </UiButton>
@@ -88,14 +88,14 @@
         <template v-else>
           <UiTable :headers="submissionHeaders" :items="learning.assignmentSubmissions" density="comfortable">
             <template #item.studentName="{ item }">
-              <div class="teacher-learning__table-title">
+              <div class="teacher-learning__table-title flex flex-col gap-1">
                 <strong>{{ item.studentName }}</strong>
-                <span class="teacher-learning__table-subtitle">{{ item.studentEmail }}</span>
+                <span class="teacher-learning__table-subtitle text-content-tertiary text-[0.85rem]">{{ item.studentEmail }}</span>
               </div>
             </template>
             <template #item.score="{ item }">
               <span v-if="item.score !== undefined">{{ item.score }}</span>
-              <span v-else class="teacher-learning__empty">—</span>
+              <span v-else class="teacher-learning__empty text-content-tertiary">—</span>
             </template>
             <template #item.status="{ item }">
               <UiTag :color="submissionStatusColor(item.status)" size="sm">
@@ -112,17 +112,17 @@
       </UiCard>
     </section>
 
-    <section v-else-if="tab === 'discussions'" class="teacher-learning__discussions">
+    <section v-else-if="tab === 'discussions'" class="teacher-learning__discussions flex flex-col gap-5">
       <UiAlert v-if="!discussionsEnabled" color="info" variant="soft">
         {{ t('discussions.flags.disabled') }}
       </UiAlert>
       <UiAlert v-else-if="!selectedCourseId" color="info" variant="soft">
         {{ t('discussions.threads.pickCourse') }}
       </UiAlert>
-      <div v-else class="teacher-learning__discussions-grid">
+      <div v-else class="teacher-learning__discussions-grid grid gap-5 [grid-template-columns:minmax(0,22rem)_minmax(0,1fr)]">
         <ThreadsList
           ref="threadsListRef"
-          class="teacher-learning__discussions-list"
+          class="teacher-learning__discussions-list w-full"
           v-model="selectedThreadId"
           :course-id="selectedCourseId"
           :lesson-options="lessonOptions"
@@ -130,7 +130,7 @@
           @created="onThreadCreated"
         />
         <ThreadView
-          class="teacher-learning__discussions-view"
+          class="teacher-learning__discussions-view w-full"
           :thread="activeDiscussionThread"
           :disabled="formSubmitting"
           @message-sent="onMessageSent"
@@ -138,21 +138,21 @@
       </div>
     </section>
 
-    <section v-else-if="tab === 'reviews'" class="teacher-learning__reviews">
+    <section v-else-if="tab === 'reviews'" class="teacher-learning__reviews flex flex-col gap-5">
       <UiAlert v-if="!reviewsEnabled" color="info" variant="soft">
         {{ t('reviews.flags.disabled') }}
       </UiAlert>
       <UiAlert v-else-if="!selectedCourseId" color="info" variant="soft">
         {{ t('reviews.shared.selectCourse') }}
       </UiAlert>
-      <div v-else class="teacher-learning__reviews-grid">
-        <UiCard class="teacher-learning__reviews-card" :title="t('learning.teacher.reviewsSummaryTitle')" hover>
-          <div v-if="reviewsSummary.count" class="teacher-learning__reviews-summary">
+      <div v-else class="teacher-learning__reviews-grid grid gap-5 [grid-template-columns:minmax(0,24rem)_minmax(0,1fr)]">
+        <UiCard class="teacher-learning__reviews-card w-full" :title="t('learning.teacher.reviewsSummaryTitle')" hover>
+          <div v-if="reviewsSummary.count" class="teacher-learning__reviews-summary flex flex-col gap-3">
             <div class="teacher-learning__reviews-average">
               <UiIcon name="StarFilled" />
               <strong>{{ reviewsSummary.average?.toFixed(1) ?? '0.0' }}</strong>
             </div>
-            <p class="teacher-learning__reviews-meta">
+            <p class="teacher-learning__reviews-meta m-0 text-content-tertiary">
               {{ t('learning.teacher.reviewsSummaryMeta', { count: reviewsSummary.count }) }}
             </p>
           </div>
@@ -161,7 +161,7 @@
           </UiAlert>
         </UiCard>
         <CourseReviewsList
-          class="teacher-learning__reviews-list"
+          class="teacher-learning__reviews-list w-full"
           :course-id="selectedCourseId"
           :show-summary="false"
           @summary="onTeacherReviewsSummary"
@@ -171,13 +171,13 @@
 
     </section>
 
-    <section v-else class="teacher-learning__grid">
+    <section v-else class="teacher-learning__grid grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
       <UiAlert v-if="resourcesRestricted" color="warning" variant="soft">
         {{ t('learning.teacher.resourceRestricted') }}
       </UiAlert>
       <template v-else>
         <UiCard :title="t('learning.teacher.resourceFormTitle')" hover>
-          <form class="teacher-learning__form" @submit.prevent="createResource">
+          <form class="teacher-learning__form grid gap-4" @submit.prevent="createResource">
             <UiInput v-model="newResource.title" :label="t('learning.teacher.resourceTitle')" required />
             <UiTextarea
               v-model="newResource.description"
@@ -206,7 +206,7 @@
               :label="t('learning.teacher.resourceUrl')"
               :required="!isFileResource"
             />
-            <p v-if="isEmbedResource" class="teacher-learning__resource-hint">
+            <p v-if="isEmbedResource" class="teacher-learning__resource-hint -mt-2 mb-0 text-content-tertiary text-[0.9rem]">
               {{ t('learning.teacher.resourceEmbedHint') }}
             </p>
             <UiFileUpload
@@ -229,11 +229,11 @@
             <UiAlert color="info" variant="soft">{{ t('learning.teacher.noResources') }}</UiAlert>
           </template>
           <template v-else>
-            <ul class="teacher-learning__resources">
-              <li v-for="resource in filteredResources" :key="resource.id" class="teacher-learning__resource">
-                <div class="teacher-learning__resource-info">
-                  <span class="teacher-learning__resource-title">{{ resource.title }}</span>
-                  <span class="teacher-learning__resource-meta">
+            <ul class="teacher-learning__resources list-none p-0 m-0 flex flex-col gap-3">
+              <li v-for="resource in filteredResources" :key="resource.id" class="teacher-learning__resource flex justify-between items-center gap-3">
+                <div class="teacher-learning__resource-info flex flex-col gap-1">
+                  <span class="teacher-learning__resource-title font-semibold">{{ resource.title }}</span>
+                  <span class="teacher-learning__resource-meta text-[0.85rem] text-content-tertiary">
                     {{ resource.lessonTitle || resource.courseTitle }} · {{ t(`learning.resourceType.${resource.resourceType}`) }}
                   </span>
                 </div>
@@ -254,7 +254,7 @@
     </section>
 
     <UiDialog v-model="assignmentDialog" :title="assignmentDialogTitle" width="520px">
-      <form class="teacher-learning__form" @submit.prevent="saveAssignment">
+      <form class="teacher-learning__form grid gap-4" @submit.prevent="saveAssignment">
         <UiSelect
           :model-value="assignmentForm.lessonId"
           :label="t('learning.teacher.assignmentLesson')"
@@ -275,7 +275,7 @@
           @update:model-value="onAssignmentScoreChange"
         />
         <UiInput v-model="assignmentForm.attachmentUrl" :label="t('learning.teacher.assignmentAttachment')" />
-        <div class="teacher-learning__dialog-actions">
+        <div class="teacher-learning__dialog-actions flex justify-end gap-3">
           <UiButton variant="link" color="secondary" @click="closeAssignmentDialog">{{ t('common.close') }}</UiButton>
           <UiButton button-type="submit" color="primary" :loading="formSubmitting">
             {{ isEditingAssignment ? t('common.save') : t('common.create') }}
@@ -286,7 +286,7 @@
 
     <UiDialog v-model="gradeDialog" :title="gradeDialogTitle" width="480px">
       <template v-if="selectedSubmission">
-        <form class="teacher-learning__form" @submit.prevent="submitGrade">
+        <form class="teacher-learning__form grid gap-4" @submit.prevent="submitGrade">
           <UiSelect
             :model-value="gradeForm.status"
             :label="t('learning.teacher.gradeStatus')"
@@ -302,7 +302,7 @@
             @update:model-value="onGradeScoreChange"
           />
           <UiTextarea v-model="gradeForm.feedback" :label="t('learning.teacher.gradeFeedback')" :rows="3" />
-          <div class="teacher-learning__dialog-actions">
+          <div class="teacher-learning__dialog-actions flex justify-end gap-3">
             <UiButton variant="link" color="secondary" @click="closeGradeDialog">{{ t('common.close') }}</UiButton>
             <UiButton button-type="submit" color="primary" :loading="formSubmitting">{{ t('common.save') }}</UiButton>
           </div>
@@ -827,103 +827,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.teacher-learning__toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-learning__toolbar-actions {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-learning__grid {
-  display: grid;
-  gap: var(--sakai-space-5);
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-}
-
-.teacher-learning__table-title {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-1);
-}
-
-.teacher-learning__table-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-learning__table-subtitle {
-  color: var(--sakai-text-color-tertiary);
-  font-size: 0.85rem;
-}
-
-.teacher-learning__empty {
-  color: var(--sakai-text-color-tertiary);
-}
-
-.teacher-learning__form {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-learning__resource-hint {
-  margin: -0.5rem 0 0;
-  color: var(--sakai-text-color-tertiary);
-  font-size: 0.9rem;
-}
-
-.teacher-learning__dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-learning__discussions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-5);
-}
-
-.teacher-learning__discussions-grid {
-  display: grid;
-  gap: var(--sakai-space-5);
-  grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
-}
-
-.teacher-learning__discussions-list,
-.teacher-learning__discussions-view {
-  width: 100%;
-}
-
-.teacher-learning__reviews {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-5);
-}
-
-.teacher-learning__reviews-grid {
-  display: grid;
-  gap: var(--sakai-space-5);
-  grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
-}
-
-.teacher-learning__reviews-card {
-  width: 100%;
-}
-
-.teacher-learning__reviews-summary {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
 .teacher-learning__reviews-average {
   display: inline-flex;
   align-items: center;
@@ -937,47 +840,6 @@ onMounted(async () => {
   height: 1.5rem;
 }
 
-.teacher-learning__reviews-meta {
-  margin: 0;
-  color: var(--sakai-text-color-tertiary);
-}
-
-.teacher-learning__reviews-list {
-
-  width: 100%;
-}
-
-.teacher-learning__resources {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-learning__resource {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-learning__resource-info {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-1);
-}
-
-.teacher-learning__resource-title {
-  font-weight: var(--sakai-font-weight-semibold);
-}
-
-.teacher-learning__resource-meta {
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
 @media (max-width: 960px) {
   .teacher-learning__toolbar {
     flex-direction: column;
@@ -989,7 +851,6 @@ onMounted(async () => {
   }
 
   .teacher-learning__reviews-grid {
-
     grid-template-columns: 1fr;
   }
 }

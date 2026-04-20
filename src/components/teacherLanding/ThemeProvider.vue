@@ -56,7 +56,7 @@ const heroStyle = computed(() => {
   /* hero tokens (used by TeacherHero) */
   --teacher-hero-radius: 24px;
   --teacher-hero-photo-shadow: 0 24px 56px rgba(15, 23, 42, 0.22);
-  --teacher-hero-photo-glow: 0 28px 80px rgba(99, 102, 241, 0.08);
+  --teacher-hero-photo-glow: 0 28px 80px rgba(6, 182, 212, 0.08);
   /* logical offsets for RTL-aware positioning (used by components) */
   --teacher-orb-offset-inline-start: 5%;
   --teacher-orb-offset-inline-end: -10%;

@@ -1,9 +1,9 @@
 ﻿<template>
   <ThemePage :title="t('certificates.teacher.title')" :subtitle="t('certificates.teacher.subtitle')">
-    <section class="certificates-grid">
-      <UiCard class="certificates-card" :title="t('certificates.teacher.formTitle')" hover>
-        <form class="certificates-form" @submit.prevent="generate">
-          <label class="certificates-field">
+    <section class="certificates-grid grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
+      <UiCard class="certificates-card min-h-[320px]" :title="t('certificates.teacher.formTitle')" hover>
+        <form class="certificates-form flex flex-col gap-4" @submit.prevent="generate">
+          <label class="certificates-field flex flex-col gap-2 font-medium">
             <span>{{ t('certificates.teacher.template') }}</span>
             <select v-model="form.templateKey" required>
               <option v-for="template in templates" :key="template.value" :value="template.value">
@@ -12,7 +12,7 @@
             </select>
           </label>
 
-          <label class="certificates-field">
+          <label class="certificates-field flex flex-col gap-2 font-medium">
             <span>{{ t('certificates.teacher.studentSearch') }}</span>
             <input
               v-model="studentSearch"
@@ -21,7 +21,7 @@
             />
           </label>
 
-          <label class="certificates-field">
+          <label class="certificates-field flex flex-col gap-2 font-medium">
             <span>{{ t('certificates.teacher.student') }}</span>
             <select v-model.number="form.studentId" :disabled="studentsLoading || !students.length" required>
               <option value="" disabled>
@@ -31,12 +31,12 @@
                 {{ formatStudentLabel(student) }}
               </option>
             </select>
-            <small v-if="!studentsLoading && !students.length" class="certificates-field__hint">
+            <small v-if="!studentsLoading && !students.length" class="certificates-field__hint text-content-tertiary text-[0.85rem]">
               {{ t('certificates.teacher.noStudents') }}
             </small>
           </label>
 
-          <label class="certificates-field">
+          <label class="certificates-field flex flex-col gap-2 font-medium">
             <span>{{ t('certificates.teacher.course') }}</span>
             <select v-model.number="form.courseId" required>
               <option value="" disabled>{{ t('certificates.teacher.coursePlaceholder') }}</option>
@@ -46,7 +46,7 @@
             </select>
           </label>
 
-          <label class="certificates-field">
+          <label class="certificates-field flex flex-col gap-2 font-medium">
             <span>{{ t('certificates.teacher.issueDate') }}</span>
             <input v-model="form.issueDate" type="date" required />
           </label>
@@ -65,17 +65,17 @@
         </form>
       </UiCard>
 
-      <UiCard v-if="result" class="certificates-card" :title="t('certificates.teacher.resultTitle')" hover>
-        <div class="certificates-result">
+      <UiCard v-if="result" class="certificates-card min-h-[320px]" :title="t('certificates.teacher.resultTitle')" hover>
+        <div class="certificates-result flex flex-col gap-3">
           <div>
             <h3>{{ result.studentName }}</h3>
             <p>{{ result.courseName }}</p>
           </div>
-          <div class="certificates-meta">
+          <div class="certificates-meta flex flex-col gap-[0.35rem] text-content-tertiary">
             <span>{{ t('certificates.teacher.issuedAt') }}: {{ formatDate(result.issuedAt) }}</span>
             <span>{{ t('certificates.teacher.verificationCode') }}: {{ result.verificationCode }}</span>
           </div>
-          <div class="certificates-actions">
+          <div class="certificates-actions flex gap-2">
             <UiButton color="secondary" @click="download(result.id)">
               {{ t('certificates.teacher.download') }}
             </UiButton>
@@ -84,7 +84,7 @@
       </UiCard>
 
       <UiCard
-        class="certificates-card"
+        class="certificates-card min-h-[320px]"
         :title="t('certificates.teacher.listTitle')"
         :subtitle="t('certificates.teacher.listSubtitle')"
         hover
@@ -114,7 +114,7 @@
             <span>{{ item.verificationCode || '—' }}</span>
           </template>
           <template #item.actions="{ item }">
-            <div class="certificates-table-actions">
+            <div class="certificates-table-actions flex flex-wrap justify-end gap-2">
               <UiButton size="sm" variant="outline" color="primary" @click="download(item.id)">
                 {{ t('certificates.teacher.download') }}
               </UiButton>
@@ -302,29 +302,6 @@ const formatDate = (value: string) => {
 </script>
 
 <style scoped>
-.certificates-grid {
-  display: grid;
-  gap: 1.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-}
-
-.certificates-card {
-  min-height: 320px;
-}
-
-.certificates-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.certificates-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  font-weight: 500;
-}
-
 .certificates-field select,
 .certificates-field input {
   padding: 0.65rem 0.75rem;
@@ -332,17 +309,6 @@ const formatDate = (value: string) => {
   border: 0.0625rem solid color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
   background: var(--sakai-surface);
   font: inherit;
-}
-
-.certificates-field__hint {
-  color: var(--sakai-text-color-tertiary);
-  font-size: 0.85rem;
-}
-
-.certificates-result {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
 }
 
 .certificates-result h3 {
@@ -353,24 +319,5 @@ const formatDate = (value: string) => {
 .certificates-result p {
   margin: 0;
   color: var(--sakai-text-color-secondary);
-}
-
-.certificates-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
-.certificates-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.certificates-table-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 0.5rem;
 }
 </style>

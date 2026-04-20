@@ -9,7 +9,7 @@
             icon="CalendarOutlined"
             :label="t('tutoring.teacher.overviewNextSession')"
             :value="nextSessionLabel"
-            :description="nextSessionDescription"
+            :secondary-stat="nextSessionDescription"
           />
           <UiStatCard
             class="teacher-tutoring__summary-card"
@@ -17,7 +17,7 @@
             icon="TeamOutlined"
             :label="t('tutoring.teacher.overviewTodayBookings')"
             :value="confirmedTodayCount.toString()"
-            :description="t('tutoring.teacher.overviewTodayBookingsHint')"
+            :secondary-stat="t('tutoring.teacher.overviewTodayBookingsHint')"
           />
           <UiStatCard
             class="teacher-tutoring__summary-card"
@@ -25,11 +25,8 @@
             icon="DollarOutlined"
             :label="t('tutoring.teacher.overviewExpectedRevenue')"
             :value="projectedRevenueDisplay"
-          >
-            <template #default>
-              <span>{{ t('tutoring.teacher.overviewExpectedRevenueHint', { count: upcomingSessionCount }) }}</span>
-            </template>
-          </UiStatCard>
+            :secondary-stat="t('tutoring.teacher.overviewExpectedRevenueHint', { count: upcomingSessionCount })"
+          />
         </div>
         <div class="teacher-tutoring__summary-actions">
           <UiButton color="primary" prepend-icon="PlusOutlined" @click="openSlotDialog()">

@@ -81,8 +81,7 @@ body.v-theme--dark,
   background-color: var(--color-surface);
 }
 
-h1,
-.text-h1 {
+h1 {
   font-size: var(--fs-h1);
   line-height: var(--lh-tight);
   letter-spacing: -0.0225em;
@@ -90,8 +89,7 @@ h1,
   margin-block: 0;
 }
 
-h2,
-.text-h2 {
+h2 {
   font-size: var(--fs-h2);
   line-height: var(--lh-tight);
   letter-spacing: -0.015em;
@@ -99,8 +97,7 @@ h2,
   margin-block: 0;
 }
 
-h3,
-.text-h3 {
+h3 {
   font-size: var(--fs-h3);
   line-height: var(--lh-normal);
   letter-spacing: -0.01em;
@@ -116,8 +113,7 @@ h4,
   margin-block: 0;
 }
 
-h5,
-.text-h5 {
+h5 {
   font-size: var(--fs-h5);
   line-height: var(--lh-normal);
   font-weight: 600;
@@ -152,24 +148,11 @@ body,
   line-height: var(--lh-relaxed);
 }
 
-.text-body-2 {
-  font-size: var(--fs-body-2);
-  line-height: var(--lh-normal);
-}
-
 .caption,
 .text-caption {
   font-size: var(--fs-caption);
   line-height: var(--lh-normal);
   letter-spacing: 0.015em;
-}
-
-.overline,
-.text-overline {
-  font-size: var(--fs-overline);
-  line-height: var(--lh-tight);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 p,
@@ -345,18 +328,15 @@ a:focus-visible {
     padding-block: clamp(var(--sp-4), 6vw, var(--sp-6));
   }
 
-  h1,
-  .text-h1 {
+  h1 {
     font-size: clamp(2.2rem, 6vw, 2.6rem);
   }
 
-  h2,
-  .text-h2 {
+  h2 {
     font-size: clamp(1.9rem, 5vw, 2.2rem);
   }
 
-  h3,
-  .text-h3 {
+  h3 {
     font-size: clamp(1.6rem, 4.5vw, 1.9rem);
   }
 }

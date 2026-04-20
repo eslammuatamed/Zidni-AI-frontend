@@ -1,5 +1,5 @@
 <template>
-  <ThemePage :title="t('adminEnglishLab.title')" :subtitle="t('adminEnglishLab.subtitle')">
+  <ThemePage class="theme-page--admin" :title="t('adminEnglishLab.title')" :subtitle="t('adminEnglishLab.subtitle')">
     <section class="english-lab-admin">
       <aside class="english-lab-admin__sidebar">
         <UiCard class="english-lab-admin__panel" hover>
@@ -415,16 +415,6 @@ onMounted(() => {
   grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
   gap: var(--sakai-space-6);
   align-items: flex-start;
-}
-
-:deep(.theme-page__title) {
-  font-size: 2.25rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--sakai-primary) 0%, var(--sakai-primary-700) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: var(--sakai-space-1);
 }
 
 @media (max-width: 1024px) {

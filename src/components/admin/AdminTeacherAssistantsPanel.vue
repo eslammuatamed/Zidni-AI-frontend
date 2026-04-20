@@ -63,7 +63,7 @@
         :label="t('adminTeachers.assistants.summary.totalLabel')"
         :value="summary.total"
         icon="TeamOutlined"
-        :description="t('adminTeachers.assistants.summary.totalDescription')"
+        :secondary-stat="t('adminTeachers.assistants.summary.totalDescription')"
       />
       <UiStatCard
         role="listitem"
@@ -71,7 +71,7 @@
         :label="t('adminTeachers.assistants.summary.activeLabel')"
         :value="summary.active"
         icon="UserSwitchOutlined"
-        :description="t('adminTeachers.assistants.summary.activeDescription')"
+        :secondary-stat="t('adminTeachers.assistants.summary.activeDescription')"
       />
       <UiStatCard
         role="listitem"
@@ -79,7 +79,7 @@
         :label="t('adminTeachers.assistants.summary.pendingLabel')"
         :value="summary.pending"
         icon="ClockCircleOutlined"
-        :description="t('adminTeachers.assistants.summary.pendingDescription')"
+        :secondary-stat="t('adminTeachers.assistants.summary.pendingDescription')"
       />
     </div>
 

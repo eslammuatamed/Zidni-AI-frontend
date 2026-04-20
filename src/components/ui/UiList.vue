@@ -1,5 +1,5 @@
 <template>
-  <ul class="ui-list" :class="listClasses">
+  <ul class="ui-list list-none m-0 flex flex-col gap-0" :class="listClasses">
     <slot />
   </ul>
 </template>
@@ -25,32 +25,16 @@ const props = withDefaults(
 );
 
 const listClasses = computed(() => ({
+  'py-2': props.padded,
+  'p-0': !props.padded,
+  'ps-3 pe-3': props.inset,
   'ui-list--divided': props.divided,
   'ui-list--density-comfortable': props.density === 'comfortable',
   'ui-list--density-compact': props.density === 'compact',
-  'ui-list--inset': props.inset,
-  'ui-list--flush': !props.padded
 }));
 </script>
 
 <style scoped>
-.ui-list {
-  list-style: none;
-  margin: 0;
-  padding: var(--sakai-space-2) 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.ui-list--flush {
-  padding: 0;
-}
-
-.ui-list--inset {
-  padding-inline: var(--sakai-space-3);
-}
-
 .ui-list--divided :deep(.ui-list-item + .ui-list-item) {
   border-top: 1px solid color-mix(in srgb, var(--sakai-border-color) 75%, transparent);
 }

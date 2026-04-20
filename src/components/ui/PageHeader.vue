@@ -29,9 +29,3 @@ withDefaults(defineProps<{
   divider: true
 });
 </script>
-
-<style scoped>
-.hover\:text-sakai-primary:hover {
-  color: rgb(var(--sakai-primary-rgb)) !important;
-}
-</style>

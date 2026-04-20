@@ -15,15 +15,15 @@
       </UiButton>
     </template>
 
-    <div class="student-assessments">
+    <div class="student-assessments flex flex-col gap-6">
       <UiAlert
         v-if="lastAttempt"
         class="student-assessments__alert"
         color="success"
         variant="soft"
       >
-        <div class="student-assessments__alert-body">
-          <span class="student-assessments__alert-text">
+        <div class="student-assessments__alert-body flex flex-wrap items-center gap-3">
+          <span class="student-assessments__alert-text font-medium text-content">
             {{
               t('assessments.lastAttemptScore', {
                 score: lastAttemptScore,
@@ -37,9 +37,9 @@
         </div>
       </UiAlert>
 
-      <UiCard class="student-assessments__card">
+      <UiCard class="student-assessments__card flex flex-col">
         <UiTable
-          class="student-assessments__table"
+          class="student-assessments__table block overflow-x-auto"
           :headers="headers"
           :items="studentAssessments"
           density="comfortable"
@@ -60,7 +60,7 @@
             <UiBadge color="info">{{ item.type.toUpperCase() }}</UiBadge>
           </template>
           <template #item.actions="{ item }">
-            <div class="student-assessments__row-actions">
+            <div class="student-assessments__row-actions flex justify-end gap-2">
               <UiButton
                 variant="link"
                 color="primary"
@@ -79,14 +79,14 @@
             class="student-assessments__list-item"
             role="listitem"
           >
-            <header class="student-assessments__list-header">
-              <div class="student-assessments__list-titles">
+            <header class="student-assessments__list-header flex flex-wrap items-center justify-between gap-2">
+              <div class="student-assessments__list-titles flex flex-col gap-[0.35rem]">
                 <h3>{{ item.title }}</h3>
                 <span>{{ item.courseTitle }}</span>
               </div>
               <UiBadge color="info">{{ item.type.toUpperCase() }}</UiBadge>
             </header>
-            <dl class="student-assessments__list-grid">
+            <dl class="student-assessments__list-grid grid gap-3">
               <div>
                 <dt>{{ t('assessments.tableDuration') }}</dt>
                 <dd>{{ item.durationMinutes }}</dd>
@@ -113,7 +113,7 @@
               </div>
             </dl>
             <UiButton
-              class="student-assessments__list-action"
+              class="student-assessments__list-action justify-center"
               color="primary"
               :variant="isPrimaryAction(item) ? 'solid' : 'outline'"
               :prepend-icon="isPrimaryAction(item) ? 'PlayCircleOutlined' : 'FileSearchOutlined'"
@@ -125,21 +125,21 @@
         </div>
       </UiCard>
 
-      <UiCard class="student-assessments__card student-assessments__certificates" :title="t('certificates.student.title')">
-        <div class="student-assessments__certificates-body">
+      <UiCard class="student-assessments__card student-assessments__certificates flex flex-col" :title="t('certificates.student.title')">
+        <div class="student-assessments__certificates-body flex flex-col gap-3">
           <div v-if="!certificateItems.length" class="empty-state">
-            <UiIcon name="SafetyCertificateOutlined" :size="32" class="text-muted" />
+            <UiIcon name="SafetyCertificateOutlined" :size="32" class="text-content-muted" />
             <p>{{ t('certificates.student.empty') }}</p>
           </div>
-          <div v-else class="student-assessments__certificates-list">
+          <div v-else class="student-assessments__certificates-list flex flex-col gap-2">
             <div
               v-for="certificate in certificateItems"
               :key="certificate.id"
-              class="student-assessments__certificates-item"
+              class="student-assessments__certificates-item flex items-center justify-between gap-3 p-2 rounded-sakai-lg border border-border bg-surface-alt"
             >
-              <div class="student-assessments__certificates-info">
-                <span class="student-assessments__certificates-title">{{ certificate.courseTitle }}</span>
-                <small class="student-assessments__certificates-date">{{ formatDate(certificate.issuedAt) }}</small>
+              <div class="student-assessments__certificates-info flex flex-col gap-[2px]">
+                <span class="student-assessments__certificates-title font-semibold text-content">{{ certificate.courseTitle }}</span>
+                <small class="student-assessments__certificates-date text-[0.75rem] text-content-secondary">{{ formatDate(certificate.issuedAt) }}</small>
               </div>
               <UiButton
                 size="xs"
@@ -156,7 +156,7 @@
               variant="link"
               color="secondary"
               size="sm"
-              class="student-assessments__certificates-view"
+              class="student-assessments__certificates-view self-start ps-0"
               @click="router.push({ name: 'student-achievements' })"
             >
               {{ t('certificates.student.viewAll') }}
@@ -451,31 +451,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.student-assessments {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-6);
-}
-
 .student-assessments__alert {
   border: 1px solid color-mix(in srgb, var(--sakai-success) 28%, transparent);
-}
-
-.student-assessments__alert-body {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--sakai-space-3);
-}
-
-.student-assessments__alert-text {
-  font-weight: var(--sakai-font-weight-medium);
-  color: var(--sakai-text-color);
-}
-
-.student-assessments__card {
-  display: flex;
-  flex-direction: column;
 }
 
 .student-assessments__card :deep(.ui-card__body) {
@@ -483,19 +460,8 @@ onMounted(() => {
   padding: var(--sakai-space-5);
 }
 
-.student-assessments__table {
-  display: block;
-  overflow-x: auto;
-}
-
 .student-assessments__table table {
   min-width: calc(var(--sakai-space-12) * 10);
-}
-
-.student-assessments__row-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--sakai-space-2);
 }
 
 .student-assessments__list {
@@ -512,20 +478,6 @@ onMounted(() => {
   background: color-mix(in srgb, var(--sakai-surface-card) 96%, transparent);
 }
 
-.student-assessments__list-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-2);
-}
-
-.student-assessments__list-titles {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
 .student-assessments__list-titles h3 {
   margin: 0;
   font-size: 1rem;
@@ -535,11 +487,6 @@ onMounted(() => {
 .student-assessments__list-titles span {
   color: var(--sakai-text-color-tertiary);
   font-size: 0.85rem;
-}
-
-.student-assessments__list-grid {
-  display: grid;
-  gap: var(--sakai-space-3);
 }
 
 .student-assessments__list-grid div {
@@ -556,54 +503,6 @@ onMounted(() => {
 .student-assessments__list-grid dd {
   margin: 0;
   font-weight: var(--sakai-font-weight-medium);
-}
-
-.student-assessments__list-action {
-  justify-content: center;
-}
-
-.student-assessments__certificates-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.student-assessments__certificates-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
-.student-assessments__certificates-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-3);
-  padding: var(--sakai-space-2);
-  border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid var(--sakai-border-color);
-  background: var(--sakai-surface-alt);
-}
-
-.student-assessments__certificates-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.student-assessments__certificates-title {
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.student-assessments__certificates-date {
-  font-size: 0.75rem;
-  color: var(--sakai-text-color-secondary);
-}
-
-.student-assessments__certificates-view {
-  align-self: flex-start;
-  padding-inline-start: 0;
 }
 
 @media (max-width: 768px) {

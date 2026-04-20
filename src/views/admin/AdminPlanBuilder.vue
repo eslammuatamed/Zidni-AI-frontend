@@ -1,22 +1,22 @@
 <template>
-  <ThemePage :title="t('adminPlanBuilder.title')" :subtitle="t('adminPlanBuilder.subtitle')">
-    <section class="plan-builder">
-      <div class="plan-builder__grid">
-        <UiCard class="plan-builder__panel" hover>
+  <ThemePage class="theme-page--admin" :title="t('adminPlanBuilder.title')" :subtitle="t('adminPlanBuilder.subtitle')">
+    <section class="plan-builder flex flex-col gap-6">
+      <div class="plan-builder__grid grid gap-6 items-start [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
+        <UiCard class="plan-builder__panel flex flex-col gap-4" hover>
           <template #title>{{ t('adminPlanBuilder.templates.title') }}</template>
           <template #subtitle>{{ t('adminPlanBuilder.templates.subtitle') }}</template>
 
           <UiSkeleton v-if="loading" height="200" animation="wave" />
           <UiAlert v-else-if="loadError" color="danger" variant="soft">{{ loadError }}</UiAlert>
 
-          <ul v-else class="plan-builder__template-list" role="list">
+          <ul v-else class="plan-builder__template-list flex flex-col gap-3 m-0 p-0 list-none" role="list">
             <li
               v-for="template in templates"
               :key="templateKey(template)"
               :class="['plan-builder__template-item', { 'is-active': templateKey(template) === selectedTemplateId }]"
             >
-              <button type="button" class="plan-builder__template-button" @click="selectTemplate(template)">
-                <span class="plan-builder__template-name">{{ template.displayName }}</span>
+              <button type="button" class="plan-builder__template-button flex w-full bg-transparent border-none px-4 py-3 flex-col items-start gap-2 cursor-pointer" @click="selectTemplate(template)">
+                <span class="plan-builder__template-name font-semibold">{{ template.displayName }}</span>
                 <UiTag size="sm" color="primary">{{ template.code }} · v{{ template.version }}</UiTag>
                 <UiTag
                   size="sm"
@@ -30,7 +30,7 @@
           </ul>
 
           <template #actions>
-            <div class="plan-builder__template-actions">
+            <div class="plan-builder__template-actions flex gap-2 justify-end">
               <UiButton
                 size="sm"
                 variant="secondary"
@@ -71,13 +71,13 @@
               ref="importInputRef"
               type="file"
               accept="application/json"
-              class="plan-builder__import-input"
+              class="plan-builder__import-input hidden"
               @change="handleImportFile"
             />
           </template>
         </UiCard>
 
-        <UiCard class="plan-builder__panel" hover>
+        <UiCard class="plan-builder__panel flex flex-col gap-4" hover>
           <template #title>
             {{ selectedTemplate?.displayName || t('adminPlanBuilder.editor.emptyTitle') }}
           </template>
@@ -85,11 +85,11 @@
             {{ t('adminPlanBuilder.editor.subtitle', { code: selectedTemplate.code, version: selectedTemplate.version }) }}
           </template>
 
-          <div v-if="!selectedTemplate" class="plan-builder__empty">
+          <div v-if="!selectedTemplate" class="plan-builder__empty flex items-center justify-center min-h-[200px] text-center">
             <p>{{ t('adminPlanBuilder.editor.emptyHelp') }}</p>
           </div>
 
-          <div v-else class="plan-builder__editor">
+          <div v-else class="plan-builder__editor flex flex-col gap-6">
             <UiAlert
               v-if="isTemplateReadOnly"
               color="info"
@@ -98,7 +98,7 @@
               {{ t('adminPlanBuilder.editor.publishedReadOnly') }}
             </UiAlert>
 
-            <div class="plan-builder__form-grid">
+            <div class="plan-builder__form-grid grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
               <UiInput
                 v-model="templateForm.displayName"
                 :label="t('adminPlanBuilder.editor.fields.displayName')"
@@ -138,7 +138,7 @@
                 v-if="teacherScopedOptions.length"
                 color="info"
                 variant="outline"
-                class="plan-builder__teacher-scoped-alert"
+                class="plan-builder__teacher-scoped-alert col-span-full"
               >
                 {{
                   t('adminPlanBuilder.features.teacherScopedNotice', {
@@ -155,12 +155,12 @@
               />
             </section>
 
-            <section class="plan-builder__entitlements">
+            <section class="plan-builder__entitlements flex flex-col gap-3">
               <header>
                 <h4>{{ t('adminPlanBuilder.entitlements.title') }}</h4>
                 <p>{{ t('adminPlanBuilder.entitlements.subtitle') }}</p>
               </header>
-              <div class="plan-builder__entitlement-grid">
+              <div class="plan-builder__entitlement-grid grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
                 <template v-for="entitlementKey in entitlementCatalog" :key="entitlementKey">
                   <UiSelect
                     v-if="isResolutionPolicyEntitlement(entitlementKey)"
@@ -185,12 +185,12 @@
               </div>
             </section>
 
-            <section class="plan-builder__marketing">
+            <section class="plan-builder__marketing flex flex-col gap-3">
               <header>
                 <h4>{{ t('adminPlanBuilder.marketing.title') }}</h4>
                 <p>{{ t('adminPlanBuilder.marketing.subtitle') }}</p>
               </header>
-              <div class="plan-builder__marketing-grid">
+              <div class="plan-builder__marketing-grid grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
                 <article
                   v-for="localeKey in marketingLocales"
                   :key="localeKey"
@@ -225,7 +225,7 @@
               </div>
             </section>
 
-            <section class="plan-builder__pricing">
+            <section class="plan-builder__pricing flex flex-col gap-3">
               <header>
                 <h4>{{ t('adminPlanBuilder.pricing.title') }}</h4>
                 <p>{{ t('adminPlanBuilder.pricing.subtitle') }}</p>
@@ -235,7 +235,7 @@
                 {{ pricingError }}
               </UiAlert>
 
-              <div v-else-if="pricingLoading" class="plan-builder__pricing-skeleton">
+              <div v-else-if="pricingLoading" class="plan-builder__pricing-skeleton grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
                 <UiSkeleton
                   v-for="country in supportedCountries"
                   :key="country.code"
@@ -244,13 +244,13 @@
                 />
               </div>
 
-              <div v-else class="plan-builder__pricing-grid">
+              <div v-else class="plan-builder__pricing-grid grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
                 <article
                   v-for="country in supportedCountries"
                   :key="country.code"
                   class="plan-builder__pricing-card"
                 >
-                  <header class="plan-builder__pricing-header">
+                  <header class="plan-builder__pricing-header flex items-center justify-between gap-2">
                     <h5>{{ t(`adminPlanBuilder.pricing.countries.${country.code}`) }}</h5>
                     <UiTag size="sm" color="primary">{{ country.currency }}</UiTag>
                   </header>
@@ -292,7 +292,7 @@
                     v-if="!pricingForms[country.code].active"
                     color="warning"
                     variant="soft"
-                    class="plan-builder__pricing-warning"
+                    class="plan-builder__pricing-warning m-0"
                   >
                     {{
                       t('adminPlanBuilder.pricing.inactiveHint', {
@@ -303,7 +303,7 @@
                   <UiAlert v-if="pricingForms[country.code].error" color="danger" variant="soft">
                     {{ pricingForms[country.code].error }}
                   </UiAlert>
-                  <div class="plan-builder__pricing-actions">
+                  <div class="plan-builder__pricing-actions flex justify-end">
                     <UiButton
                       type="button"
                       color="primary"
@@ -320,7 +320,7 @@
               </div>
             </section>
 
-            <div class="plan-builder__actions">
+            <div class="plan-builder__actions flex justify-end gap-3">
               <UiButton
                 color="secondary"
                 variant="link"
@@ -341,11 +341,11 @@
           </div>
         </UiCard>
 
-        <UiCard class="plan-builder__panel" hover>
+        <UiCard class="plan-builder__panel flex flex-col gap-4" hover>
           <template #title>{{ t('adminPlanBuilder.assignment.title') }}</template>
           <template #subtitle>{{ t('adminPlanBuilder.assignment.subtitle') }}</template>
 
-          <form class="plan-builder__assignment" @submit.prevent="assignPlan">
+          <form class="plan-builder__assignment flex flex-col gap-4" @submit.prevent="assignPlan">
             <UiSwitch v-model="assignmentForm.bulkMode" :label="t('adminPlanBuilder.assignment.bulkMode')" />
             <UiSelect
               v-if="!assignmentForm.bulkMode"
@@ -403,13 +403,13 @@
               type="date"
               :label="t('adminPlanBuilder.assignment.effectiveTo')"
             />
-            <div class="plan-builder__assignment-actions">
+            <div class="plan-builder__assignment-actions flex justify-end gap-2">
               <UiButton type="submit" color="primary" :loading="assigning">
                 {{ t('adminPlanBuilder.assignment.submit') }}
               </UiButton>
             </div>
           </form>
-          <div class="plan-builder__assignment-preview">
+          <div class="plan-builder__assignment-preview flex flex-col gap-3">
             <UiAlert v-if="assignmentPreviewError" color="warning" variant="soft">
               {{ assignmentPreviewError }}
             </UiAlert>
@@ -458,7 +458,7 @@
                 v-if="assignmentPreview.warnings.length"
                 color="warning"
                 variant="soft"
-                class="plan-builder__assignment-preview-warning"
+                class="plan-builder__assignment-preview-warning col-span-full"
               >
                 <ul>
                   <li v-for="warning in assignmentPreview.warnings" :key="warning">{{ warning }}</li>
@@ -467,7 +467,7 @@
             </div>
           </div>
 
-          <div v-if="bulkAssignResult" class="plan-builder__bulk-actions">
+          <div v-if="bulkAssignResult" class="plan-builder__bulk-actions flex justify-end">
             <UiButton size="sm" variant="secondary" @click="exportBulkAssignCsv">
               {{ t('adminPlanBuilder.assignment.exportBulkCsv') }}
             </UiButton>
@@ -481,7 +481,7 @@
             v-if="bulkAssignResult && bulkAssignResult.errors.length"
             color="warning"
             variant="soft"
-            class="plan-builder__bulk-errors"
+            class="plan-builder__bulk-errors mt-3"
           >
             <strong>{{ t('adminPlanBuilder.assignment.bulkIssues') }}</strong>
             <ul>
@@ -491,9 +491,9 @@
             </ul>
           </UiAlert>
 
-          <div v-if="bulkAssignResult?.previews?.length" class="plan-builder__bulk-preview">
+          <div v-if="bulkAssignResult?.previews?.length" class="plan-builder__bulk-preview mt-3 flex flex-col gap-2">
             <h4>{{ t('adminPlanBuilder.assignment.previewResults') }}</h4>
-            <ul class="plan-builder__bulk-preview-list">
+            <ul class="plan-builder__bulk-preview-list list-none p-0 m-0 flex flex-col gap-2">
               <li v-for="preview in bulkAssignResult.previews" :key="preview.tenantSlug">
                 <strong>{{ preview.tenantSlug }}</strong>
                   <span>
@@ -518,7 +518,7 @@
           </div>
         </UiCard>
 
-        <UiCard class="plan-builder__panel" hover>
+        <UiCard class="plan-builder__panel flex flex-col gap-4" hover>
           <template #title>{{ t('adminPlanBuilder.assignmentList.title') }}</template>
           <template #subtitle>{{ t('adminPlanBuilder.assignmentList.subtitle') }}</template>
 
@@ -528,21 +528,21 @@
             {{ t('adminPlanBuilder.assignmentList.empty') }}
           </UiAlert>
 
-          <div v-if="!assignmentsLoading && !assignmentsError && assignments.length > 0" class="plan-builder__assignment-list-actions">
+          <div v-if="!assignmentsLoading && !assignmentsError && assignments.length > 0" class="plan-builder__assignment-list-actions flex justify-end mb-3">
             <UiButton size="sm" variant="secondary" @click="exportAssignmentsCsv">
               {{ t('adminPlanBuilder.assignmentList.exportCsv') }}
             </UiButton>
           </div>
 
-          <ul v-if="!assignmentsLoading && !assignmentsError && assignments.length > 0" class="plan-builder__assignment-list" role="list">
+          <ul v-if="!assignmentsLoading && !assignmentsError && assignments.length > 0" class="plan-builder__assignment-list flex flex-col gap-4 p-0 m-0 list-none" role="list">
             <li
               v-for="assignment in assignments"
               :key="`${assignment.teacherSlug || assignment.teacherId || 'unknown'}::${assignment.version}`"
               class="plan-builder__assignment-list-item"
             >
-              <div class="plan-builder__assignment-list-header">
-                <div class="plan-builder__assignment-tenant">
-                  <span class="plan-builder__assignment-tenant-name">
+              <div class="plan-builder__assignment-list-header flex items-start justify-between gap-4">
+                <div class="plan-builder__assignment-tenant flex flex-col gap-[0.15rem]">
+                  <span class="plan-builder__assignment-tenant-name font-semibold">
                     {{ assignment.teacherName || assignment.teacherSlug || '—' }}
                   </span>
                   <small class="plan-builder__assignment-tenant-slug">
@@ -554,7 +554,7 @@
                 </UiTag>
               </div>
 
-              <dl class="plan-builder__assignment-meta">
+              <dl class="plan-builder__assignment-meta grid gap-3 m-0 [grid-template-columns:repeat(auto-fit,minmax(160px,1fr))]">
                 <div>
                   <dt>{{ t('adminPlanBuilder.assignmentList.columns.plan') }}</dt>
                   <dd>{{ assignment.planCode }} · v{{ assignment.version }}</dd>
@@ -579,7 +579,7 @@
                 </div>
               </dl>
 
-              <div class="plan-builder__assignment-controls">
+              <div class="plan-builder__assignment-controls flex justify-end">
                 <UiButton
                   size="sm"
                   variant="link"
@@ -594,11 +594,11 @@
           </ul>
         </UiCard>
 
-        <UiCard class="plan-builder__panel" hover>
+        <UiCard class="plan-builder__panel flex flex-col gap-4" hover>
           <template #title>{{ t('adminPlanBuilder.audit.title') }}</template>
           <template #subtitle>{{ t('adminPlanBuilder.audit.subtitle') }}</template>
 
-          <form class="plan-builder__audit-filters" @submit.prevent="applyPlanAuditFilters">
+          <form class="plan-builder__audit-filters grid gap-3 mb-4 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]" @submit.prevent="applyPlanAuditFilters">
             <UiInput v-model="planAuditFilters.planCode" :label="t('adminPlanBuilder.audit.filters.planCode')" :placeholder="t('adminPlanBuilder.audit.filters.planPlaceholder')" />
             <UiInput v-model="planAuditFilters.teacherSlug" :label="t('adminPlanBuilder.audit.filters.teacherSlug')" :placeholder="t('adminPlanBuilder.audit.filters.teacherPlaceholder')" />
             <UiInput
@@ -613,7 +613,7 @@
               appearance="datetime"
               :label="t('adminPlanBuilder.audit.filters.to')"
             />
-            <div class="plan-builder__audit-actions">
+            <div class="plan-builder__audit-actions flex items-center justify-end gap-2">
               <UiButton type="submit" size="sm" variant="link">{{ t('adminPlanBuilder.audit.filters.apply') }}</UiButton>
               <UiButton type="button" size="sm" variant="link" color="secondary" @click="resetPlanAuditFilters">
                 {{ t('adminPlanBuilder.audit.filters.reset') }}
@@ -628,18 +628,18 @@
             :items="planAuditItems"
             :loading="planAuditLoading"
             density="comfortable"
-            class="plan-builder__audit-table"
+            class="plan-builder__audit-table mt-4"
             :empty-text="t('adminPlanBuilder.audit.empty')"
           >
             <template #item.actor="{ item }">
-              <div class="plan-builder__audit-actor">
+              <div class="plan-builder__audit-actor flex flex-col gap-[0.25rem]">
                 <UiTag size="sm" color="primary" variant="soft">{{ item.actorType || t('adminPlanBuilder.reconciliation.unknown') }}</UiTag>
                 <span v-if="item.actorName">{{ item.actorName }}</span>
                 <small v-else-if="item.actorId">#{{ item.actorId }}</small>
               </div>
             </template>
             <template #item.entity="{ item }">
-              <div class="plan-builder__audit-entity">
+              <div class="plan-builder__audit-entity flex flex-col gap-[0.25rem]">
                 <span>{{ item.entityType || '—' }}</span>
                 <small v-if="item.entityId">#{{ item.entityId }}</small>
               </div>
@@ -662,7 +662,7 @@
                 total: planAuditTotal
               }) }}
             </span>
-            <div class="plan-builder__audit-pager">
+            <div class="plan-builder__audit-pager flex gap-2">
               <UiButton
                 size="sm"
                 variant="link"
@@ -683,7 +683,7 @@
           </div>
         </UiCard>
 
-        <UiCard class="plan-builder__panel" hover>
+        <UiCard class="plan-builder__panel flex flex-col gap-4" hover>
           <template #title>{{ t('adminPlanBuilder.reconciliation.title') }}</template>
           <template #subtitle>{{ t('adminPlanBuilder.reconciliation.subtitle') }}</template>
 
@@ -691,7 +691,7 @@
             {{ reconciliationError }}
           </UiAlert>
           <UiSkeleton v-else-if="reconciliationLoading" height="120" animation="wave" />
-          <div v-else class="plan-builder__reconciliation">
+          <div v-else class="plan-builder__reconciliation flex flex-col gap-2">
             <div>
               <strong>{{ t('adminPlanBuilder.reconciliation.status') }}:</strong>
               <span>{{ reconciliationStatus?.status || t('adminPlanBuilder.reconciliation.unknown') }}</span>
@@ -718,11 +718,11 @@
           </div>
         </UiCard>
 
-        <UiCard class="plan-builder__panel" hover>
+        <UiCard class="plan-builder__panel flex flex-col gap-4" hover>
           <template #title>{{ t('adminPlanBuilder.backfill.title') }}</template>
           <template #subtitle>{{ t('adminPlanBuilder.backfill.subtitle') }}</template>
 
-          <div class="plan-builder__backfill-actions">
+          <div class="plan-builder__backfill-actions flex justify-end">
             <UiButton size="sm" variant="secondary" :loading="backfillRunning" @click="triggerBackfill">
               {{ t('adminPlanBuilder.backfill.run') }}
             </UiButton>
@@ -732,7 +732,7 @@
             {{ backfillError }}
           </UiAlert>
           <UiSkeleton v-else-if="backfillLoading" height="140" animation="wave" />
-          <div v-else class="plan-builder__reconciliation">
+          <div v-else class="plan-builder__reconciliation flex flex-col gap-2">
             <div>
               <strong>{{ t('adminPlanBuilder.backfill.status') }}:</strong>
               <span>{{ backfillStatus?.status || t('adminPlanBuilder.reconciliation.unknown') }}</span>
@@ -2337,49 +2337,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.plan-builder {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-6);
-}
-
-:deep(.theme-page__title) {
-  font-size: 2.25rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--sakai-primary) 0%, var(--sakai-primary-700) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: var(--sakai-space-1);
-}
-
-.plan-builder__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: var(--sakai-space-6);
-  align-items: flex-start;
-}
-
-.plan-builder__panel {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.plan-builder__backfill-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.plan-builder__template-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
 .plan-builder__template-item {
   border: 1px solid var(--surface-border);
   border-radius: 12px;
@@ -2390,52 +2347,6 @@ onMounted(() => {
   border-color: var(--primary-color);
 }
 
-.plan-builder__template-button {
-  display: flex;
-  width: 100%;
-  background: transparent;
-  border: none;
-  padding: 0.75rem 1rem;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  cursor: pointer;
-}
-
-.plan-builder__template-name {
-  font-weight: 600;
-}
-
-.plan-builder__template-actions {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
-}
-
-.plan-builder__import-input {
-  display: none;
-}
-
-.plan-builder__empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  text-align: center;
-}
-
-.plan-builder__editor {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.plan-builder__form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
 .plan-builder__feature-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -2443,34 +2354,6 @@ onMounted(() => {
   padding: var(--sakai-space-4);
   background: var(--sakai-surface-ground);
   border-radius: var(--sakai-border-radius-xl);
-}
-
-.plan-builder__teacher-scoped-alert {
-  grid-column: 1 / -1;
-}
-
-.plan-builder__entitlements {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.plan-builder__entitlement-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0.75rem;
-}
-
-.plan-builder__marketing {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.plan-builder__marketing-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.75rem;
 }
 
 .plan-builder__marketing-card {
@@ -2503,19 +2386,6 @@ onMounted(() => {
   color: var(--sakai-text-color-tertiary);
 }
 
-.plan-builder__pricing {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.plan-builder__pricing-grid,
-.plan-builder__pricing-skeleton {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 0.75rem;
-}
-
 .plan-builder__pricing-card {
   display: flex;
   flex-direction: column;
@@ -2534,50 +2404,10 @@ onMounted(() => {
   border-color: var(--sakai-primary-300);
 }
 
-.plan-builder__pricing-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
 .plan-builder__pricing-meta {
   margin: 0;
   font-size: var(--sakai-font-size-sm);
   color: var(--sakai-text-color-tertiary);
-}
-
-.plan-builder__pricing-warning {
-  margin: 0;
-}
-
-.plan-builder__pricing-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.plan-builder__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-}
-
-.plan-builder__assignment {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.plan-builder__assignment-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-}
-
-.plan-builder__assignment-preview {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
 }
 
 .plan-builder__assignment-preview-grid {
@@ -2590,28 +2420,6 @@ onMounted(() => {
   border: 1px solid var(--surface-border);
 }
 
-.plan-builder__assignment-preview-warning {
-  grid-column: 1 / -1;
-}
-
-.plan-builder__bulk-errors {
-  margin-top: 0.75rem;
-}
-
-.plan-builder__assignment-controls {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.plan-builder__assignment-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
 .plan-builder__assignment-list-item {
   display: flex;
   flex-direction: column;
@@ -2622,70 +2430,11 @@ onMounted(() => {
   background-color: color-mix(in srgb, var(--surface-border) 12%, transparent);
 }
 
-.plan-builder__assignment-list-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.plan-builder__assignment-list-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0.75rem;
-}
-
-.plan-builder__bulk-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.plan-builder__bulk-preview {
-  margin-top: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.plan-builder__bulk-preview-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
 .plan-builder__bulk-preview-warnings {
   margin: 0.35rem 0 0;
   padding-left: 1rem;
   color: var(--text-color-secondary);
   font-size: 0.85rem;
-}
-
-.plan-builder__audit-filters {
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  margin-bottom: 1rem;
-}
-
-.plan-builder__audit-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.5rem;
-}
-
-.plan-builder__audit-table {
-  margin-top: 1rem;
-}
-
-.plan-builder__audit-actor,
-.plan-builder__audit-entity {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
 }
 
 .plan-builder__audit-footer {
@@ -2694,11 +2443,6 @@ onMounted(() => {
   gap: 0.5rem;
   margin-top: 1rem;
   color: var(--text-color-secondary);
-}
-
-.plan-builder__audit-pager {
-  display: flex;
-  gap: 0.5rem;
 }
 
 .plan-builder__audit-detail dl {
@@ -2731,26 +2475,9 @@ onMounted(() => {
   color: var(--text-color-secondary);
 }
 
-.plan-builder__assignment-tenant {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.plan-builder__assignment-tenant-name {
-  font-weight: 600;
-}
-
 .plan-builder__assignment-tenant-slug {
   font-size: 0.85rem;
   color: var(--text-color-secondary);
-}
-
-.plan-builder__assignment-meta {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.75rem;
-  margin: 0;
 }
 
 .plan-builder__assignment-meta dt {
@@ -2763,12 +2490,6 @@ onMounted(() => {
 .plan-builder__assignment-meta dd {
   margin: 0;
   font-weight: 500;
-}
-
-.plan-builder__reconciliation {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
 }
 
 .plan-builder__assignment-end-description {
@@ -2780,65 +2501,5 @@ onMounted(() => {
   margin: 0;
   font-size: 0.85rem;
   color: var(--text-color-secondary);
-}
-
-.plan-builder__assignment-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.plan-builder__assignment-list-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 1rem;
-  border: 1px solid var(--surface-border);
-  border-radius: 12px;
-  background-color: color-mix(in srgb, var(--surface-border) 12%, transparent);
-}
-
-.plan-builder__assignment-list-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.plan-builder__assignment-tenant {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.plan-builder__assignment-tenant-name {
-  font-weight: 600;
-}
-
-.plan-builder__assignment-tenant-slug {
-  font-size: 0.85rem;
-  color: var(--text-color-secondary);
-}
-
-.plan-builder__assignment-meta {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.75rem;
-  margin: 0;
-}
-
-.plan-builder__assignment-meta dt {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: var(--text-color-secondary);
-}
-
-.plan-builder__assignment-meta dd {
-  margin: 0;
-  font-weight: 500;
 }
 </style>

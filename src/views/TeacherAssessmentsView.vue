@@ -7,7 +7,7 @@
       </UiButton>
     </template>
 
-    <div class="teacher-assessments">
+    <div class="teacher-assessments flex flex-col gap-6">
       <UiCard
         class="teacher-assessments__card"
         :title="t('assessments.title')"
@@ -15,7 +15,7 @@
  
       >
         <UiTable
-          class="teacher-assessments__table"
+          class="teacher-assessments__table block w-full overflow-x-auto"
           :headers="headers"
           :items="store.assessments"
           density="comfortable"
@@ -26,7 +26,7 @@
             <UiBadge color="secondary">{{ item.type.toUpperCase() }}</UiBadge>
           </template>
           <template #item.actions="{ item }">
-            <div class="teacher-assessments__row-actions">
+            <div class="teacher-assessments__row-actions inline-flex gap-2">
               <UiButton variant="link" color="primary" @click.stop="goToAssessment(item)">
                 {{ t('common.edit') }}
               </UiButton>
@@ -43,11 +43,11 @@
             class="teacher-assessments__list-item"
             role="listitem"
           >
-            <header class="teacher-assessments__list-header">
+            <header class="teacher-assessments__list-header flex flex-wrap items-center justify-between gap-2">
               <h3>{{ item.title }}</h3>
               <UiBadge color="secondary">{{ item.type.toUpperCase() }}</UiBadge>
             </header>
-            <dl class="teacher-assessments__list-grid">
+            <dl class="teacher-assessments__list-grid grid gap-3">
               <div>
                 <dt>{{ t('assessments.tableCourse') }}</dt>
                 <dd>{{ item.courseTitle }}</dd>
@@ -61,7 +61,7 @@
                 <dd>{{ item.questionCount }}</dd>
               </div>
             </dl>
-            <div class="teacher-assessments__list-actions">
+            <div class="teacher-assessments__list-actions flex flex-wrap gap-2">
               <UiButton variant="outline" color="primary" @click="goToAssessment(item)">
                 {{ t('common.edit') }}
               </UiButton>
@@ -74,7 +74,7 @@
       </UiCard>
 
       <UiDialog v-model="showCreate" :title="t('assessments.createAssessment')" width="520px">
-        <form class="teacher-assessments__form" @submit.prevent="createAssessment">
+        <form class="teacher-assessments__form grid gap-4" @submit.prevent="createAssessment">
           <UiSelect
             :model-value="createForm.courseId ?? ''"
             :label="t('assessments.course')"
@@ -97,7 +97,7 @@
             required
           />
 
-          <div class="teacher-assessments__form-grid">
+          <div class="teacher-assessments__form-grid grid gap-4">
             <UiSelect
               :model-value="createForm.type"
               :label="t('assessments.mode')"
@@ -121,7 +121,7 @@
             />
           </div>
 
-          <div class="teacher-assessments__form-grid">
+          <div class="teacher-assessments__form-grid grid gap-4">
             <UiInput
               :model-value="createForm.maxAttempts"
               type="number"
@@ -148,17 +148,17 @@
             v-if="isExternalForm"
             variant="outline"
             color="primary"
-            class="teacher-assessments__embed-guide"
+            class="teacher-assessments__embed-guide grid gap-2"
           >
-            <p class="teacher-assessments__embed-title">{{ t('assessments.embedHowToTitle') }}</p>
-            <ol class="teacher-assessments__embed-steps">
+            <p class="teacher-assessments__embed-title m-0 font-semibold">{{ t('assessments.embedHowToTitle') }}</p>
+            <ol class="teacher-assessments__embed-steps m-0 pl-5 grid gap-1 text-content-secondary">
               <li>{{ t('assessments.embedHowToStep1') }}</li>
               <li>{{ t('assessments.embedHowToStep2') }}</li>
               <li>{{ t('assessments.embedHowToStep3') }}</li>
             </ol>
           </UiAlert>
 
-          <div class="teacher-assessments__dialog-actions">
+          <div class="teacher-assessments__dialog-actions flex justify-end gap-3 mt-4">
             <UiButton variant="link" color="secondary" @click.prevent="showCreate = false">
               {{ t('common.cancel') }}
             </UiButton>
@@ -303,27 +303,9 @@ const onDurationChange = (value: string | number | null) => {
 </script>
 
 <style scoped>
-.teacher-assessments {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-6);
-}
-
-
-.teacher-assessments__table {
-  display: block;
-  width: 100%;
-  overflow-x: auto;
-}
-
 .teacher-assessments__table :deep(table) {
   width: 100%;
   min-width: calc(var(--sakai-space-12) * 9);
-}
-
-.teacher-assessments__row-actions {
-  display: inline-flex;
-  gap: var(--sakai-space-2);
 }
 
 .teacher-assessments__list {
@@ -340,23 +322,10 @@ const onDurationChange = (value: string | number | null) => {
   background: color-mix(in srgb, var(--sakai-surface-card) 96%, transparent);
 }
 
-.teacher-assessments__list-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-2);
-}
-
 .teacher-assessments__list-header h3 {
   margin: 0;
   font-size: 1rem;
   font-weight: var(--sakai-font-weight-semibold);
-}
-
-.teacher-assessments__list-grid {
-  display: grid;
-  gap: var(--sakai-space-3);
 }
 
 .teacher-assessments__list-grid div {
@@ -375,51 +344,10 @@ const onDurationChange = (value: string | number | null) => {
   font-weight: var(--sakai-font-weight-medium);
 }
 
-.teacher-assessments__list-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-assessments__form {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-assessments__form-grid {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-assessments__embed-guide {
-  display: grid;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-assessments__embed-title {
-  margin: 0;
-  font-weight: var(--sakai-font-weight-semibold);
-}
-
-.teacher-assessments__embed-steps {
-  margin: 0;
-  padding-left: var(--sakai-space-5);
-  display: grid;
-  gap: var(--sakai-space-1);
-  color: var(--sakai-text-color-secondary);
-}
-
 @media (min-width: 640px) {
   .teacher-assessments__form-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-}
-
-.teacher-assessments__dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--sakai-space-3);
-  margin-top: var(--sakai-space-4);
 }
 
 .teacher-assessments__confirm {

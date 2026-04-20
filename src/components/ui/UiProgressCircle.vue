@@ -1,6 +1,6 @@
 <template>
   <div
-    class="ui-progress-circle"
+    class="ui-progress-circle relative inline-flex items-center justify-center"
     :class="`ui-progress-circle--tone-${props.color}`"
     :style="{ width: `${props.size}px`, height: `${props.size}px` }"
     role="progressbar"
@@ -8,7 +8,7 @@
     :aria-valuemin="props.min"
     :aria-valuemax="props.max"
   >
-    <svg :viewBox="`0 0 120 120`" class="ui-progress-circle__svg">
+    <svg :viewBox="`0 0 120 120`" class="ui-progress-circle__svg -rotate-90">
       <circle class="ui-progress-circle__track" cx="60" cy="60" :r="radius" :stroke-width="props.strokeWidth" />
       <circle
         class="ui-progress-circle__value"
@@ -20,7 +20,7 @@
         :stroke-dashoffset="dashOffset"
       />
     </svg>
-    <div v-if="props.showValue || $slots.default" class="ui-progress-circle__label">
+    <div v-if="props.showValue || $slots.default" class="ui-progress-circle__label absolute inset-0 flex items-center justify-center font-semibold text-content">
       <slot>{{ displayValue }}</slot>
     </div>
   </div>
@@ -71,17 +71,6 @@ const displayValue = computed(() => {
 </script>
 
 <style scoped>
-.ui-progress-circle {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ui-progress-circle__svg {
-  transform: rotate(-90deg);
-}
-
 .ui-progress-circle__track {
   fill: none;
   stroke: color-mix(in srgb, var(--sakai-border-color) 55%, transparent);
@@ -114,13 +103,4 @@ const displayValue = computed(() => {
   stroke: var(--sakai-danger);
 }
 
-.ui-progress-circle__label {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
 </style>

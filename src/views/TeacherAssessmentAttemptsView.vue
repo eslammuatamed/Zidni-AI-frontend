@@ -13,8 +13,8 @@
     <UiCard>
       <UiTable :headers="headers" :items="attemptRows" :no-data-text="t('assessments.noAttempts')">
         <template #item.student="{ item }">
-          <div class="attempts__student">
-            <span class="attempts__name">{{ item.studentName }}</span>
+          <div class="attempts__student flex flex-col">
+            <span class="attempts__name font-medium">{{ item.studentName }}</span>
           </div>
         </template>
         <template #item.status="{ item }">
@@ -56,11 +56,11 @@
         <UiAlert v-if="attemptForm.error" variant="outline" color="danger">
           {{ attemptForm.error }}
         </UiAlert>
-        <div class="attempts__summary">
+        <div class="attempts__summary flex justify-between items-center gap-4 mb-4">
           <UiBadge :color="statusTone(currentAttempt.status)">
             {{ formatStatus(currentAttempt.status) }}
           </UiBadge>
-          <dl class="attempts__scores">
+          <dl class="attempts__scores grid grid-cols-2 gap-3">
             <div>
               <dt>{{ t('assessments.questionAuto') }}</dt>
               <dd>{{ formatNumber(currentAttempt.autoScore) }}</dd>
@@ -79,15 +79,15 @@
           readonly
           disabled
         />
-        <section class="attempts__questions">
-          <article v-for="question in attemptForm.questions" :key="question.id" class="attempts__question">
+        <section class="attempts__questions flex flex-col gap-4 mt-5">
+          <article v-for="question in attemptForm.questions" :key="question.id" class="attempts__question border border-border rounded-sakai-md p-4">
             <header>
               <h4>{{ question.position }}. {{ question.stem }}</h4>
               <div class="attempts__question-scores">
                 <span>{{ t('assessments.questionAuto') }}: {{ formatNumber(question.autoScore) }}</span>
               </div>
             </header>
-            <div class="attempts__question-body">
+            <div class="attempts__question-body flex flex-col gap-3">
               <UiInput
                 :model-value="question.manualScore ?? ''"
                 type="number"
@@ -354,29 +354,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.attempts__student {
-  display: flex;
-  flex-direction: column;
-}
-
-.attempts__name {
-  font-weight: var(--sakai-font-weight-medium);
-}
-
-.attempts__summary {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--sakai-space-4);
-  margin-bottom: var(--sakai-space-4);
-}
-
-.attempts__scores {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--sakai-space-3);
-}
-
 .attempts__scores dt {
   font-size: var(--sakai-font-size-sm);
   color: var(--sakai-text-muted);
@@ -384,19 +361,6 @@ onMounted(async () => {
 
 .attempts__scores dd {
   font-weight: var(--sakai-font-weight-medium);
-}
-
-.attempts__questions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-  margin-top: var(--sakai-space-5);
-}
-
-.attempts__question {
-  border: 1px solid var(--sakai-border-color);
-  border-radius: var(--sakai-border-radius-md);
-  padding: var(--sakai-space-4);
 }
 
 .attempts__question header {
@@ -409,12 +373,6 @@ onMounted(async () => {
 .attempts__question h4 {
   margin: 0;
   font-size: var(--sakai-font-size-md);
-}
-
-.attempts__question-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
 }
 
 .attempts__question-meta {

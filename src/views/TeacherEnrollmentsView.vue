@@ -1,6 +1,6 @@
 <template>
   <ThemePage :title="t('teacher.paymentsTitle')" :subtitle="t('teacher.enrollmentsTitle')">
-    <div class="teacher-enrollments">
+    <div class="teacher-enrollments grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
       <UiDialog
         v-model="decisionDialog.open"
         :title="t('teacher.paymentRejectDialogTitle')"
@@ -24,11 +24,11 @@
       </UiDialog>
 
       <UiCard class="teacher-enrollments__card" :title="t('teacher.paymentsTitle')" hover>
-        <div class="teacher-enrollments__filters">
+        <div class="teacher-enrollments__filters flex flex-wrap justify-between items-center gap-3 mb-4">
           <UiSegmentedControl v-model="selectedStatus" :options="statusOptions" size="sm" />
-          <div v-if="selectedPayments.length" class="teacher-enrollments__bulk">
+          <div v-if="selectedPayments.length" class="teacher-enrollments__bulk flex items-center gap-3 flex-wrap">
             <UiTag color="info" size="sm">{{ selectedPayments.length }} {{ t('common.selectedOptions') }}</UiTag>
-            <div class="teacher-enrollments__bulk-actions">
+            <div class="teacher-enrollments__bulk-actions flex flex-wrap gap-2">
               <UiButton color="success" variant="outline" @click="bulkDecision('approved')">
                 {{ t('teacher.approve') }}
               </UiButton>
@@ -39,7 +39,7 @@
           </div>
         </div>
         <UiTable
-          class="teacher-enrollments__table"
+          class="teacher-enrollments__table block w-full overflow-x-auto"
           v-model:selected="selectedPayments"
           :headers="paymentHeaders"
           :items="payments"
@@ -48,9 +48,9 @@
           density="comfortable"
         >
           <template #item.student="{ item }">
-            <div class="teacher-enrollments__student">
+            <div class="teacher-enrollments__student flex flex-col gap-[2px]">
               <strong>{{ item.studentName || t('teacher.enrollmentUnknownStudent') }}</strong>
-              <span v-if="item.studentEmail" class="teacher-enrollments__student-email">{{ item.studentEmail }}</span>
+              <span v-if="item.studentEmail" class="teacher-enrollments__student-email text-[0.85rem] text-content-secondary">{{ item.studentEmail }}</span>
             </div>
           </template>
           <template #item.proofUrl="{ item }">
@@ -63,12 +63,12 @@
             >
               {{ t('student.proofUrl') }}
             </a>
-            <span v-else class="teacher-enrollments__empty">—</span>
+            <span v-else class="teacher-enrollments__empty text-content-tertiary text-[0.85rem]">—</span>
           </template>
           <template #item.courseTitle="{ item }">
-            <div class="teacher-enrollments__course-meta">
+            <div class="teacher-enrollments__course-meta flex flex-col gap-[0.2rem]">
               <span>{{ item.courseTitle }}</span>
-              <small v-if="paymentUsageSummary(item)" class="teacher-enrollments__course-helper">
+              <small v-if="paymentUsageSummary(item)" class="teacher-enrollments__course-helper text-[0.8rem] text-content-tertiary">
                 {{ paymentUsageSummary(item) }}
               </small>
             </div>
@@ -80,7 +80,7 @@
             <UiTag :color="statusColor(item.status)" size="sm">{{ item.status }}</UiTag>
           </template>
           <template #item.actions="{ item }">
-            <div v-if="isPendingStatus(item.status)" class="teacher-enrollments__row-actions">
+            <div v-if="isPendingStatus(item.status)" class="teacher-enrollments__row-actions inline-flex gap-2">
               <UiButton color="success" variant="link" @click="decision(item.id, 'approved')">
                 {{ t('teacher.approve') }}
               </UiButton>
@@ -97,19 +97,19 @@
             class="teacher-enrollments__list-item"
             role="listitem"
           >
-            <header class="teacher-enrollments__list-header">
-              <div class="teacher-enrollments__list-titles">
+            <header class="teacher-enrollments__list-header flex flex-wrap items-center justify-between gap-2">
+              <div class="teacher-enrollments__list-titles flex flex-col gap-[0.35rem]">
                 <h3>{{ payment.courseTitle }}</h3>
                 <span>{{ formatManualMethod(payment.method) }}</span>
                 <span v-if="paymentUsageSummary(payment)">{{ paymentUsageSummary(payment) }}</span>
               </div>
               <UiTag :color="statusColor(payment.status)" size="sm">{{ payment.status }}</UiTag>
             </header>
-            <div class="teacher-enrollments__student">
+            <div class="teacher-enrollments__student flex flex-col gap-[2px]">
               <strong>{{ payment.studentName || t('teacher.enrollmentUnknownStudent') }}</strong>
-              <span v-if="payment.studentEmail" class="teacher-enrollments__student-email">{{ payment.studentEmail }}</span>
+              <span v-if="payment.studentEmail" class="teacher-enrollments__student-email text-[0.85rem] text-content-secondary">{{ payment.studentEmail }}</span>
             </div>
-            <dl class="teacher-enrollments__list-grid">
+            <dl class="teacher-enrollments__list-grid grid gap-3">
               <div>
                 <dt>{{ t('student.tableAmount') }}</dt>
                 <dd>{{ payment.amount }}</dd>
@@ -133,7 +133,7 @@
                 <dd>{{ payment.reviewedBy || t('teacher.enrollmentUnknownStudent') }}</dd>
               </div>
             </dl>
-            <div v-if="isPendingStatus(payment.status)" class="teacher-enrollments__list-actions">
+            <div v-if="isPendingStatus(payment.status)" class="teacher-enrollments__list-actions flex flex-wrap gap-2">
               <UiButton color="success" variant="outline" @click="decision(payment.id, 'approved')">
                 {{ t('teacher.approve') }}
               </UiButton>
@@ -147,23 +147,23 @@
 
       <UiCard class="teacher-enrollments__card" :title="t('teacher.enrollmentsTitle')" hover>
         <UiTable
-          class="teacher-enrollments__table teacher-enrollments__table--enrollments"
+          class="teacher-enrollments__table teacher-enrollments__table--enrollments block w-full overflow-x-auto"
           :headers="enrollmentHeaders"
           :items="enrollments"
           density="comfortable"
         >
           <template #item.student="{ item }">
-            <div class="teacher-enrollments__student">
+            <div class="teacher-enrollments__student flex flex-col gap-[2px]">
               <strong>{{ item.studentName || t('teacher.enrollmentUnknownStudent') }}</strong>
-              <span v-if="item.studentEmail" class="teacher-enrollments__student-email">{{ item.studentEmail }}</span>
+              <span v-if="item.studentEmail" class="teacher-enrollments__student-email text-[0.85rem] text-content-secondary">{{ item.studentEmail }}</span>
             </div>
           </template>
           <template #item.courseTitle="{ item }">
-            <div class="teacher-enrollments__course">
+            <div class="teacher-enrollments__course flex flex-col gap-1">
               <UiSelect
                 :model-value="String(item.courseId)"
                 size="sm"
-                class="teacher-enrollments__course-select"
+                class="teacher-enrollments__course-select max-w-[220px]"
                 :disabled="isEnrollmentUpdating(item.id) || !courseOptions.length"
                 @update:model-value="(value) => onEnrollmentCourseChange(item, value as string)"
               >
@@ -175,8 +175,8 @@
                   {{ course.label }}
                 </option>
               </UiSelect>
-              <span class="teacher-enrollments__course-helper">{{ currentCourseLabel(item.courseId) }}</span>
-              <span v-if="enrollmentUsageSummary(item)" class="teacher-enrollments__course-helper">
+              <span class="teacher-enrollments__course-helper text-[0.8rem] text-content-tertiary">{{ currentCourseLabel(item.courseId) }}</span>
+              <span v-if="enrollmentUsageSummary(item)" class="teacher-enrollments__course-helper text-[0.8rem] text-content-tertiary">
                 {{ enrollmentUsageSummary(item) }}
               </span>
             </div>
@@ -185,11 +185,11 @@
             <UiTag :color="statusColor(item.status)" size="sm">{{ item.status }}</UiTag>
           </template>
           <template #item.progress="{ item }">
-            <div v-if="item.progress !== undefined && item.progress !== null" class="teacher-enrollments__progress">
+            <div v-if="item.progress !== undefined && item.progress !== null" class="teacher-enrollments__progress flex items-center gap-3">
               <UiProgressBar :value="Number(item.progress)" :show-value="false" />
-              <span class="teacher-enrollments__progress-value">{{ Math.round(Number(item.progress)) }}%</span>
+              <span class="teacher-enrollments__progress-value text-[0.85rem] text-content-secondary">{{ Math.round(Number(item.progress)) }}%</span>
             </div>
-            <span v-else class="teacher-enrollments__empty">—</span>
+            <span v-else class="teacher-enrollments__empty text-content-tertiary text-[0.85rem]">—</span>
           </template>
         </UiTable>
         <div class="teacher-enrollments__list" role="list">
@@ -199,14 +199,14 @@
             class="teacher-enrollments__list-item"
             role="listitem"
           >
-            <header class="teacher-enrollments__list-header">
-              <div class="teacher-enrollments__list-titles">
+            <header class="teacher-enrollments__list-header flex flex-wrap items-center justify-between gap-2">
+              <div class="teacher-enrollments__list-titles flex flex-col gap-[0.35rem]">
                 <h3>{{ enrollment.studentName || t('teacher.enrollmentUnknownStudent') }}</h3>
                 <span v-if="enrollment.studentEmail">{{ enrollment.studentEmail }}</span>
               </div>
               <UiTag :color="statusColor(enrollment.status)" size="sm">{{ enrollment.status }}</UiTag>
             </header>
-            <div class="teacher-enrollments__list-field">
+            <div class="teacher-enrollments__list-field grid gap-2">
               <label>{{ t('student.tableCourse') }}</label>
               <UiSelect
                 :model-value="String(enrollment.courseId)"
@@ -222,12 +222,12 @@
                   {{ course.label }}
                 </option>
               </UiSelect>
-              <small class="teacher-enrollments__course-helper">{{ currentCourseLabel(enrollment.courseId) }}</small>
-              <small v-if="enrollmentUsageSummary(enrollment)" class="teacher-enrollments__course-helper">
+              <small class="teacher-enrollments__course-helper text-[0.8rem] text-content-tertiary">{{ currentCourseLabel(enrollment.courseId) }}</small>
+              <small v-if="enrollmentUsageSummary(enrollment)" class="teacher-enrollments__course-helper text-[0.8rem] text-content-tertiary">
                 {{ enrollmentUsageSummary(enrollment) }}
               </small>
             </div>
-            <dl class="teacher-enrollments__list-grid">
+            <dl class="teacher-enrollments__list-grid grid gap-3">
               <div>
                 <dt>{{ t('student.tableStart') }}</dt>
                 <dd>{{ enrollment.startAt || '—' }}</dd>
@@ -239,7 +239,7 @@
               <div>
                 <dt>{{ t('student.tableProgress') }}</dt>
                 <dd>
-                  <div v-if="enrollment.progress !== undefined && enrollment.progress !== null" class="teacher-enrollments__list-progress">
+                  <div v-if="enrollment.progress !== undefined && enrollment.progress !== null" class="teacher-enrollments__list-progress flex items-center gap-2">
                     <UiProgressBar :value="Number(enrollment.progress)" :show-value="false" />
                     <span>{{ Math.round(Number(enrollment.progress)) }}%</span>
                   </div>
@@ -608,51 +608,12 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.teacher-enrollments {
-  display: grid;
-  gap: var(--sakai-space-5);
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-}
-
-.teacher-enrollments__filters {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--sakai-space-3);
-  margin-bottom: var(--sakai-space-4);
-}
-
-.teacher-enrollments__table {
-  display: block;
-  width: 100%;
-  overflow-x: auto;
-}
-
 .teacher-enrollments__table :deep(table) {
   min-width: calc(var(--sakai-space-12) * 11);
 }
 
 .teacher-enrollments__table--enrollments :deep(table) {
   min-width: calc(var(--sakai-space-12) * 12);
-}
-
-.teacher-enrollments__bulk {
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-3);
-  flex-wrap: wrap;
-}
-
-.teacher-enrollments__bulk-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-enrollments__row-actions {
-  display: inline-flex;
-  gap: var(--sakai-space-2);
 }
 
 .teacher-enrollments__link {
@@ -684,20 +645,6 @@ onBeforeUnmount(() => {
   border-color: color-mix(in srgb, var(--sakai-warning) 25%, var(--sakai-border-color) 60%);
 }
 
-.teacher-enrollments__list-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-enrollments__list-titles {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
 .teacher-enrollments__list-titles h3 {
   margin: 0;
   font-size: 1rem;
@@ -707,11 +654,6 @@ onBeforeUnmount(() => {
 .teacher-enrollments__list-titles span {
   color: var(--sakai-text-color-tertiary);
   font-size: 0.85rem;
-}
-
-.teacher-enrollments__list-grid {
-  display: grid;
-  gap: var(--sakai-space-3);
 }
 
 .teacher-enrollments__list-grid div {
@@ -730,76 +672,11 @@ onBeforeUnmount(() => {
   font-weight: var(--sakai-font-weight-medium);
 }
 
-.teacher-enrollments__list-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-enrollments__list-field {
-  display: grid;
-  gap: var(--sakai-space-2);
-}
-
 .teacher-enrollments__list-field label {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--sakai-text-color-muted);
-}
-
-.teacher-enrollments__list-progress {
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-enrollments__student {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.teacher-enrollments__student-email {
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-secondary);
-}
-
-.teacher-enrollments__course {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-1);
-}
-
-.teacher-enrollments__course-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.teacher-enrollments__course-select {
-  max-width: 220px;
-}
-
-.teacher-enrollments__course-helper {
-  font-size: 0.8rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
-.teacher-enrollments__progress {
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-enrollments__progress-value {
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-secondary);
-}
-
-.teacher-enrollments__empty {
-  color: var(--sakai-text-color-tertiary);
-  font-size: 0.85rem;
 }
 
 .teacher-enrollments__card :deep(.ui-table) {

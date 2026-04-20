@@ -20,19 +20,19 @@ module.exports = {
         // Use: text-sakai-primary, bg-sakai-primary, text-sakai-primary/50, etc.
         'sakai-primary': {
           DEFAULT: 'rgb(var(--sakai-primary-rgb) / <alpha-value>)',
-          300: '#a5b4fc',
-          400: '#818cf8',
+          300: '#67e8f9',
+          400: '#22d3ee',
           500: 'rgb(var(--sakai-primary-rgb) / <alpha-value>)',
-          600: '#4f46e5',
-          700: '#4338ca',
+          600: '#0891b2',
+          700: '#0e7490',
           contrast: 'var(--sakai-primary-contrast)'
         },
         'sakai-secondary': {
           DEFAULT: 'rgb(var(--sakai-secondary-rgb) / <alpha-value>)',
-          400: '#22d3ee',
+          400: '#60a5fa',
           500: 'rgb(var(--sakai-secondary-rgb) / <alpha-value>)',
-          600: '#0891b2',
-          700: '#0e7490'
+          600: '#2563eb',
+          700: '#1d4ed8'
         },
         success: 'rgb(var(--sakai-success-rgb) / <alpha-value>)',
         info: 'rgb(var(--sakai-info-rgb) / <alpha-value>)',

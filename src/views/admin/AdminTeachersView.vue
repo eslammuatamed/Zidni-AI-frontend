@@ -1,15 +1,15 @@
 <template>
-  <ThemePage :title="t('adminTeachers.title')" :subtitle="t('adminTeachers.subtitle')">
-    <section class="admin-teachers">
+  <ThemePage class="theme-page--admin" :title="t('adminTeachers.title')" :subtitle="t('adminTeachers.subtitle')">
+    <section class="admin-teachers flex flex-col gap-6">
       <UiCard hover>
         <template #title>{{ t('adminTeachers.tableTitle') }}</template>
         <template #subtitle>{{ t('adminTeachers.tableSubtitle') }}</template>
 
-        <UiAlert v-if="store.error" color="danger" variant="soft" class="admin-teachers__alert">
+        <UiAlert v-if="store.error" color="danger" variant="soft" class="admin-teachers__alert mb-4">
           {{ translateError(store.error) }}
         </UiAlert>
 
-        <div class="admin-teachers__toolbar">
+        <div class="admin-teachers__toolbar grid gap-4 items-end mb-5 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
           <UiInput
             v-model="filters.search"
             :label="t('adminTeachers.filters.search')"
@@ -55,9 +55,9 @@
           :empty-text="t('adminTeachers.empty')"
         >
           <template #item.teacher="{ item }">
-            <div class="admin-teachers__teacher">
-              <span class="admin-teachers__teacher-name">{{ (item as any).name }}</span>
-              <small class="admin-teachers__teacher-meta">
+            <div class="admin-teachers__teacher flex flex-col gap-[0.125rem]">
+              <span class="admin-teachers__teacher-name font-semibold text-content">{{ (item as any).name }}</span>
+              <small class="admin-teachers__teacher-meta text-content-secondary">
                 {{ (item as any).slug }} · {{ (item as any).plan.toUpperCase() }}
                 <template v-if="(item as any).subject"> · {{ (item as any).subject }}</template>
               </small>
@@ -71,7 +71,7 @@
           </template>
 
           <template #item.actions="{ item }">
-            <div class="admin-teachers__actions">
+            <div class="admin-teachers__actions flex gap-2 justify-end">
               <UiButton size="sm" variant="link" @click="openDetail((item as any).id)">
                 {{ t('adminTeachers.actions.manage') }}
               </UiButton>
@@ -85,7 +85,7 @@
     </section>
 
     <UiDialog v-model="createDialog.open" :title="t('adminTeachers.create.title')" width="640px">
-      <form class="admin-teachers__form" @submit.prevent="submitCreate">
+      <form class="admin-teachers__form grid gap-4" @submit.prevent="submitCreate">
         <UiInput
           v-model="createDialog.form.slug"
           :label="t('adminTeachers.create.slug')"
@@ -117,7 +117,7 @@
         <UiInput v-model="createDialog.form.email" type="email" :label="t('adminTeachers.create.email')" required />
         <UiInput v-model="createDialog.form.password" type="password" :label="t('adminTeachers.create.password')" required />
 
-        <div class="admin-teachers__dialog-actions">
+        <div class="admin-teachers__dialog-actions flex justify-end gap-3 mt-4">
           <UiButton type="button" variant="link" @click="closeCreateDialog">
             {{ t('common.cancel') }}
           </UiButton>
@@ -134,22 +134,22 @@
       width="760px"
       @hide="closeDetail"
     >
-      <div v-if="store.loadingTeacherDetail" class="admin-teachers__loading">
+      <div v-if="store.loadingTeacherDetail" class="admin-teachers__loading grid gap-3 p-6">
         <UiSkeleton v-for="n in 4" :key="n" height="32px" />
       </div>
       <div v-else-if="selectedTeacher" class="admin-teachers__detail">
-        <UiAlert v-if="store.error" color="danger" variant="soft" class="admin-teachers__alert">
+        <UiAlert v-if="store.error" color="danger" variant="soft" class="admin-teachers__alert mb-4">
           {{ translateError(store.error) }}
         </UiAlert>
 
-        <section class="admin-teachers__section">
-          <header class="admin-teachers__section-header">
+        <section class="admin-teachers__section flex flex-col gap-4 mb-6">
+          <header class="admin-teachers__section-header flex items-center justify-between gap-3 mb-2">
             <h3>{{ t('adminTeachers.detail.overview') }}</h3>
             <UiTag :color="teacherForm.active ? 'success' : 'danger'">
               {{ teacherForm.active ? t('adminTeachers.status.active') : t('adminTeachers.status.disabled') }}
             </UiTag>
           </header>
-          <form class="admin-teachers__form" @submit.prevent="submitUpdateTeacher">
+          <form class="admin-teachers__form grid gap-4" @submit.prevent="submitUpdateTeacher">
             <UiInput v-model="teacherForm.name" :label="t('adminTeachers.detail.name')" required />
             <UiInput v-model="teacherForm.subject" :label="t('adminTeachers.detail.subject')" />
             <UiSelect v-model="teacherForm.phoneCountryCode" :label="t('adminTeachers.detail.phoneCountryCode')" required>
@@ -176,7 +176,7 @@
               :hint="t('adminTeachers.detail.studentMultiDeviceLoginHint')"
             />
 
-            <div class="admin-teachers__dialog-actions">
+            <div class="admin-teachers__dialog-actions flex justify-end gap-3 mt-4">
               <UiButton type="submit" color="primary" :loading="detailDialog.submitting">
                 {{ t('adminTeachers.detail.save') }}
               </UiButton>
@@ -198,7 +198,7 @@
             </UiButton>
           </form>
 
-          <dl class="admin-teachers__meta">
+          <dl class="admin-teachers__meta grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
             <div>
               <dt>{{ t('adminTeachers.detail.joined') }}</dt>
               <dd>{{ formatDate(selectedTeacher.joinDate) }}</dd>
@@ -218,15 +218,15 @@
           </dl>
         </section>
 
-        <section class="admin-teachers__section">
-          <header class="admin-teachers__section-header">
+        <section class="admin-teachers__section flex flex-col gap-4 mb-6">
+          <header class="admin-teachers__section-header flex items-center justify-between gap-3 mb-2">
             <h3>{{ t('adminTeachers.overrides.title') }}</h3>
             <UiSwitch v-model="usageOverridesEnabled" :label="t('adminTeachers.overrides.switch')" />
           </header>
           <UiAlert color="info" variant="soft">
             {{ t('adminTeachers.overrides.alert') }}
           </UiAlert>
-          <div v-if="usageOverridesEnabled" class="admin-teachers__form admin-teachers__usage-overrides">
+          <div v-if="usageOverridesEnabled" class="admin-teachers__form grid gap-4 admin-teachers__usage-overrides [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
             <UiInput
               v-model.number="usageOverridesForm.storageWarningPercent"
               type="number"
@@ -276,11 +276,11 @@
               placeholder="e.g. 7"
             />
           </div>
-          <p v-else class="admin-teachers__help">{{ t('adminTeachers.overrides.help') }}</p>
+          <p v-else class="admin-teachers__help m-0 text-sm text-content-tertiary">{{ t('adminTeachers.overrides.help') }}</p>
         </section>
 
-        <section class="admin-teachers__section">
-          <header class="admin-teachers__section-header">
+        <section class="admin-teachers__section flex flex-col gap-4 mb-6">
+          <header class="admin-teachers__section-header flex items-center justify-between gap-3 mb-2">
             <h3>{{ t('adminTeachers.accounts.title') }}</h3>
             <UiButton
               v-if="!selectedTeacher.accounts || selectedTeacher.accounts.length === 0"
@@ -291,13 +291,13 @@
               {{ t('adminTeachers.accounts.add') }}
             </UiButton>
           </header>
-          <div v-if="selectedTeacher.accounts && selectedTeacher.accounts.length" class="admin-teachers__accounts">
+          <div v-if="selectedTeacher.accounts && selectedTeacher.accounts.length" class="admin-teachers__accounts flex flex-col gap-3">
             <article v-for="account in selectedTeacher.accounts" :key="account.id" class="admin-teachers__account">
               <div class="admin-teachers__account-info">
                 <h4>{{ account.email }}</h4>
                 <small>{{ lastActivity(account) }}</small>
               </div>
-              <div class="admin-teachers__account-actions">
+              <div class="admin-teachers__account-actions flex items-center gap-3 flex-wrap justify-end">
                 <UiSwitch
                   :model-value="account.enabled"
                   :label="account.enabled ? t('adminTeachers.accounts.enabled') : t('adminTeachers.accounts.disabled')"
@@ -322,22 +322,22 @@
 
         <AdminTeacherAssistantsPanel :teacher-id="selectedTeacher.id" />
 
-        <footer class="admin-teachers__danger-zone">
+        <footer class="admin-teachers__danger-zone flex justify-end pt-5 border-t border-border">
           <UiButton color="danger" variant="outline" @click="confirmDeleteTeacher(selectedTeacher.id, selectedTeacher.name)">
             {{ t('adminTeachers.detail.deleteTeacher') }}
           </UiButton>
         </footer>
       </div>
-      <div v-else class="admin-teachers__empty-detail">
+      <div v-else class="admin-teachers__empty-detail text-content-tertiary text-center p-[3rem] italic">
         {{ t('adminTeachers.detail.empty') }}
       </div>
     </UiDialog>
 
     <UiDialog v-model="accountCreateDialog.open" :title="t('adminTeachers.accounts.addTitle')" width="480px">
-      <form class="admin-teachers__form" @submit.prevent="submitCreateAccount">
+      <form class="admin-teachers__form grid gap-4" @submit.prevent="submitCreateAccount">
         <UiInput v-model="accountCreateDialog.email" type="email" :label="t('adminTeachers.accounts.email')" required />
         <UiInput v-model="accountCreateDialog.password" type="password" :label="t('adminTeachers.accounts.password')" required />
-        <div class="admin-teachers__dialog-actions">
+        <div class="admin-teachers__dialog-actions flex justify-end gap-3 mt-4">
           <UiButton type="button" variant="link" @click="closeAccountCreate">
             {{ t('common.cancel') }}
           </UiButton>
@@ -349,11 +349,11 @@
     </UiDialog>
 
     <UiDialog v-model="accountEditDialog.open" :title="t('adminTeachers.accounts.editTitle')" width="480px">
-      <form class="admin-teachers__form" @submit.prevent="submitAccountEdit">
+      <form class="admin-teachers__form grid gap-4" @submit.prevent="submitAccountEdit">
         <UiInput v-model="accountEditDialog.email" type="email" :label="t('adminTeachers.accounts.email')" required />
         <UiInput v-model="accountEditDialog.password" type="password" :label="t('adminTeachers.accounts.newPassword')" />
-        <p class="admin-teachers__help">{{ t('adminTeachers.accounts.passwordHelp') }}</p>
-        <div class="admin-teachers__dialog-actions">
+        <p class="admin-teachers__help m-0 text-sm text-content-tertiary">{{ t('adminTeachers.accounts.passwordHelp') }}</p>
+        <div class="admin-teachers__dialog-actions flex justify-end gap-3 mt-4">
           <UiButton type="button" variant="link" @click="closeAccountEdit">
             {{ t('common.cancel') }}
           </UiButton>
@@ -921,83 +921,10 @@ function buildUsageOverridesPayload(): TeacherUsageOverrides | null {
 </script>
 
 <style scoped>
-.admin-teachers {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-6);
-}
-
-:deep(.theme-page__title) {
-  font-size: 2.25rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--sakai-primary) 0%, var(--sakai-primary-700) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: var(--sakai-space-1);
-}
-
-.admin-teachers__alert {
-  margin-bottom: var(--sakai-space-4);
-}
-
-.admin-teachers__toolbar {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--sakai-space-4);
-  align-items: end;
-  margin-bottom: var(--sakai-space-5);
-}
-
-.admin-teachers__teacher {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-}
-
-.admin-teachers__teacher-name {
-  font-weight: 600;
-  color: var(--sakai-text-color);
-}
-
-.admin-teachers__teacher-meta {
-  color: var(--sakai-text-color-secondary);
-}
-
-.admin-teachers__actions {
-  display: flex;
-  gap: var(--sakai-space-2);
-  justify-content: flex-end;
-}
-
-.admin-teachers__section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-  margin-bottom: var(--sakai-space-6);
-}
-
-.admin-teachers__section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-3);
-  margin-bottom: var(--sakai-space-2);
-}
-
 .admin-teachers__section-header h3 {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 700;
-}
-
-.admin-teachers__form {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.admin-teachers__usage-overrides {
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 .admin-teachers__form--inline {
@@ -1005,25 +932,6 @@ function buildUsageOverridesPayload(): TeacherUsageOverrides | null {
   grid-template-columns: 1fr auto;
   gap: var(--sakai-space-3);
   align-items: end;
-}
-
-.admin-teachers__dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--sakai-space-3);
-  margin-top: var(--sakai-space-4);
-}
-
-.admin-teachers__loading {
-  display: grid;
-  gap: var(--sakai-space-3);
-  padding: var(--sakai-space-6);
-}
-
-.admin-teachers__meta {
-  display: grid;
-  gap: var(--sakai-space-4);
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 .admin-teachers__meta dt {
@@ -1038,12 +946,6 @@ function buildUsageOverridesPayload(): TeacherUsageOverrides | null {
   margin: 0.125rem 0 0;
   font-weight: 600;
   color: var(--sakai-text-color);
-}
-
-.admin-teachers__accounts {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
 }
 
 .admin-teachers__account {
@@ -1068,34 +970,6 @@ function buildUsageOverridesPayload(): TeacherUsageOverrides | null {
 }
 
 .admin-teachers__account-info small {
-  color: var(--sakai-text-color-tertiary);
-}
-
-.admin-teachers__account-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-3);
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.admin-teachers__danger-zone {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: var(--sakai-space-5);
-  border-top: 1px solid var(--sakai-border-color);
-}
-
-.admin-teachers__empty-detail {
-  color: var(--sakai-text-color-tertiary);
-  text-align: center;
-  padding: var(--sakai-space-10);
-  font-style: italic;
-}
-
-.admin-teachers__help {
-  margin: 0;
-  font-size: 0.875rem;
   color: var(--sakai-text-color-tertiary);
 }
 </style>

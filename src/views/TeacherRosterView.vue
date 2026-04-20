@@ -11,26 +11,26 @@
       </UiButton>
     </template>
 
-    <UiAlert v-if="!isRosterFeatureEnabled" color="warning" variant="soft" class="teacher-roster__alert">
+    <UiAlert v-if="!isRosterFeatureEnabled" color="warning" variant="soft" class="teacher-roster__alert mt-4">
       {{ t('roster.disabledMessage') }}
     </UiAlert>
 
-    <div v-else class="teacher-roster">
+    <div v-else class="teacher-roster flex flex-col gap-6">
       <UiTabs v-model="activeTab" :tabs="tabItems" variant="underline" />
 
       <UiAlert
         v-if="quotaWarning"
         color="warning"
         variant="soft"
-        class="teacher-roster__alert"
+        class="teacher-roster__alert mt-4"
       >
         <p>{{ quotaWarningMessage }}</p>
         <p>{{ quotaWarningSuggestion }}</p>
       </UiAlert>
 
-      <section v-if="activeTab === 'students'" class="teacher-roster__section">
-        <UiCard class="teacher-roster__card" :title="t('roster.studentsTitle')" :subtitle="t('roster.studentsSubtitle')">
-          <div class="teacher-roster__filters">
+      <section v-if="activeTab === 'students'" class="teacher-roster__section flex flex-col gap-4">
+        <UiCard class="teacher-roster__card flex flex-col gap-4" :title="t('roster.studentsTitle')" :subtitle="t('roster.studentsSubtitle')">
+          <div class="teacher-roster__filters grid gap-4 items-end [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
             <UiInput
               v-model="studentSearch"
               :label="t('roster.searchLabel')"
@@ -55,11 +55,11 @@
       </div>
 
       <div v-if="showBulkStudentsBar" class="teacher-roster__bulk-bar">
-        <div class="teacher-roster__bulk-info">
+        <div class="teacher-roster__bulk-info flex flex-col gap-1">
           <strong>{{ t('bulk.studentsSelected', { count: selectedStudentCount }) }}</strong>
           <span>{{ t('bulk.studentsHint') }}</span>
         </div>
-        <div class="teacher-roster__bulk-actions">
+        <div class="teacher-roster__bulk-actions flex flex-wrap gap-2">
           <UiButton
             size="sm"
             variant="outline"
@@ -91,7 +91,7 @@
         :headers="studentHeaders"
         :items="store.students"
         :loading="store.studentsLoading"
-        class="teacher-roster__table teacher-roster__table--students"
+        class="teacher-roster__table teacher-roster__table--students w-full"
             item-value="studentId"
             show-select
             v-model:selected="selectedStudents"
@@ -99,9 +99,9 @@
             :empty-text="t('roster.studentsEmpty')"
           >
             <template #item.name="{ item }">
-              <div class="teacher-roster__student-name">
+              <div class="teacher-roster__student-name flex flex-col">
                 <span>{{ item.name }}</span>
-                <span class="teacher-roster__student-email">{{ item.email }}</span>
+                <span class="teacher-roster__student-email text-[0.85rem] text-content-secondary">{{ item.email }}</span>
               </div>
             </template>
             <template #item.status="{ item }">
@@ -118,7 +118,7 @@
               {{ formatDateTime(item.joinedAt) }}
             </template>
             <template #item.actions="{ item }">
-              <div class="teacher-roster__device-actions">
+              <div class="teacher-roster__device-actions inline-flex flex-wrap gap-2 justify-end">
                 <UiButton
                   size="xs"
                   variant="link"
@@ -156,26 +156,26 @@
               class="teacher-roster__list-item"
               role="listitem"
             >
-              <header class="teacher-roster__list-header">
-                <div class="teacher-roster__student-name">
+              <header class="teacher-roster__list-header flex flex-wrap items-center justify-between gap-2">
+                <div class="teacher-roster__student-name flex flex-col">
                   <span>{{ item.name }}</span>
-                  <span class="teacher-roster__student-email">{{ item.email }}</span>
+                  <span class="teacher-roster__student-email text-[0.85rem] text-content-secondary">{{ item.email }}</span>
                 </div>
                 <UiBadge :color="statusColor(item.status)">
                   {{ statusLabel(item.status) }}
                 </UiBadge>
               </header>
-              <div class="teacher-roster__list-field">
+              <div class="teacher-roster__list-field grid gap-2">
                 <label>{{ t('roster.device.column') }}</label>
                 <UiBadge :color="deviceStatusColor(item)">
                   {{ deviceStatusLabel(item) }}
                 </UiBadge>
               </div>
-              <div class="teacher-roster__list-field">
+              <div class="teacher-roster__list-field grid gap-2">
                 <label>{{ t('roster.joinedColumn') }}</label>
                 <span>{{ formatDateTime(item.joinedAt) }}</span>
               </div>
-              <div class="teacher-roster__list-actions">
+              <div class="teacher-roster__list-actions flex flex-wrap gap-2">
                 <UiButton
                   size="sm"
                   variant="link"
@@ -206,7 +206,7 @@
             </article>
           </div>
 
-          <div class="teacher-roster__footer">
+          <div class="teacher-roster__footer flex justify-between items-center text-[0.9rem] text-content-tertiary">
             <span>
               {{ t('roster.studentsSummary', {
                 from: firstStudentIndex,
@@ -214,7 +214,7 @@
                 total: store.studentsTotal
               }) }}
             </span>
-            <div class="teacher-roster__pager">
+            <div class="teacher-roster__pager inline-flex gap-2">
               <UiButton
                 variant="link"
                 size="sm"
@@ -234,15 +234,15 @@
             </div>
           </div>
 
-          <div class="teacher-roster__selection" v-if="selectedStudents.length">
+          <div class="teacher-roster__selection text-[0.85rem] text-content-secondary" v-if="selectedStudents.length">
             {{ t('roster.selectedCount', { count: selectedStudents.length }) }}
           </div>
         </UiCard>
       </section>
 
-      <section v-else class="teacher-roster__section">
-        <UiCard class="teacher-roster__card" :title="t('roster.groupsTitle')" :subtitle="t('roster.groupsSubtitle')">
-          <div class="teacher-roster__filters">
+      <section v-else class="teacher-roster__section flex flex-col gap-4">
+        <UiCard class="teacher-roster__card flex flex-col gap-4" :title="t('roster.groupsTitle')" :subtitle="t('roster.groupsSubtitle')">
+          <div class="teacher-roster__filters grid gap-4 items-end [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
             <UiInput
               v-model="groupQuery"
               :label="t('roster.searchGroups')"
@@ -259,14 +259,14 @@
             :headers="groupHeaders"
             :items="store.groups"
             :loading="store.groupsLoading"
-            class="teacher-roster__table teacher-roster__table--groups"
+            class="teacher-roster__table teacher-roster__table--groups w-full"
             density="comfortable"
             :empty-text="t('roster.groupsEmpty')"
           >
             <template #item.name="{ item }">
-              <div class="teacher-roster__group-name">
-                <span class="teacher-roster__group-title">{{ item.name }}</span>
-                <span v-if="item.description" class="teacher-roster__group-description">{{ item.description }}</span>
+              <div class="teacher-roster__group-name flex flex-col gap-[0.25rem]">
+                <span class="teacher-roster__group-title font-semibold">{{ item.name }}</span>
+                <span v-if="item.description" class="teacher-roster__group-description text-[0.85rem] text-content-tertiary">{{ item.description }}</span>
               </div>
             </template>
             <template #item.members="{ item }">
@@ -279,7 +279,7 @@
               {{ formatDateTime(item.createdAt) }}
             </template>
             <template #item.actions="{ item }">
-              <div class="teacher-roster__group-actions">
+              <div class="teacher-roster__group-actions inline-flex gap-2">
             <UiButton variant="link" size="sm" @click="openMembers(item)">
               {{ t('roster.viewMembers') }}
             </UiButton>
@@ -304,7 +304,7 @@
         </template>
           </UiTable>
 
-          <div class="teacher-roster__footer">
+          <div class="teacher-roster__footer flex justify-between items-center text-[0.9rem] text-content-tertiary">
             <span>
               {{ t('roster.groupsSummary', {
                 from: firstGroupIndex,
@@ -312,7 +312,7 @@
                 total: store.groupsTotal
               }) }}
             </span>
-            <div class="teacher-roster__pager">
+            <div class="teacher-roster__pager inline-flex gap-2">
               <UiButton
                 variant="link"
                 size="sm"
@@ -336,7 +336,7 @@
     </div>
 
     <UiDialog v-model="showGroupForm" :title="groupFormTitle" width="520px">
-      <form class="teacher-roster__dialog-form" @submit.prevent="submitGroupForm">
+      <form class="teacher-roster__dialog-form flex flex-col gap-4" @submit.prevent="submitGroupForm">
         <UiInput v-model="groupForm.name" :label="t('roster.groupName')" required maxlength="120" />
         <UiTextarea v-model="groupForm.description" :label="t('roster.groupDescription')" :rows="3" maxlength="2000" />
         <UiInput
@@ -346,7 +346,7 @@
           min="1"
           :hint="t('roster.capacityHint')"
         />
-        <div class="teacher-roster__dialog-actions">
+        <div class="teacher-roster__dialog-actions flex justify-end gap-2">
           <UiButton variant="link" color="secondary" @click.prevent="closeGroupForm">
             {{ t('common.cancel') }}
           </UiButton>
@@ -363,8 +363,8 @@
       width="720px"
     >
       <template v-if="store.activeGroup">
-        <div class="teacher-roster__members-toolbar">
-          <div class="teacher-roster__members-meta">
+        <div class="teacher-roster__members-toolbar flex flex-col gap-4 mb-4">
+          <div class="teacher-roster__members-meta flex gap-2 items-center">
             <UiBadge color="primary">
               {{ t('roster.membersCount', { count: store.activeGroup.membersCount }) }}
             </UiBadge>
@@ -372,7 +372,7 @@
               {{ t('roster.capacityBadge', { capacity: store.activeGroup.capacity }) }}
             </span>
           </div>
-          <div class="teacher-roster__members-actions">
+          <div class="teacher-roster__members-actions flex flex-wrap gap-2">
             <UiInput
               v-model="memberQuery"
               :placeholder="t('roster.searchMembersPlaceholder')"
@@ -390,7 +390,7 @@
           :items="store.members"
           :loading="store.membersLoading"
           density="comfortable"
-          class="teacher-roster__table"
+          class="teacher-roster__table w-full"
           :empty-text="t('roster.membersEmpty')"
         >
           <template #item.joinedAt="{ item }">
@@ -403,7 +403,7 @@
           </template>
         </UiTable>
 
-        <div class="teacher-roster__footer">
+        <div class="teacher-roster__footer flex justify-between items-center text-[0.9rem] text-content-tertiary">
           <span>
             {{ t('roster.membersSummary', {
               from: firstMemberIndex,
@@ -411,7 +411,7 @@
               total: store.membersTotal
             }) }}
           </span>
-          <div class="teacher-roster__pager">
+          <div class="teacher-roster__pager inline-flex gap-2">
             <UiButton
               variant="link"
               size="sm"
@@ -434,7 +434,7 @@
     </UiDialog>
 
     <UiDialog v-model="showAddMembers" :title="t('roster.addStudentsTitle')" width="520px">
-      <div class="teacher-roster__dialog-form">
+      <div class="teacher-roster__dialog-form flex flex-col gap-4">
         <UiSelect
           v-model="membersSelection"
           multiple
@@ -449,7 +449,7 @@
             {{ student.name }} — {{ student.email }}
           </option>
         </UiSelect>
-        <div class="teacher-roster__dialog-actions">
+        <div class="teacher-roster__dialog-actions flex justify-end gap-2">
           <UiButton variant="link" color="secondary" @click="closeAddMembers">
             {{ t('common.cancel') }}
           </UiButton>
@@ -466,11 +466,11 @@
     </UiDialog>
 
     <UiDialog v-model="bulkEnrollState.open" :title="t('bulk.enrollTitle')" width="640px" @hide="closeBulkEnroll">
-      <div class="teacher-roster__bulk-dialog">
-        <p v-if="contextSummary" class="teacher-roster__bulk-context">{{ contextSummary }}</p>
+      <div class="teacher-roster__bulk-dialog flex flex-col gap-4">
+        <p v-if="contextSummary" class="teacher-roster__bulk-context m-0 text-content-secondary">{{ contextSummary }}</p>
 
         <template v-if="bulkEnrollState.result">
-          <div class="teacher-roster__bulk-summary-grid">
+          <div class="teacher-roster__bulk-summary-grid grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(120px,1fr))]">
             <div>
               <span>{{ t('bulk.summary.total') }}</span>
               <strong>{{ bulkEnrollState.result.summary.total }}</strong>
@@ -489,7 +489,7 @@
             </div>
           </div>
 
-          <table class="teacher-roster__bulk-table">
+          <table class="teacher-roster__bulk-table w-full border-collapse">
             <thead>
               <tr>
                 <th>{{ t('bulk.result.student') }}</th>
@@ -510,7 +510,7 @@
             </tbody>
           </table>
 
-          <div class="teacher-roster__dialog-actions">
+          <div class="teacher-roster__dialog-actions flex justify-end gap-2">
             <UiButton variant="link" color="secondary" @click="closeBulkEnroll">
               {{ t('common.close') }}
             </UiButton>
@@ -535,7 +535,7 @@
                 {{ course.title }}
               </option>
             </UiSelect>
-            <div class="teacher-roster__dialog-actions">
+            <div class="teacher-roster__dialog-actions flex justify-end gap-2">
               <UiButton variant="link" color="secondary" @click.prevent="closeBulkEnroll">
                 {{ t('common.cancel') }}
               </UiButton>
@@ -549,11 +549,11 @@
     </UiDialog>
 
     <UiDialog v-model="bulkLiveState.open" :title="t('bulk.liveTitle')" width="640px" @hide="closeBulkLive">
-      <div class="teacher-roster__bulk-dialog">
-        <p v-if="contextSummary" class="teacher-roster__bulk-context">{{ contextSummary }}</p>
+      <div class="teacher-roster__bulk-dialog flex flex-col gap-4">
+        <p v-if="contextSummary" class="teacher-roster__bulk-context m-0 text-content-secondary">{{ contextSummary }}</p>
 
         <template v-if="bulkLiveState.result">
-          <div class="teacher-roster__bulk-summary-grid">
+          <div class="teacher-roster__bulk-summary-grid grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(120px,1fr))]">
             <div>
               <span>{{ t('bulk.summary.total') }}</span>
               <strong>{{ bulkLiveState.result.summary.total }}</strong>
@@ -572,7 +572,7 @@
             </div>
           </div>
 
-          <table class="teacher-roster__bulk-table">
+          <table class="teacher-roster__bulk-table w-full border-collapse">
             <thead>
               <tr>
                 <th>{{ t('bulk.result.student') }}</th>
@@ -593,7 +593,7 @@
             </tbody>
           </table>
 
-          <div class="teacher-roster__dialog-actions">
+          <div class="teacher-roster__dialog-actions flex justify-end gap-2">
             <UiButton variant="link" color="secondary" @click="closeBulkLive">
               {{ t('common.close') }}
             </UiButton>
@@ -618,7 +618,7 @@
                 {{ session.title }} — {{ formatDateTime(session.scheduledAt) }}
               </option>
             </UiSelect>
-            <div class="teacher-roster__dialog-actions">
+            <div class="teacher-roster__dialog-actions flex justify-end gap-2">
               <UiButton variant="link" color="secondary" @click.prevent="closeBulkLive">
                 {{ t('common.cancel') }}
               </UiButton>
@@ -632,12 +632,12 @@
     </UiDialog>
 
     <UiDialog v-model="bulkTutoringState.open" :title="t('bulk.tutoringTitle')" width="720px" @hide="closeBulkTutoring">
-      <div class="teacher-roster__bulk-dialog">
-        <p v-if="contextSummary" class="teacher-roster__bulk-context">{{ contextSummary }}</p>
+      <div class="teacher-roster__bulk-dialog flex flex-col gap-4">
+        <p v-if="contextSummary" class="teacher-roster__bulk-context m-0 text-content-secondary">{{ contextSummary }}</p>
         <UiAlert color="info" variant="soft">{{ t('bulk.tutoringConstraint') }}</UiAlert>
 
         <template v-if="bulkTutoringState.result">
-          <div class="teacher-roster__bulk-summary-grid">
+          <div class="teacher-roster__bulk-summary-grid grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(120px,1fr))]">
             <div>
               <span>{{ t('bulk.summary.total') }}</span>
               <strong>{{ bulkTutoringState.result.summary.total }}</strong>
@@ -656,7 +656,7 @@
             </div>
           </div>
 
-          <table class="teacher-roster__bulk-table">
+          <table class="teacher-roster__bulk-table w-full border-collapse">
             <thead>
               <tr>
                 <th>{{ t('bulk.result.student') }}</th>
@@ -679,7 +679,7 @@
             </tbody>
           </table>
 
-          <div class="teacher-roster__dialog-actions">
+          <div class="teacher-roster__dialog-actions flex justify-end gap-2">
             <UiButton variant="link" color="secondary" @click="closeBulkTutoring">
               {{ t('common.close') }}
             </UiButton>
@@ -694,7 +694,7 @@
         </template>
 
         <template v-else>
-          <div class="teacher-roster__bulk-mode">
+          <div class="teacher-roster__bulk-mode flex justify-start">
             <UiRadioGroup
               v-model="bulkTutoringState.mode"
               :options="[
@@ -704,13 +704,13 @@
             />
           </div>
 
-          <div v-if="bulkTutoringState.mode === 'perStudent'" class="teacher-roster__bulk-assignments">
+          <div v-if="bulkTutoringState.mode === 'perStudent'" class="teacher-roster__bulk-assignments flex flex-col gap-3">
             <div
               v-for="pair in bulkTutoringState.pairs"
               :key="`pair-${pair.studentId}`"
-              class="teacher-roster__bulk-assignment-row"
+              class="teacher-roster__bulk-assignment-row grid gap-3 items-center [grid-template-columns:minmax(160px,1fr)_minmax(220px,1.2fr)]"
             >
-              <span class="teacher-roster__bulk-student">{{ studentDisplayName(pair.studentId) }}</span>
+              <span class="teacher-roster__bulk-student font-semibold">{{ studentDisplayName(pair.studentId) }}</span>
               <UiSelect v-model="pair.slotId" :label="t('bulk.selectSlot')" required>
                 <option
                   v-for="slot in bulkTutoringState.availableSlots"
@@ -723,8 +723,8 @@
             </div>
           </div>
 
-          <div v-else class="teacher-roster__bulk-pairing">
-            <p class="teacher-roster__bulk-note">
+          <div v-else class="teacher-roster__bulk-pairing flex flex-col gap-3">
+            <p class="teacher-roster__bulk-note m-0 text-content-secondary">
               {{ t('bulk.pairingNote', { count: contextStudentCount }) }}
             </p>
             <UiSelect v-model="bulkTutoringState.pairingSlotIds" :label="t('bulk.selectMultipleSlots')" multiple>
@@ -734,7 +734,7 @@
             </UiSelect>
           </div>
 
-          <div class="teacher-roster__dialog-actions">
+          <div class="teacher-roster__dialog-actions flex justify-end gap-2">
             <UiButton variant="link" color="secondary" @click.prevent="closeBulkTutoring">
               {{ t('common.cancel') }}
             </UiButton>
@@ -1864,31 +1864,6 @@ watch(activeTab, async (tab) => {
 </script>
 
 <style scoped>
-.teacher-roster {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-6);
-}
-
-.teacher-roster__section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-roster__card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-roster__filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--sakai-space-4);
-  align-items: end;
-}
-
 .teacher-roster__bulk-bar {
   display: flex;
   flex-wrap: wrap;
@@ -1898,35 +1873,6 @@ watch(activeTab, async (tab) => {
   border: 1px solid var(--sakai-border-color);
   border-radius: var(--sakai-border-radius-md);
   background: color-mix(in srgb, var(--sakai-primary) 6%, transparent);
-  gap: var(--sakai-space-3);
-}
-
-.teacher-roster__bulk-info {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-1);
-}
-
-.teacher-roster__bulk-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-roster__bulk-dialog {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-roster__bulk-context {
-  margin: 0;
-  color: var(--sakai-text-color-secondary);
-}
-
-.teacher-roster__bulk-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: var(--sakai-space-3);
 }
 
@@ -1949,108 +1895,11 @@ watch(activeTab, async (tab) => {
   font-size: 1.1rem;
 }
 
-.teacher-roster__bulk-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
 .teacher-roster__bulk-table th,
 .teacher-roster__bulk-table td {
   padding: var(--sakai-space-3);
   border-bottom: 1px solid var(--sakai-border-color);
   text-align: left;
-}
-
-.teacher-roster__bulk-mode {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.teacher-roster__bulk-assignments {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-roster__bulk-assignment-row {
-  display: grid;
-  grid-template-columns: minmax(160px, 1fr) minmax(220px, 1.2fr);
-  gap: var(--sakai-space-3);
-  align-items: center;
-}
-
-.teacher-roster__bulk-student {
-  font-weight: 600;
-}
-
-.teacher-roster__bulk-note {
-  margin: 0;
-  color: var(--sakai-text-color-secondary);
-}
-
-.teacher-roster__bulk-pairing {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-roster__table {
-  width: 100%;
-}
-
-.teacher-roster__footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
-.teacher-roster__pager {
-  display: inline-flex;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-roster__selection {
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-secondary);
-}
-
-.teacher-roster__student-name {
-  display: flex;
-  flex-direction: column;
-}
-
-.teacher-roster__student-email {
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-secondary);
-}
-
-.teacher-roster__group-name {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.teacher-roster__group-title {
-  font-weight: 600;
-}
-
-.teacher-roster__group-description {
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
-.teacher-roster__group-actions {
-  display: inline-flex;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-roster__device-actions {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-  justify-content: flex-end;
 }
 
 .teacher-roster__list {
@@ -2067,61 +1916,11 @@ watch(activeTab, async (tab) => {
   background: color-mix(in srgb, var(--sakai-surface-card) 96%, transparent);
 }
 
-.teacher-roster__list-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-roster__list-field {
-  display: grid;
-  gap: var(--sakai-space-2);
-}
-
 .teacher-roster__list-field label {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--sakai-text-color-muted);
-}
-
-.teacher-roster__list-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-roster__dialog-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-roster__dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-roster__members-toolbar {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-  margin-bottom: var(--sakai-space-4);
-}
-
-.teacher-roster__members-actions {
-  display: flex;
-  gap: var(--sakai-space-2);
-  flex-wrap: wrap;
-}
-
-.teacher-roster__members-meta {
-  display: flex;
-  gap: var(--sakai-space-2);
-  align-items: center;
 }
 
 .teacher-roster__capacity-pill {
@@ -2130,10 +1929,6 @@ watch(activeTab, async (tab) => {
   border-radius: var(--sakai-border-radius-pill);
   background: color-mix(in srgb, var(--sakai-primary) 12%, transparent);
   color: var(--sakai-primary-700);
-}
-
-.teacher-roster__alert {
-  margin-top: var(--sakai-space-4);
 }
 
 @media (max-width: 768px) {

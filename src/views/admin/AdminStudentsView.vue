@@ -1,15 +1,15 @@
 <template>
-  <ThemePage :title="t('adminStudents.title')" :subtitle="t('adminStudents.subtitle')">
-    <section class="admin-students">
+  <ThemePage class="theme-page--admin" :title="t('adminStudents.title')" :subtitle="t('adminStudents.subtitle')">
+    <section class="admin-students flex flex-col gap-6">
       <UiCard hover>
         <template #title>{{ t('adminStudents.tableTitle') }}</template>
         <template #subtitle>{{ t('adminStudents.tableSubtitle') }}</template>
 
-        <UiAlert v-if="store.error" color="danger" variant="soft" class="admin-students__alert">
+        <UiAlert v-if="store.error" color="danger" variant="soft" class="admin-students__alert mb-4">
           {{ translateError(store.error) }}
         </UiAlert>
 
-        <div class="admin-students__filters">
+        <div class="admin-students__filters grid gap-4 mb-5 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
           <UiSelect
             :model-value="filters.status"
             :label="t('adminStudents.filters.status')"
@@ -56,7 +56,7 @@
         >
           <template #item.name="{ item }">
             <div class="admin-students__student">
-              <span class="admin-students__student-name">{{ (item as any).name }}</span>
+              <span class="admin-students__student-name font-semibold">{{ (item as any).name }}</span>
               <small class="admin-students__student-email">{{ (item as any).email }}</small>
             </div>
           </template>
@@ -90,7 +90,7 @@
           </template>
         </UiTable>
 
-        <div v-if="store.totalElements" class="admin-students__footer">
+        <div v-if="store.totalElements" class="admin-students__footer flex items-center justify-between mt-4">
           <span>
             {{ t('adminStudents.paginationSummary', {
               from: pageStart,
@@ -98,7 +98,7 @@
               total: store.totalElements
             }) }}
           </span>
-          <div class="admin-students__pager">
+          <div class="admin-students__pager flex gap-2">
             <UiButton variant="link" size="sm" :disabled="store.page === 0 || store.loading" @click="changePage(store.page - 1)">
               {{ t('adminStudents.prevPage') }}
             </UiButton>
@@ -116,22 +116,22 @@
     </section>
 
     <UiDialog v-model="detailDialog.open" :title="detailTitle" width="720px" @hide="closeDetail">
-      <div v-if="store.loadingDetail" class="admin-students__dialog-loading">
+      <div v-if="store.loadingDetail" class="admin-students__dialog-loading flex flex-col gap-3">
         <UiSkeleton v-for="n in 4" :key="n" height="32px" />
       </div>
-      <div v-else-if="selectedStudent" class="admin-students__dialog">
-        <UiAlert v-if="store.error" color="danger" variant="soft" class="admin-students__dialog-alert">
+      <div v-else-if="selectedStudent" class="admin-students__dialog flex flex-col gap-6">
+        <UiAlert v-if="store.error" color="danger" variant="soft" class="admin-students__dialog-alert mb-4">
           {{ translateError(store.error) }}
         </UiAlert>
 
-        <section class="admin-students__section">
-          <header class="admin-students__section-header">
+        <section class="admin-students__section flex flex-col gap-4">
+          <header class="admin-students__section-header flex items-center justify-between gap-3">
             <h3>{{ t('adminStudents.detail.overview') }}</h3>
             <UiTag :color="statusColor(selectedStudent.status)">
               {{ statusLabel(selectedStudent.status) }}
             </UiTag>
           </header>
-          <dl class="admin-students__meta">
+          <dl class="admin-students__meta grid gap-y-3 gap-x-6 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
             <div>
               <dt>{{ t('adminStudents.detail.email') }}</dt>
               <dd>{{ selectedStudent.email }}</dd>
@@ -165,7 +165,7 @@
                   <span>
                     {{ planUsage(primaryPlanQuota) }}
                   </span>
-                  <small v-if="primaryPlanQuota.limitReached" class="admin-students__plan-warning">
+                  <small v-if="primaryPlanQuota.limitReached" class="admin-students__plan-warning text-danger">
                     {{ t('adminStudents.detail.planLimitReached') }}
                   </small>
                 </template>
@@ -175,11 +175,11 @@
           </dl>
         </section>
 
-        <section class="admin-students__section">
-          <header class="admin-students__section-header">
+        <section class="admin-students__section flex flex-col gap-4">
+          <header class="admin-students__section-header flex items-center justify-between gap-3">
             <h3>{{ t('adminStudents.detail.statusControls') }}</h3>
           </header>
-          <div class="admin-students__actions">
+          <div class="admin-students__actions flex flex-wrap gap-3">
             <UiButton
               size="sm"
               color="success"
@@ -210,20 +210,20 @@
           </UiAlert>
         </section>
 
-        <section class="admin-students__section">
-          <header class="admin-students__section-header">
+        <section class="admin-students__section flex flex-col gap-4">
+          <header class="admin-students__section-header flex items-center justify-between gap-3">
             <h3>{{ t('adminStudents.device.title') }}</h3>
             <UiTag :color="deviceStatusColor">
               {{ deviceStatusText }}
             </UiTag>
           </header>
-          <dl class="admin-students__meta">
+          <dl class="admin-students__meta grid gap-y-3 gap-x-6 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
             <div>
               <dt>{{ t('adminStudents.device.lastSeen') }}</dt>
               <dd>{{ formatDate(selectedStudent.deviceLastSeen) }}</dd>
             </div>
           </dl>
-          <div class="admin-students__actions">
+          <div class="admin-students__actions flex flex-wrap gap-3">
             <UiButton
               size="sm"
               color="danger"
@@ -251,15 +251,15 @@
           </div>
         </section>
 
-        <section class="admin-students__section">
-          <header class="admin-students__section-header">
+        <section class="admin-students__section flex flex-col gap-4">
+          <header class="admin-students__section-header flex items-center justify-between gap-3">
             <h3>{{ t('adminStudents.links.title') }}</h3>
             <UiButton size="sm" variant="outline" color="primary" @click="toggleLinkForm">
               {{ showLinkForm ? t('adminStudents.links.cancelLink') : t('adminStudents.links.addLink') }}
             </UiButton>
           </header>
 
-          <form v-if="showLinkForm" class="admin-students__link-form" @submit.prevent="submitLink">
+          <form v-if="showLinkForm" class="admin-students__link-form grid gap-4 mb-4 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]" @submit.prevent="submitLink">
             <UiSelect v-model="linkForm.teacherId" :label="t('adminStudents.links.teacherLabel')">
               <option value="" disabled>{{ t('adminStudents.links.teacherPlaceholder') }}</option>
               <option v-for="teacher in teacherOptions" :key="teacher.value" :value="teacher.value">
@@ -272,7 +272,7 @@
               </option>
             </UiSelect>
             <UiSwitch v-model="linkForm.primary" :label="t('adminStudents.links.primaryLabel')" />
-            <div class="admin-students__actions">
+            <div class="admin-students__actions flex flex-wrap gap-3">
               <UiButton
                 button-type="submit"
                 color="primary"
@@ -290,7 +290,7 @@
             :headers="linkHeaders"
             :items="selectedStudent.links"
             density="comfortable"
-            class="admin-students__links"
+            class="admin-students__links mt-3"
             :empty-text="t('adminStudents.links.empty')"
           >
             <template #item.teacherName="{ item }">
@@ -311,7 +311,7 @@
               {{ formatDate((item as any).createdAt) }}
             </template>
             <template #item.actions="{ item }">
-              <div class="admin-students__link-actions">
+              <div class="admin-students__link-actions flex flex-wrap gap-2 justify-end">
                 <UiButton
                   v-if="(item as any).teacherId && !(item as any).primary"
                   size="xs"
@@ -353,7 +353,7 @@
           </UiTable>
         </section>
       </div>
-      <div v-else class="admin-students__dialog-empty">
+      <div v-else class="admin-students__dialog-empty py-4">
         <UiAlert color="info" variant="soft">{{ t('adminStudents.detail.empty') }}</UiAlert>
       </div>
     </UiDialog>
@@ -760,82 +760,13 @@ function translateError(code: string | null | undefined) {
 </script>
 
 <style scoped>
-.admin-students {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-6);
-}
-
-:deep(.theme-page__title) {
-  font-size: 2.25rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--sakai-primary) 0%, var(--sakai-primary-700) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: var(--sakai-space-1);
-}
-
-.admin-students__alert,
-.admin-students__dialog-alert {
-  margin-bottom: 1rem;
-}
-
-.admin-students__filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.25rem;
-}
-
 .admin-students__table :deep(tbody tr td) {
   vertical-align: middle;
-}
-
-.admin-students__student-name {
-  font-weight: 600;
 }
 
 .admin-students__student-email,
 .admin-students__teacher small {
   color: var(--sakai-text-color-secondary);
-}
-
-.admin-students__footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 1rem;
-}
-
-.admin-students__pager {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.admin-students__dialog {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.admin-students__section {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.admin-students__section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.admin-students__meta {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0.75rem 1.5rem;
 }
 
 .admin-students__meta dt {
@@ -850,43 +781,5 @@ function translateError(code: string | null | undefined) {
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
-}
-
-.admin-students__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.admin-students__dialog-loading {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.admin-students__dialog-empty {
-  padding: 1rem 0;
-}
-
-.admin-students__links {
-  margin-top: 0.75rem;
-}
-
-.admin-students__link-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: flex-end;
-}
-
-.admin-students__link-form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.admin-students__plan-warning {
-  color: var(--sakai-danger);
 }
 </style>

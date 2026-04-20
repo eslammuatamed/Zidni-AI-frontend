@@ -735,7 +735,7 @@
       <UiCard :title="t('certificates.student.title')">
         <div class="learning-certificates__body">
           <div v-if="!certificateItems.length" class="empty-state">
-            <UiIcon name="SafetyCertificateOutlined" :size="32" class="text-muted" />
+            <UiIcon name="SafetyCertificateOutlined" :size="32" class="text-content-muted" />
             <p>{{ t('certificates.student.empty') }}</p>
           </div>
           <div v-else class="learning-certificates__list">

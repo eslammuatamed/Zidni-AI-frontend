@@ -1,9 +1,9 @@
 <template>
   <ThemePage :title="t('nav.teacherReports')" :subtitle="t('reports.requestTitle')">
-    <section class="teacher-reports">
-      <UiCard class="teacher-reports__card" hover>
+    <section class="teacher-reports grid gap-6">
+      <UiCard class="teacher-reports__card grid gap-4" hover>
         <template #title>{{ t('reports.requestTitle') }}</template>
-        <form class="teacher-reports__form" @submit.prevent="submitReport">
+        <form class="teacher-reports__form grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]" @submit.prevent="submitReport">
           <UiSelect :model-value="form.type" :label="t('reports.type')" @update:model-value="onTypeChange">
             <option v-for="option in typeOptions" :key="option.value" :value="option.value">{{ option.title }}</option>
           </UiSelect>
@@ -17,7 +17,7 @@
             :label="t('reports.deliverToEmail')"
             :placeholder="t('reports.deliverToPlaceholder')"
           />
-          <div class="teacher-reports__actions">
+          <div class="teacher-reports__actions flex justify-end col-span-full">
             <UiButton button-type="submit" color="primary" :disabled="reports.loading">
               {{ t('reports.requestButton') }}
             </UiButton>
@@ -166,27 +166,3 @@ const formatDateTime = (value?: string | null) => {
   }
 };
 </script>
-
-<style scoped>
-.teacher-reports {
-  display: grid;
-  gap: var(--sakai-space-6);
-}
-
-.teacher-reports__form {
-  display: grid;
-  gap: var(--sakai-space-4);
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
-.teacher-reports__actions {
-  display: flex;
-  justify-content: flex-end;
-  grid-column: 1 / -1;
-}
-
-.teacher-reports__card {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-</style>

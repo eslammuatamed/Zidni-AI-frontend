@@ -7,25 +7,22 @@
           icon="CalendarOutlined"
           :label="t('tutoring.student.summaryNextSession')"
           :value="nextSessionLabel"
-          :description="nextSessionDescription"
+          :secondary-stat="nextSessionDescription"
         />
         <UiStatCard
           color="warning"
           icon="ScheduleOutlined"
           :label="t('tutoring.student.summaryPendingActions')"
           :value="pendingActionsCount.toString()"
-          :description="pendingActionsDescription"
+          :secondary-stat="pendingActionsDescription"
         />
         <UiStatCard
           color="success"
           icon="VideoCameraOutlined"
           :label="t('tutoring.student.summaryJoinReady')"
           :value="joinReadyCount.toString()"
-        >
-          <template #default>
-            <span>{{ joinReadyDescription }}</span>
-          </template>
-        </UiStatCard>
+          :secondary-stat="joinReadyDescription"
+        />
       </div>
     </template>
     <div v-if="tenantMissing" class="student-tutoring__tenant-warning">

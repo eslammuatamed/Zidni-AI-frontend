@@ -4,7 +4,7 @@
   close events by delegating to the composable API.
 -->
 <template>
-  <div class="ui-toast-host">
+  <div class="ui-toast-host fixed right-6 bottom-6 grid gap-3 z-[1300]">
     <UiToast
       v-for="toast in toasts"
       :key="toast.id"
@@ -41,14 +41,3 @@ const dismiss = (id: number) => {
   toast.remove(id);
 };
 </script>
-
-<style scoped>
-.ui-toast-host {
-  position: fixed;
-  right: var(--sakai-space-6);
-  bottom: var(--sakai-space-6);
-  display: grid;
-  gap: var(--sakai-space-3);
-  z-index: 1300;
-}
-</style>

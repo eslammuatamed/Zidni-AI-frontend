@@ -9,11 +9,11 @@
     class="ui-button"
     :class="[variantClass, toneClass]"
   >
-    <span v-if="prependIcon" class="ui-button__icon ui-button__icon--start">
+    <span v-if="prependIcon" class="ui-button__icon ui-button__icon--start inline-flex items-center justify-center">
       <UiIcon :name="prependIcon" :size="18" />
     </span>
     <slot />
-    <span v-if="appendIcon" class="ui-button__icon ui-button__icon--end">
+    <span v-if="appendIcon" class="ui-button__icon ui-button__icon--end inline-flex items-center justify-center">
       <UiIcon :name="appendIcon" :size="18" />
     </span>
   </component>
@@ -160,11 +160,5 @@ const buttonType = computed(() => (componentTag.value === 'button' ? props.butto
 
 .ui-button--ghost:hover {
   background: color-mix(in srgb, var(--ui-button-color) 12%, transparent);
-}
-
-.ui-button__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 </style>

@@ -559,7 +559,7 @@
                         {{ course?.instructor }}
                       </h4></a
                     >
-                    <span class="text-muted">Member Since November 2008</span>
+                    <span class="text-content-muted">Member Since November 2008</span>
                   </div>
                   <h6 class="mt-2 mb-0 statusBtns">
                     <a href="profile.html" class="btn btn-primary btn-sm m-1"

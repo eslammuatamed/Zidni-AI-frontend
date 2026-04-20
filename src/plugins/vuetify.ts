@@ -2,7 +2,6 @@ import { h } from 'vue';
 import { createVuetify } from 'vuetify';
 import 'vuetify/styles';
 import '@/styles/theme.css';
-import '@/styles/utilities.css';
 
 const LIGHT_SURFACE = '#ffffff';
 const LIGHT_ON_SURFACE = '#1f2937';
@@ -27,10 +26,10 @@ const museTheme = {
 const mathGuruTheme = {
   dark: false,
   colors: {
-    primary: '#FF3EA5',
-    secondary: '#111827',
+    primary: '#06b6d4',
+    secondary: '#1e3a8a',
     surface: LIGHT_SURFACE,
-    background: '#0f172a',
+    background: '#ffffff',
     onMedia: '#ffffff',
     'on-surface': LIGHT_ON_SURFACE
   }
@@ -41,8 +40,8 @@ const mathGuruDarkTheme = {
   colors: {
     background: '#0f172a',
     surface: '#111c34',
-    primary: '#FF3EA5',
-    secondary: '#1e293b',
+    primary: '#06b6d4',
+    secondary: '#1e3a8a',
     info: '#38bdf8',
     success: '#4ade80',
     warning: '#facc15',

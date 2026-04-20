@@ -1,6 +1,6 @@
 <template>
-  <div class="ui-table-container" :class="containerClasses" :style="containerStyle">
-    <table class="ui-table">
+  <div class="ui-table-container w-full overflow-x-auto bg-surface-card rounded-sakai-xl shadow-sakai-sm border border-border" :class="containerClasses" :style="containerStyle">
+    <table class="ui-table w-full border-collapse text-left text-[0.925rem]">
       <thead class="ui-table__head">
         <tr>
           <th
@@ -37,11 +37,11 @@
         </template>
         <template v-else>
           <tr>
-            <td :colspan="headers.length" class="ui-table__empty-cell">
-              <div class="ui-table__empty">
+            <td :colspan="headers.length" class="ui-table__empty-cell px-8 py-16">
+              <div class="ui-table__empty flex flex-col items-center justify-center gap-3 text-content-tertiary">
                 <slot name="no-data">
                   <UiIcon name="InfoCircleOutlined" :size="24" />
-                  <span>{{ emptyText || 'No records found' }}</span>
+                  <span class="font-medium">{{ emptyText || 'No records found' }}</span>
                 </slot>
               </div>
             </td>
@@ -116,21 +116,6 @@ const skeletonRowsComputed = computed(() => Math.max(props.skeletonRows, 1));
 </script>
 
 <style scoped>
-.ui-table-container {
-  width: 100%;
-  overflow-x: auto;
-  background: var(--sakai-surface-card);
-  border-radius: var(--sakai-border-radius-xl);
-  box-shadow: var(--sakai-shadow-sm);
-  border: 1px solid var(--sakai-border-color);
-}
-
-.ui-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 0.925rem;
-}
 
 .ui-table__th {
   padding: 1rem 1.25rem;
@@ -168,22 +153,6 @@ const skeletonRowsComputed = computed(() => Math.max(props.skeletonRows, 1));
   background: color-mix(in srgb, var(--sakai-primary) 6%, transparent);
 }
 
-.ui-table__empty-cell {
-  padding: 4rem 2rem;
-}
-
-.ui-table__empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--sakai-space-3);
-  color: var(--sakai-text-color-tertiary);
-}
-
-.ui-table__empty span {
-  font-weight: var(--sakai-font-weight-medium);
-}
 
 .ui-table-container--bordered {
   border: 1px solid var(--sakai-border-color);

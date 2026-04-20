@@ -17,12 +17,12 @@
       {{ t('teacher.paymentsDisabled') }}
     </UiAlert>
 
-    <section v-else class="teacher-payments">
+    <section v-else class="teacher-payments grid gap-6">
       <UiTabs v-model="activeTab" :tabs="tabItems" />
 
-      <div v-if="activeTab === 'manual'" class="teacher-payments__panel">
-        <UiCard class="teacher-payments__filters" hover>
-          <div class="teacher-payments__filters-grid">
+      <div v-if="activeTab === 'manual'" class="teacher-payments__panel grid gap-5">
+        <UiCard class="teacher-payments__filters grid gap-4" hover>
+          <div class="teacher-payments__filters-grid grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
             <UiSelect
               :model-value="manualFilters.courseId"
               :label="t('teacher.filterCourse')"
@@ -55,12 +55,12 @@
 
             <UiInput v-model="manualFilters.search" :label="t('teacher.filterSearch')" :placeholder="t('teacher.filterSearchPlaceholder')" />
 
-            <div class="teacher-payments__date-inputs">
+            <div class="teacher-payments__date-inputs grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(160px,1fr))]">
               <UiInput v-model="manualFilters.dateFrom" type="date" :label="t('teacher.filterDateFrom')" />
               <UiInput v-model="manualFilters.dateTo" type="date" :label="t('teacher.filterDateTo')" />
             </div>
           </div>
-          <div class="teacher-payments__filters-actions">
+          <div class="teacher-payments__filters-actions flex justify-end">
             <UiButton
               variant="link"
               color="secondary"
@@ -73,12 +73,12 @@
         </UiCard>
 
         <div class="teacher-payments__summary" role="status" aria-live="polite">
-          <div class="teacher-payments__summary-info">
-            <h3 class="teacher-payments__summary-heading">{{ manualResultsHeading }}</h3>
-            <p class="teacher-payments__summary-description">{{ manualRangeLabel }}</p>
+          <div class="teacher-payments__summary-info grid gap-2 min-w-[220px]">
+            <h3 class="teacher-payments__summary-heading m-0 text-[1.1rem] font-semibold">{{ manualResultsHeading }}</h3>
+            <p class="teacher-payments__summary-description m-0 text-content-secondary text-[0.9rem]">{{ manualRangeLabel }}</p>
           </div>
-          <div class="teacher-payments__summary-meta">
-            <div v-if="manualActiveFilters.length" class="teacher-payments__chips">
+          <div class="teacher-payments__summary-meta flex flex-col items-end gap-3 min-w-[200px]">
+            <div v-if="manualActiveFilters.length" class="teacher-payments__chips flex flex-wrap gap-2 justify-end">
               <span
                 v-for="filter in manualActiveFilters"
                 :key="`manual-filter-${filter}`"
@@ -87,12 +87,12 @@
                 {{ filter }}
               </span>
             </div>
-            <span v-else class="teacher-payments__no-filters">{{ t('teacher.paymentsFiltersEmpty') }}</span>
+            <span v-else class="teacher-payments__no-filters text-content-tertiary text-[0.85rem]">{{ t('teacher.paymentsFiltersEmpty') }}</span>
           </div>
         </div>
 
         <UiTable
-          class="teacher-payments__table"
+          class="teacher-payments__table w-full"
           :headers="manualHeaders"
           :items="manualData.items"
           :items-length="manualData.total"
@@ -110,10 +110,10 @@
             <span>{{ item.courseTitle }}</span>
           </template>
           <template #item.studentName="{ item }">
-            <div class="teacher-payments__cell">
-              <span class="teacher-payments__primary">{{ item.studentName }}</span>
-              <span class="teacher-payments__secondary">{{ item.studentEmail }}</span>
-              <span class="teacher-payments__secondary">
+            <div class="teacher-payments__cell flex flex-col gap-[0.125rem]">
+              <span class="teacher-payments__primary font-medium">{{ item.studentName }}</span>
+              <span class="teacher-payments__secondary text-[0.825rem] text-content-tertiary">{{ item.studentEmail }}</span>
+              <span class="teacher-payments__secondary text-[0.825rem] text-content-tertiary">
                 {{ t('teacher.paymentsStudentIdLabel', { id: item.studentId }) }}
               </span>
             </div>
@@ -151,9 +151,9 @@
         </UiTable>
       </div>
 
-      <div v-else class="teacher-payments__panel">
-        <UiCard class="teacher-payments__filters" hover>
-          <div class="teacher-payments__filters-grid">
+      <div v-else class="teacher-payments__panel grid gap-5">
+        <UiCard class="teacher-payments__filters grid gap-4" hover>
+          <div class="teacher-payments__filters-grid grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
             <UiSelect
               :model-value="tutoringFilters.status"
               :label="t('teacher.filterPaymentStatus')"
@@ -176,12 +176,12 @@
 
             <UiInput v-model="tutoringFilters.search" :label="t('teacher.filterSearch')" :placeholder="t('teacher.filterSearchPlaceholder')" />
 
-            <div class="teacher-payments__date-inputs">
+            <div class="teacher-payments__date-inputs grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(160px,1fr))]">
               <UiInput v-model="tutoringFilters.dateFrom" type="date" :label="t('teacher.filterDateFrom')" />
               <UiInput v-model="tutoringFilters.dateTo" type="date" :label="t('teacher.filterDateTo')" />
             </div>
           </div>
-          <div class="teacher-payments__filters-actions">
+          <div class="teacher-payments__filters-actions flex justify-end">
             <UiButton
               variant="link"
               color="secondary"
@@ -194,12 +194,12 @@
         </UiCard>
 
         <div class="teacher-payments__summary" role="status" aria-live="polite">
-          <div class="teacher-payments__summary-info">
-            <h3 class="teacher-payments__summary-heading">{{ tutoringResultsHeading }}</h3>
-            <p class="teacher-payments__summary-description">{{ tutoringRangeLabel }}</p>
+          <div class="teacher-payments__summary-info grid gap-2 min-w-[220px]">
+            <h3 class="teacher-payments__summary-heading m-0 text-[1.1rem] font-semibold">{{ tutoringResultsHeading }}</h3>
+            <p class="teacher-payments__summary-description m-0 text-content-secondary text-[0.9rem]">{{ tutoringRangeLabel }}</p>
           </div>
-          <div class="teacher-payments__summary-meta">
-            <div v-if="tutoringActiveFilters.length" class="teacher-payments__chips">
+          <div class="teacher-payments__summary-meta flex flex-col items-end gap-3 min-w-[200px]">
+            <div v-if="tutoringActiveFilters.length" class="teacher-payments__chips flex flex-wrap gap-2 justify-end">
               <span
                 v-for="filter in tutoringActiveFilters"
                 :key="`tutoring-filter-${filter}`"
@@ -208,12 +208,12 @@
                 {{ filter }}
               </span>
             </div>
-            <span v-else class="teacher-payments__no-filters">{{ t('teacher.paymentsFiltersEmpty') }}</span>
+            <span v-else class="teacher-payments__no-filters text-content-tertiary text-[0.85rem]">{{ t('teacher.paymentsFiltersEmpty') }}</span>
           </div>
         </div>
 
         <UiTable
-          class="teacher-payments__table"
+          class="teacher-payments__table w-full"
           :headers="tutoringHeaders"
           :items="tutoringData.items"
           :items-length="tutoringData.total"
@@ -228,10 +228,10 @@
           @update:sort-by="onTutoringSortChange"
         >
           <template #item.studentName="{ item }">
-            <div class="teacher-payments__cell">
-              <span class="teacher-payments__primary">{{ item.studentName }}</span>
-              <span class="teacher-payments__secondary">{{ item.studentEmail }}</span>
-              <span class="teacher-payments__secondary">
+            <div class="teacher-payments__cell flex flex-col gap-[0.125rem]">
+              <span class="teacher-payments__primary font-medium">{{ item.studentName }}</span>
+              <span class="teacher-payments__secondary text-[0.825rem] text-content-tertiary">{{ item.studentEmail }}</span>
+              <span class="teacher-payments__secondary text-[0.825rem] text-content-tertiary">
                 {{ t('teacher.paymentsStudentIdLabel', { id: item.studentId }) }}
               </span>
             </div>
@@ -1048,32 +1048,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.teacher-payments {
-  display: grid;
-  gap: var(--sakai-space-6);
-}
-
-.teacher-payments__panel {
-  display: grid;
-  gap: var(--sakai-space-5);
-}
-
-.teacher-payments__filters {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-payments__filters-grid {
-  display: grid;
-  gap: var(--sakai-space-4);
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
-.teacher-payments__filters-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .teacher-payments__summary {
   display: flex;
   flex-wrap: wrap;
@@ -1086,39 +1060,6 @@ onBeforeUnmount(() => {
   border: 1px solid color-mix(in srgb, var(--sakai-primary-400) 18%, transparent);
 }
 
-.teacher-payments__summary-info {
-  display: grid;
-  gap: var(--sakai-space-2);
-  min-width: 220px;
-}
-
-.teacher-payments__summary-heading {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: var(--sakai-font-weight-semibold);
-}
-
-.teacher-payments__summary-description {
-  margin: 0;
-  color: var(--sakai-text-color-secondary);
-  font-size: 0.9rem;
-}
-
-.teacher-payments__summary-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--sakai-space-3);
-  min-width: 200px;
-}
-
-.teacher-payments__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-  justify-content: flex-end;
-}
-
 .teacher-payments__chip {
   display: inline-flex;
   align-items: center;
@@ -1129,36 +1070,6 @@ onBeforeUnmount(() => {
   color: var(--sakai-primary-700);
   font-size: 0.8rem;
   font-weight: var(--sakai-font-weight-medium);
-}
-
-.teacher-payments__no-filters {
-  color: var(--sakai-text-color-tertiary);
-  font-size: 0.85rem;
-}
-
-.teacher-payments__date-inputs {
-  display: grid;
-  gap: var(--sakai-space-3);
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-}
-
-.teacher-payments__table {
-  width: 100%;
-}
-
-.teacher-payments__cell {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-}
-
-.teacher-payments__primary {
-  font-weight: var(--sakai-font-weight-medium);
-}
-
-.teacher-payments__secondary {
-  font-size: 0.825rem;
-  color: var(--sakai-text-color-tertiary);
 }
 
 .teacher-payments__link {

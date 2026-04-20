@@ -1,5 +1,5 @@
 <template>
-  <div class="ui-chart" :style="{ '--ui-chart-height': `${height}px` }">
+  <div class="ui-chart w-full max-w-full flex flex-col gap-3" :style="{ '--ui-chart-height': `${height}px` }">
     <svg :viewBox="`0 0 ${width} ${height}`" preserveAspectRatio="none">
       <defs>
         <linearGradient id="uiChartGradient" x1="0" y1="0" x2="0" y2="1">
@@ -29,7 +29,7 @@
         />
       </g>
     </svg>
-    <div v-if="labels.length" class="ui-chart__labels">
+    <div v-if="labels.length" class="ui-chart__labels grid [grid-template-columns:repeat(auto-fit,minmax(40px,1fr))] text-[0.8rem] text-content-tertiary text-center">
       <span v-for="(label, index) in labels" :key="index">{{ label }}</span>
     </div>
   </div>
@@ -84,14 +84,6 @@ const fill = computed(() => props.fill);
 </script>
 
 <style scoped>
-.ui-chart {
-  width: 100%;
-  max-width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
 .ui-chart svg {
   width: 100%;
   height: var(--ui-chart-height, 140px);
@@ -111,11 +103,4 @@ const fill = computed(() => props.fill);
   stroke-width: 2;
 }
 
-.ui-chart__labels {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
-  font-size: 0.8rem;
-  color: var(--sakai-text-color-tertiary);
-  text-align: center;
-}
 </style>
