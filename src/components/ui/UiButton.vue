@@ -3,29 +3,34 @@
     :is="componentTag"
     v-bind="$attrs"
     :to="props.to"
-     :href="href"
- 
+    :href="href"
     :type="buttonType"
-    class="ui-button"
+    class="ui-button inline-flex items-center justify-center"
     :class="[variantClass, toneClass]"
   >
-    <span v-if="prependIcon" class="ui-button__icon ui-button__icon--start inline-flex items-center justify-center">
+    <span
+      v-if="prependIcon"
+      class="ui-button__icon ui-button__icon--start inline-flex items-center justify-center"
+    >
       <UiIcon :name="prependIcon" :size="18" />
     </span>
     <slot />
-    <span v-if="appendIcon" class="ui-button__icon ui-button__icon--end inline-flex items-center justify-center">
+    <span
+      v-if="appendIcon"
+      class="ui-button__icon ui-button__icon--end inline-flex items-center justify-center"
+    >
       <UiIcon :name="appendIcon" :size="18" />
     </span>
   </component>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { RouterLink } from 'vue-router';
-import UiIcon from './UiIcon.vue';
+import { computed } from "vue";
+import { RouterLink } from "vue-router";
+import UiIcon from "./UiIcon.vue";
 
-export type UiVariant = 'solid' | 'outline' | 'link' | 'ghost';
-export type UiTone = 'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'danger';
+export type UiVariant = "solid" | "outline" | "link" | "ghost";
+export type UiTone = "primary" | "secondary" | "info" | "success" | "danger";
 
 const props = withDefaults(
   defineProps<{
@@ -34,41 +39,43 @@ const props = withDefaults(
     prependIcon?: string;
     appendIcon?: string;
     to?: string | Record<string, unknown>;
-     href?: string;
- 
-    buttonType?: 'button' | 'submit' | 'reset';
+    href?: string;
+
+    buttonType?: "button" | "submit" | "reset";
   }>(),
   {
-    color: 'primary',
-    variant: 'solid',
+    color: "primary",
+    variant: "solid",
     prependIcon: undefined,
     appendIcon: undefined,
     to: undefined,
-     href: undefined,
- 
-    buttonType: 'button'
-  }
+    href: undefined,
+
+    buttonType: "button",
+  },
 );
 
- const componentTag = computed(() => {
- 
+const componentTag = computed(() => {
   if (props.to) {
     return RouterLink;
   }
   if (props.href) {
-    return 'a';
+    return "a";
   }
-  return 'button';
+  return "button";
 });
- 
+
 const variantClass = computed(() => `ui-button--${props.variant}`);
 const toneClass = computed(() => `ui-button--tone-${props.color}`);
 
 const prependIcon = computed(() => props.prependIcon);
 const appendIcon = computed(() => props.appendIcon);
-const buttonType = computed(() => (componentTag.value === 'button' ? props.buttonType : undefined));
- const href = computed(() => (componentTag.value === 'a' ? props.href : undefined));
- 
+const buttonType = computed(() =>
+  componentTag.value === "button" ? props.buttonType : undefined,
+);
+const href = computed(() =>
+  componentTag.value === "a" ? props.href : undefined,
+);
 </script>
 
 <style scoped>
@@ -77,10 +84,7 @@ const buttonType = computed(() => (componentTag.value === 'button' ? props.butto
   --ui-button-gradient: var(--sakai-gradient-primary);
   --ui-button-shadow: var(--sakai-shadow-md);
   --ui-button-shadow-hover: var(--sakai-shadow-lg);
-  --ui-button-solid-text: var(--sakai-primary-contrast);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  --ui-button-solid-text: white;
   gap: var(--sakai-space-2);
   border-radius: var(--sakai-border-radius-md);
   border: none;
@@ -88,7 +92,8 @@ const buttonType = computed(() => (componentTag.value === 'button' ? props.butto
   font-size: 0.95rem;
   padding: 0.6rem 1.35rem;
   cursor: pointer;
-  transition: transform var(--sakai-transition-duration) var(--sakai-transition-ease),
+  transition:
+    transform var(--sakai-transition-duration) var(--sakai-transition-ease),
     box-shadow var(--sakai-transition-duration) var(--sakai-transition-ease);
   text-decoration: none;
   background: transparent;
@@ -114,12 +119,6 @@ const buttonType = computed(() => (componentTag.value === 'button' ? props.butto
 .ui-button--tone-success {
   --ui-button-color: var(--sakai-success);
   --ui-button-gradient: var(--sakai-gradient-success);
-}
-
-.ui-button--tone-warning {
-  --ui-button-color: var(--sakai-warning);
-  --ui-button-gradient: var(--sakai-gradient-warning);
-  --ui-button-solid-text: var(--sakai-text-color);
 }
 
 .ui-button--tone-info {

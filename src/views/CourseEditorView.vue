@@ -11,8 +11,8 @@
       </UiButton>
     </template>
 
-    <div v-if="course" class="course-editor">
-      <section class="course-editor__main">
+    <div v-if="course" class="course-editor grid md:grid-cols-5 grid-cols-1 gap-5">
+      <section class="md:col-span-3">
         <UiCard :title="t('courses.modules')">
           <template #actions>
             <UiButton
@@ -254,7 +254,8 @@
         </UiCard>
       </section>
 
-      <aside class="course-editor__sidebar">
+      
+      <aside class="md:col-span-2">
         <UiCard>
           <div class="course-editor__form-header">
             <div
@@ -2589,12 +2590,12 @@ const saveInfo = async () => {
   box-shadow: var(--sakai-shadow-sm);
   padding: 0.7rem 1rem;
 }
-.course-editor {
+/* .course-editor {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
   gap: var(--sakai-space-5);
-}
+} */
 
 .course-editor__visibility-card {
   width: 100%;
@@ -2680,13 +2681,13 @@ const saveInfo = async () => {
   min-width: 0;
 }
 
-.course-editor__sidebar {
+/* .course-editor__sidebar {
   flex: 0 0 320px;
   min-width: 280px;
   display: flex;
   flex-direction: column;
   gap: var(--sakai-space-4);
-}
+} */
 
 .course-editor__accordion :deep(.ui-accordion__content) {
   background: transparent;
@@ -3107,10 +3108,10 @@ const saveInfo = async () => {
   gap: var(--sakai-space-3);
 }
 
-@media (max-width: 960px) {
+/* @media (max-width: 960px) {
   .course-editor__sidebar {
     flex-basis: 100%;
     min-width: 0;
   }
-}
+} */
 </style>

@@ -1,15 +1,18 @@
 <template>
-   <ThemePage :title="t('courses.title')" :subtitle="t('courses.subtitle')">
- 
+  <ThemePage :title="t('courses.title')" :subtitle="t('courses.subtitle')">
     <template #actions>
-      <UiButton color="primary" prepend-icon="FolderAddOutlined" @click="createCourse">
-        {{ t('courses.new') }}
+      <UiButton
+        color="primary"
+        prepend-icon="FolderAddOutlined"
+        @click="createCourse"
+      >
+        {{ t("courses.new") }}
       </UiButton>
     </template>
 
     <section
       v-if="!loading && courses.length"
-      class="course-list"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       aria-label="course catalog"
     >
       <UiCard
@@ -37,7 +40,7 @@
               <UiBadge color="secondary">{{ course.type }}</UiBadge>
             </div>
             <p class="course-card__meta">
-              {{ course.level || t('courses.levelDefault') }}
+              {{ course.level || t("courses.levelDefault") }}
             </p>
             <div class="course-card__footer">
               <span class="course-card__price">{{ formatPrice(course) }}</span>
@@ -52,7 +55,7 @@
               prepend-icon="EyeOutlined"
               @click="viewCourse(course.id)"
             >
-              {{ t('courses.actions.view') }}
+              {{ t("courses.actions.view") }}
             </UiButton>
             <UiButton
               size="sm"
@@ -61,7 +64,7 @@
               prepend-icon="EditOutlined"
               @click="editCourse(course.id)"
             >
-              {{ t('courses.actions.edit') }}
+              {{ t("courses.actions.edit") }}
             </UiButton>
             <UiButton
               size="sm"
@@ -71,7 +74,11 @@
               :disabled="deletingCourseId === course.id"
               @click="confirmDeleteCourse(course)"
             >
-              {{ deletingCourseId === course.id ? t('common.deleting') : t('courses.actions.delete') }}
+              {{
+                deletingCourseId === course.id
+                  ? t("common.deleting")
+                  : t("courses.actions.delete")
+              }}
             </UiButton>
           </div>
         </article>
@@ -98,36 +105,53 @@
             <UiSkeleton height="20px" width="60%" animation="wave" />
           </div>
           <div class="course-card__actions">
-            <UiSkeleton height="36px" width="112px" shape="pill" animation="wave" />
-            <UiSkeleton height="36px" width="96px" shape="pill" animation="wave" />
-            <UiSkeleton height="36px" width="104px" shape="pill" animation="wave" />
+            <UiSkeleton
+              height="36px"
+              width="112px"
+              shape="pill"
+              animation="wave"
+            />
+            <UiSkeleton
+              height="36px"
+              width="96px"
+              shape="pill"
+              animation="wave"
+            />
+            <UiSkeleton
+              height="36px"
+              width="104px"
+              shape="pill"
+              animation="wave"
+            />
           </div>
         </article>
       </UiCard>
     </section>
 
     <UiCard v-else class="course-list__empty" aria-live="polite">
- 
       <div class="course-list__empty-content">
         <UiIcon name="FolderOutlined" class="course-list__empty-icon" />
-        <h3>{{ t('courses.empty') }}</h3>
-        <p>{{ t('courses.subtitle') }}</p>
-        <UiButton color="primary" prepend-icon="FolderAddOutlined" @click="createCourse">
-          {{ t('courses.new') }}
+        <h3>{{ t("courses.empty") }}</h3>
+        <p>{{ t("courses.subtitle") }}</p>
+        <UiButton
+          color="primary"
+          prepend-icon="FolderAddOutlined"
+          @click="createCourse"
+        >
+          {{ t("courses.new") }}
         </UiButton>
       </div>
     </UiCard>
- 
   </ThemePage>
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useCoursesStore, type CourseSummary } from '@/stores/courses';
-import { useI18n } from 'vue-i18n';
-import { withPlaceholder } from '@/utils/placeholders';
-import UiSkeleton from '@/components/ui/UiSkeleton.vue';
+import { onMounted, computed, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useCoursesStore, type CourseSummary } from "@/stores/courses";
+import { useI18n } from "vue-i18n";
+import { withPlaceholder } from "@/utils/placeholders";
+import UiSkeleton from "@/components/ui/UiSkeleton.vue";
 
 const router = useRouter();
 const store = useCoursesStore();
@@ -144,23 +168,28 @@ onMounted(async () => {
 });
 
 const editCourse = (id: number) => {
-  router.push({ name: 'teacher-course', params: { courseId: id } });
+  router.push({ name: "teacher-course", params: { courseId: id } });
 };
 
 const createCourse = async () => {
-  const id = await store.createCourse({ title: t('courses.untitled'), type: 'recorded', price: 0 });
-  router.push({ name: 'teacher-course', params: { courseId: id } });
+  const id = await store.createCourse({
+    title: t("courses.untitled"),
+    type: "recorded",
+    price: 0,
+  });
+  router.push({ name: "teacher-course", params: { courseId: id } });
 };
 
 const viewCourse = (id: number) => {
-  router.push({ name: 'public-course-detail', params: { courseId: id } });
+  router.push({ name: "public-course-detail", params: { courseId: id } });
 };
 
-const courseImage = (course: CourseSummary) => withPlaceholder(course.thumbnailUrl, 'course');
+const courseImage = (course: CourseSummary) =>
+  withPlaceholder(course.thumbnailUrl, "course");
 
 const confirmDeleteCourse = async (course: CourseSummary) => {
-  const courseTitle = course.title || t('courses.untitled');
-  if (!confirm(t('courses.deleteConfirm', { title: courseTitle }))) {
+  const courseTitle = course.title || t("courses.untitled");
+  if (!confirm(t("courses.deleteConfirm", { title: courseTitle }))) {
     return;
   }
 
@@ -174,11 +203,11 @@ const confirmDeleteCourse = async (course: CourseSummary) => {
 
 const formatPrice = (course: CourseSummary) => {
   const amount = course.price || 0;
-  const currency = (course.currency || 'EGP').toUpperCase();
+  const currency = (course.currency || "EGP").toUpperCase();
   try {
-    return new Intl.NumberFormat(locale.value === 'ar' ? 'ar-EG' : 'en-US', {
-      style: 'currency',
-      currency
+    return new Intl.NumberFormat(locale.value === "ar" ? "ar-EG" : "en-US", {
+      style: "currency",
+      currency,
     }).format(amount);
   } catch {
     return `${currency} ${amount}`;
@@ -187,14 +216,17 @@ const formatPrice = (course: CourseSummary) => {
 </script>
 
 <style scoped>
-.course-list {
+/* .course-list {
   display: grid;
   gap: var(--sakai-space-6);
-  grid-template-columns: repeat(auto-fit, minmax(calc(var(--sakai-space-12) * 4), 1fr));
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(calc(var(--sakai-space-12) * 4), 1fr)
+  );
   grid-auto-rows: 1fr;
   align-items: stretch;
   justify-items: stretch;
-}
+} */
 
 .course-list__card {
   cursor: pointer;
@@ -290,7 +322,8 @@ const formatPrice = (course: CourseSummary) => {
 
 .course-card__arrow {
   color: var(--sakai-text-color-muted);
-  transition: transform var(--sakai-transition-duration) var(--sakai-transition-ease);
+  transition: transform var(--sakai-transition-duration)
+    var(--sakai-transition-ease);
 }
 
 .course-list__card:hover .course-card__arrow,
@@ -308,7 +341,10 @@ const formatPrice = (course: CourseSummary) => {
 .course-list--loading {
   display: grid;
   gap: var(--sakai-space-6);
-  grid-template-columns: repeat(auto-fit, minmax(calc(var(--sakai-space-12) * 4), 1fr));
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(calc(var(--sakai-space-12) * 4), 1fr)
+  );
   margin-top: var(--sakai-space-6);
 }
 

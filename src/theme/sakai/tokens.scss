@@ -208,6 +208,24 @@
   --sakai-warning-surface: color-mix(in srgb, var(--sakai-warning) 28%, transparent);
   --sakai-danger-surface: color-mix(in srgb, var(--sakai-danger) 26%, transparent);
 
+  /* Brand Colors for Dark Mode */
+  --brand-primary:        var(--sakai-primary-400);
+  --brand-primary-light:  var(--sakai-primary-200);
+
+  /* Sidebar */
+  --brand-sidebar-bg:          var(--sakai-surface-card);
+  --brand-sidebar-border:      var(--sakai-border-color);
+  --brand-sidebar-text:        var(--sakai-text-color-secondary);
+  --brand-sidebar-text-muted:  var(--sakai-text-color-tertiary);
+  --brand-sidebar-label:       var(--sakai-text-color-muted);
+
+  /* Nav items */
+  --brand-nav-active-bg:       color-mix(in srgb, var(--sakai-primary) 20%, transparent);
+  --brand-nav-active-text:     var(--sakai-primary-100);
+  --brand-nav-active-shadow:   rgba(0, 0, 0, 0.30);
+  --brand-nav-hover-bg:        color-mix(in srgb, var(--sakai-primary) 10%, transparent);
+  --brand-nav-hover-text:      var(--sakai-primary-200);
+
   color-scheme: dark;
 }
 

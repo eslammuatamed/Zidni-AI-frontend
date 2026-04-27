@@ -18,7 +18,9 @@
           color="danger"
           variant="soft"
         >
-          <div class="teacher-dashboard__alert-content flex items-center justify-between gap-3 flex-wrap">
+          <div
+            class="teacher-dashboard__alert-content flex items-center justify-between gap-3 flex-wrap"
+          >
             <span>{{ t("teacher.profileLoadError") }}</span>
             <UiButton
               size="sm"
@@ -36,7 +38,9 @@
           color="warning"
           variant="soft"
         >
-          <div class="teacher-dashboard__alert-content flex items-center justify-between gap-3 flex-wrap">
+          <div
+            class="teacher-dashboard__alert-content flex items-center justify-between gap-3 flex-wrap"
+          >
             <span>{{ t("teacher.metricsLoadError") }}</span>
             <UiButton
               size="sm"
@@ -54,7 +58,9 @@
           color="info"
           variant="soft"
         >
-          <div class="teacher-dashboard__alert-content flex items-center justify-between gap-3 flex-wrap">
+          <div
+            class="teacher-dashboard__alert-content flex items-center justify-between gap-3 flex-wrap"
+          >
             <span>{{ t("teacher.activityLoadError") }}</span>
             <UiButton
               size="sm"
@@ -68,7 +74,9 @@
         </UiAlert>
       </div>
 
-      <div class="teacher-dashboard__toolbar flex items-center justify-end gap-3 flex-wrap">
+      <div
+        class="teacher-dashboard__toolbar flex items-center justify-end gap-3 flex-wrap"
+      >
         <UiButton
           size="sm"
           variant="ghost"
@@ -79,7 +87,10 @@
         >
           {{ t("teacher.refreshDashboard") }}
         </UiButton>
-        <span v-if="lastUpdatedLabel" class="teacher-dashboard__toolbar-meta text-[0.85rem] text-content-tertiary">
+        <span
+          v-if="lastUpdatedLabel"
+          class="teacher-dashboard__toolbar-meta text-[0.85rem] text-content-tertiary"
+        >
           {{ lastUpdatedLabel }}
         </span>
       </div>
@@ -152,7 +163,9 @@
       <UiCard class="teacher-dashboard__welcome" hover>
         <template #title>{{ t("teacher.dashboard") }}</template>
         <template #subtitle>
-          <span class="teacher-dashboard__welcome-subtitle text-content-tertiary">
+          <span
+            class="teacher-dashboard__welcome-subtitle text-content-tertiary"
+          >
             {{
               t("teacher.welcome", {
                 name: profile?.name || t("teacher.dashboard"),
@@ -160,11 +173,17 @@
             }}
           </span>
         </template>
-        <div v-if="isProfilePending" class="teacher-dashboard__bio-skeleton flex flex-col gap-2">
+        <div
+          v-if="isProfilePending"
+          class="teacher-dashboard__bio-skeleton flex flex-col gap-2"
+        >
           <UiSkeleton height="1rem" width="80%" />
           <UiSkeleton height="1rem" width="60%" />
         </div>
-        <p v-else class="teacher-dashboard__bio m-0 text-content-secondary leading-[var(--sakai-line-height-lg)]">
+        <p
+          v-else
+          class="teacher-dashboard__bio m-0 text-content-secondary leading-[var(--sakai-line-height-lg)]"
+        >
           {{ profile?.bio || t("teacher.bioPlaceholder") }}
         </p>
         <div class="teacher-dashboard__quick-links flex flex-wrap gap-3">
@@ -180,15 +199,14 @@
         </div>
       </UiCard>
 
-      <div dir="rtl" class="teacher-dashboard__content grid gap-5 [grid-template-columns:minmax(0,1fr)_minmax(0,2fr)]">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
         <UiCard
-          class="teacher-dashboard__insights [grid-column:1] [grid-row:1]"
           :title="t('teacher.insightsTitle')"
           :subtitle="t('teacher.insightsSubtitle')"
           hover
         >
-          <div class="teacher-dashboard__insights-grid flex flex-wrap gap-5 items-center justify-between">
-            <div class="teacher-dashboard__progress flex items-center gap-4">
+          <div class="flex flex-wrap gap-5 items-center justify-between">
+            <div class="flex items-center gap-4">
               <UiProgressCircle
                 :value="profileCompleteness"
                 :size="112"
@@ -196,19 +214,17 @@
               >
                 {{ profileCompleteness }}%
               </UiProgressCircle>
-              <div class="teacher-dashboard__progress-meta flex flex-col gap-2">
-                <span class="teacher-dashboard__progress-label text-[0.85rem] text-content-tertiary uppercase tracking-[0.08em]">{{
-                  t("teacher.profileCompleteness")
-                }}</span>
-                <span class="teacher-dashboard__progress-value text-[1.75rem] font-semibold"
+              <div class="flex flex-col gap-2">
+                <span
+                  class="text-[0.85rem] text-content-tertiary uppercase tracking-[0.08em]"
+                  >{{ t("teacher.profileCompleteness") }}</span
+                >
+                <span class="text-[1.75rem] font-semibold"
                   >{{ profileCompleteness }}%</span
                 >
               </div>
             </div>
-            <div
-              v-if="showMetricsSkeleton"
-              class="teacher-dashboard__sparkline-skeleton flex-[1_1_200px]"
-            >
+            <div v-if="showMetricsSkeleton" class="flex-[1_1_200px]">
               <UiSkeleton height="72px" />
             </div>
             <div
@@ -244,12 +260,14 @@
         </UiCard>
 
         <UiCard
-          class="teacher-dashboard__next [grid-column:1] [grid-row:2]"
+          class="md:col-span-2"
           :title="t('teacher.nextStepsTitle')"
           :subtitle="t('teacher.nextStepsSubtitle')"
           hover
         >
-          <ul class="teacher-dashboard__steps list-none m-0 p-0 flex flex-col gap-4">
+          <ul
+            class="teacher-dashboard__steps list-none m-0 p-0 flex flex-col gap-4"
+          >
             <li
               v-for="step in nextSteps"
               :key="step.id"
@@ -258,9 +276,10 @@
               <div class="teacher-dashboard__step-info flex items-center gap-3">
                 <UiAvatar :icon="step.icon" size="sm" />
                 <div class="teacher-dashboard__step-copy">
-                  <span class="teacher-dashboard__step-title font-semibold text-content">{{
-                    step.title
-                  }}</span>
+                  <span
+                    class="teacher-dashboard__step-title font-semibold text-content"
+                    >{{ step.title }}</span
+                  >
                   <span
                     v-if="step.description"
                     class="teacher-dashboard__step-description block text-content-tertiary text-[0.85rem]"
@@ -281,7 +300,7 @@
         </UiCard>
 
         <UiCard
-          class="teacher-dashboard__plan-usage [grid-column:2] [grid-row:1] flex flex-col gap-4"
+          class="md:col-span-2 flex flex-col gap-4"
           :title="planUsageTitle"
           :subtitle="planUsageSubtitle"
           hover
@@ -301,16 +320,22 @@
             v-else-if="usageSummary"
             class="teacher-dashboard__plan-usage-grid flex flex-col gap-4"
           >
-            <div class="teacher-dashboard__plan-usage-header flex items-center justify-between gap-3 flex-wrap">
+            <div
+              class="teacher-dashboard__plan-usage-header flex items-center justify-between gap-3 flex-wrap"
+            >
               <div>
-                <span class="teacher-dashboard__plan-usage-plan font-semibold text-content">
+                <span
+                  class="teacher-dashboard__plan-usage-plan font-semibold text-content"
+                >
                   {{
                     usageSummary.planName ||
                     usageSummary.planCode ||
                     planUsagePlanFallback
                   }}
                 </span>
-                <span class="teacher-dashboard__plan-usage-resolution ml-2 text-content-secondary text-[0.9rem]">
+                <span
+                  class="teacher-dashboard__plan-usage-resolution ml-2 text-content-secondary text-[0.9rem]"
+                >
                   {{ planUsageMaxResolutionLabel }}
                   {{
                     usageSummary.maxResolutionHeight
@@ -318,7 +343,9 @@
                       : planUsageUnlimitedLabel
                   }}
                 </span>
-                <span class="teacher-dashboard__plan-usage-resolution ml-2 text-content-secondary text-[0.9rem]">
+                <span
+                  class="teacher-dashboard__plan-usage-resolution ml-2 text-content-secondary text-[0.9rem]"
+                >
                   {{ planUsageMaxDurationLabel }}
                   {{
                     usageSummary.maxVideoDurationMinutes
@@ -346,11 +373,15 @@
             </UiAlert>
 
             <div class="teacher-dashboard__plan-usage-item flex flex-col gap-2">
-              <div class="teacher-dashboard__plan-usage-label font-medium text-content">
+              <div
+                class="teacher-dashboard__plan-usage-label font-medium text-content"
+              >
                 {{ planUsageStorageLabel }}
               </div>
               <UiProgressBar :value="storageUsagePercent" color="primary">
-                <div class="teacher-dashboard__plan-usage-meta flex gap-2 justify-between text-[0.85rem] text-content-secondary">
+                <div
+                  class="teacher-dashboard__plan-usage-meta flex gap-2 justify-between text-[0.85rem] text-content-secondary"
+                >
                   <span>{{
                     formatDurationSeconds(usageSummary.storageSecondsUsed)
                   }}</span>
@@ -375,11 +406,15 @@
             </div>
 
             <div class="teacher-dashboard__plan-usage-item flex flex-col gap-2">
-              <div class="teacher-dashboard__plan-usage-label font-medium text-content">
+              <div
+                class="teacher-dashboard__plan-usage-label font-medium text-content"
+              >
                 {{ planUsageStorageSizeLabel }}
               </div>
               <UiProgressBar :value="storageSizeUsagePercent" color="secondary">
-                <div class="teacher-dashboard__plan-usage-meta flex gap-2 justify-between text-[0.85rem] text-content-secondary">
+                <div
+                  class="teacher-dashboard__plan-usage-meta flex gap-2 justify-between text-[0.85rem] text-content-secondary"
+                >
                   <span>{{ formatBytes(usageSummary.storageBytesUsed) }}</span>
                   <span>
                     /
@@ -400,11 +435,15 @@
             </div>
 
             <div class="teacher-dashboard__plan-usage-item flex flex-col gap-2">
-              <div class="teacher-dashboard__plan-usage-label font-medium text-content">
+              <div
+                class="teacher-dashboard__plan-usage-label font-medium text-content"
+              >
                 {{ planUsageStreamingLabel }}
               </div>
               <UiProgressBar :value="streamingUsagePercent" color="info">
-                <div class="teacher-dashboard__plan-usage-meta flex gap-2 justify-between text-[0.85rem] text-content-secondary">
+                <div
+                  class="teacher-dashboard__plan-usage-meta flex gap-2 justify-between text-[0.85rem] text-content-secondary"
+                >
                   <span>{{
                     formatMinutes(usageSummary.streamingMinutesUsed)
                   }}</span>
@@ -426,7 +465,9 @@
               </div>
             </div>
 
-            <div class="teacher-dashboard__plan-trends flex flex-col gap-3 mt-2">
+            <div
+              class="teacher-dashboard__plan-trends flex flex-col gap-3 mt-2"
+            >
               <div class="teacher-dashboard__plan-trends-header">
                 {{ planUsageTrendsTitle }}
               </div>
@@ -465,7 +506,10 @@
                   />
                 </div>
               </div>
-              <p v-else class="teacher-dashboard__plan-trends-empty m-0 text-[0.85rem] text-content-tertiary">
+              <p
+                v-else
+                class="teacher-dashboard__plan-trends-empty m-0 text-[0.85rem] text-content-tertiary"
+              >
                 {{ planUsageTrendsEmptyMessage }}
               </p>
             </div>
@@ -473,7 +517,7 @@
         </UiCard>
 
         <UiCard
-          class="teacher-dashboard__views [grid-column:2] [grid-row:2] flex flex-col gap-4"
+          class="teacher-dashboard__views flex flex-col gap-4"
           :title="viewsCardTitle"
           :subtitle="viewsCardSubtitle"
           hover
@@ -487,7 +531,9 @@
             <UiSkeleton height="1rem" width="60%" />
           </div>
           <UiAlert v-else-if="viewsError" color="warning" variant="soft">
-            <div class="teacher-dashboard__views-alert flex items-center justify-between gap-3 flex-wrap">
+            <div
+              class="teacher-dashboard__views-alert flex items-center justify-between gap-3 flex-wrap"
+            >
               <span>{{ viewsErrorMessage }}</span>
               <UiButton
                 v-if="showViewsRetry"
@@ -500,7 +546,10 @@
               </UiButton>
             </div>
           </UiAlert>
-          <div v-else class="teacher-dashboard__views-content flex flex-col gap-4">
+          <div
+            v-else
+            class="teacher-dashboard__views-content flex flex-col gap-4"
+          >
             <div class="teacher-dashboard__views-stats">
               <div class="teacher-dashboard__views-stat">
                 <span class="teacher-dashboard__views-value">{{
@@ -555,7 +604,10 @@
                   }}</span>
                 </li>
               </ul>
-              <p v-else class="teacher-dashboard__views-empty m-0 text-content-tertiary">
+              <p
+                v-else
+                class="teacher-dashboard__views-empty m-0 text-content-tertiary"
+              >
                 {{ viewsEmptyLabel }}
               </p>
             </div>
@@ -563,13 +615,130 @@
         </UiCard>
 
         <UiCard
+          class="flex flex-col gap-5"
+          :title="t('teacher.activityTitle')"
+          :subtitle="t('teacher.activitySubtitle')"
+          hover
+        >
+          <div
+            v-if="showActivitySkeleton"
+            class="teacher-dashboard__activity-skeleton flex flex-col gap-3"
+          >
+            <div
+              v-for="index in 3"
+              :key="`activity-skeleton-${index}`"
+              class="teacher-dashboard__activity-skeleton-row flex flex-col gap-2"
+            >
+              <UiSkeleton height="0.9rem" width="55%" />
+              <UiSkeleton height="0.8rem" width="40%" />
+            </div>
+          </div>
+          <template v-else>
+            <div
+              class="teacher-dashboard__activity-section flex flex-col gap-3"
+            >
+              <div
+                class="teacher-dashboard__activity-header flex items-center justify-between gap-3 flex-wrap"
+              >
+                <h3>{{ t("teacher.upcomingSessions") }}</h3>
+                <UiButton
+                  size="sm"
+                  variant="link"
+                  color="info"
+                  @click="goToLiveSessions"
+                >
+                  {{ t("teacher.activityViewAllSessions") }}
+                </UiButton>
+              </div>
+              <ul
+                class="teacher-dashboard__activity-list list-none m-0 p-0 flex flex-col gap-3"
+              >
+                <li
+                  v-for="session in upcomingSessions"
+                  :key="session.id"
+                  class="teacher-dashboard__activity-item"
+                >
+                  <div>
+                    <span
+                      class="teacher-dashboard__activity-title block font-medium text-content"
+                      >{{ session.title }}</span
+                    >
+                    <span
+                      class="teacher-dashboard__activity-meta block text-[0.85rem] text-content-tertiary"
+                      >{{ formatDateTime(session.scheduledAt) }}</span
+                    >
+                  </div>
+                  <UiBadge variant="soft" color="primary">{{
+                    session.courseTitle
+                  }}</UiBadge>
+                </li>
+                <li
+                  v-if="!upcomingSessions.length"
+                  class="teacher-dashboard__activity-empty"
+                >
+                  {{ t("teacher.noSessions") }}
+                </li>
+              </ul>
+            </div>
+            <div
+              class="teacher-dashboard__activity-section flex flex-col gap-3"
+            >
+              <div
+                class="teacher-dashboard__activity-header flex items-center justify-between gap-3 flex-wrap"
+              >
+                <h3>{{ t("teacher.upcomingAssignments") }}</h3>
+                <UiButton
+                  size="sm"
+                  variant="link"
+                  color="primary"
+                  @click="goToLearning"
+                >
+                  {{ t("teacher.activityReviewAssignments") }}
+                </UiButton>
+              </div>
+              <ul
+                class="teacher-dashboard__activity-list list-none m-0 p-0 flex flex-col gap-3"
+              >
+                <li
+                  v-for="assignment in upcomingAssignments"
+                  :key="assignment.id"
+                  class="teacher-dashboard__activity-item"
+                >
+                  <div>
+                    <span
+                      class="teacher-dashboard__activity-title block font-medium text-content"
+                      >{{ assignment.title }}</span
+                    >
+                    <span
+                      class="teacher-dashboard__activity-meta block text-[0.85rem] text-content-tertiary"
+                      >{{ formatDateTime(assignment.dueAt) }}</span
+                    >
+                  </div>
+                  <UiBadge variant="outline" color="warning">{{
+                    assignment.courseTitle
+                  }}</UiBadge>
+                </li>
+                <li
+                  v-if="!upcomingAssignments.length"
+                  class="teacher-dashboard__activity-empty"
+                >
+                  {{ t("teacher.noAssignments") }}
+                </li>
+              </ul>
+            </div>
+          </template>
+        </UiCard>
+
+        <UiCard
           v-if="teacherAssistantsEnabled"
-          class="teacher-dashboard__assistants-card [grid-column:1] [grid-row:3] flex flex-col gap-5"
+          class="md:col-span-2 flex flex-col gap-5"
           :title="t('teacher.assistantsDashboard.title')"
           :subtitle="t('teacher.assistantsDashboard.subtitle')"
           hover
         >
-          <div class="teacher-dashboard__assistants-content flex flex-col gap-4">
+          <div
+            class="teacher-dashboard__assistants-content flex flex-col gap-4"
+          >
             <div
               v-if="assistantsSummaryLoading"
               class="teacher-dashboard__assistants-skeleton grid gap-3"
@@ -587,7 +756,9 @@
             </UiAlert>
             <div v-else>
               <div class="teacher-dashboard__assistants-grid">
-                <div class="teacher-dashboard__assistants-stat flex flex-col gap-1">
+                <div
+                  class="teacher-dashboard__assistants-stat flex flex-col gap-1"
+                >
                   <span class="teacher-dashboard__assistants-value">{{
                     formatNumber(assistantCount)
                   }}</span>
@@ -602,7 +773,9 @@
                     }}
                   </span>
                 </div>
-                <div class="teacher-dashboard__assistants-stat flex flex-col gap-1">
+                <div
+                  class="teacher-dashboard__assistants-stat flex flex-col gap-1"
+                >
                   <span class="teacher-dashboard__assistants-value">{{
                     formatNumber(assistantRoleCount)
                   }}</span>
@@ -626,7 +799,9 @@
               </p>
             </div>
           </div>
-          <div class="teacher-dashboard__assistants-actions flex flex-wrap gap-3">
+          <div
+            class="teacher-dashboard__assistants-actions flex flex-wrap gap-3"
+          >
             <UiButton
               size="sm"
               color="primary"
@@ -659,113 +834,17 @@
             </UiButton>
           </div>
         </UiCard>
-        <UiCard
-          class="teacher-dashboard__activity [grid-column:2] [grid-row:3] flex flex-col gap-5"
-          :title="t('teacher.activityTitle')"
-          :subtitle="t('teacher.activitySubtitle')"
-          hover
-        >
-          <div
-            v-if="showActivitySkeleton"
-            class="teacher-dashboard__activity-skeleton flex flex-col gap-3"
-          >
-            <div
-              v-for="index in 3"
-              :key="`activity-skeleton-${index}`"
-              class="teacher-dashboard__activity-skeleton-row flex flex-col gap-2"
-            >
-              <UiSkeleton height="0.9rem" width="55%" />
-              <UiSkeleton height="0.8rem" width="40%" />
-            </div>
-          </div>
-          <template v-else>
-            <div class="teacher-dashboard__activity-section flex flex-col gap-3">
-              <div class="teacher-dashboard__activity-header flex items-center justify-between gap-3 flex-wrap">
-                <h3>{{ t("teacher.upcomingSessions") }}</h3>
-                <UiButton
-                  size="sm"
-                  variant="link"
-                  color="info"
-                  @click="goToLiveSessions"
-                >
-                  {{ t("teacher.activityViewAllSessions") }}
-                </UiButton>
-              </div>
-              <ul class="teacher-dashboard__activity-list list-none m-0 p-0 flex flex-col gap-3">
-                <li
-                  v-for="session in upcomingSessions"
-                  :key="session.id"
-                  class="teacher-dashboard__activity-item"
-                >
-                  <div>
-                    <span class="teacher-dashboard__activity-title block font-medium text-content">{{
-                      session.title
-                    }}</span>
-                    <span class="teacher-dashboard__activity-meta block text-[0.85rem] text-content-tertiary">{{
-                      formatDateTime(session.scheduledAt)
-                    }}</span>
-                  </div>
-                  <UiBadge variant="soft" color="primary">{{
-                    session.courseTitle
-                  }}</UiBadge>
-                </li>
-                <li
-                  v-if="!upcomingSessions.length"
-                  class="teacher-dashboard__activity-empty"
-                >
-                  {{ t("teacher.noSessions") }}
-                </li>
-              </ul>
-            </div>
-            <div class="teacher-dashboard__activity-section flex flex-col gap-3">
-              <div class="teacher-dashboard__activity-header flex items-center justify-between gap-3 flex-wrap">
-                <h3>{{ t("teacher.upcomingAssignments") }}</h3>
-                <UiButton
-                  size="sm"
-                  variant="link"
-                  color="primary"
-                  @click="goToLearning"
-                >
-                  {{ t("teacher.activityReviewAssignments") }}
-                </UiButton>
-              </div>
-              <ul class="teacher-dashboard__activity-list list-none m-0 p-0 flex flex-col gap-3">
-                <li
-                  v-for="assignment in upcomingAssignments"
-                  :key="assignment.id"
-                  class="teacher-dashboard__activity-item"
-                >
-                  <div>
-                    <span class="teacher-dashboard__activity-title block font-medium text-content">{{
-                      assignment.title
-                    }}</span>
-                    <span class="teacher-dashboard__activity-meta block text-[0.85rem] text-content-tertiary">{{
-                      formatDateTime(assignment.dueAt)
-                    }}</span>
-                  </div>
-                  <UiBadge variant="outline" color="warning">{{
-                    assignment.courseTitle
-                  }}</UiBadge>
-                </li>
-                <li
-                  v-if="!upcomingAssignments.length"
-                  class="teacher-dashboard__activity-empty"
-                >
-                  {{ t("teacher.noAssignments") }}
-                </li>
-              </ul>
-            </div>
-          </template>
-        </UiCard>
       </div>
 
-      <UiCard
+      <!-- <UiCard
         class="teacher-dashboard__account"
         :title="t('teacher.accountCardTitle')"
         hover
       >
         <div class="teacher-dashboard__account-list flex flex-col gap-3 mb-4">
-          <div class="teacher-dashboard__account-row flex justify-between items-center gap-3 border-b pb-3">
+          <div
+            class="teacher-dashboard__account-row flex justify-between items-center gap-3 border-b pb-3"
+          >
             <span class="teacher-dashboard__account-label">{{
               t("teacher.accountStatus")
             }}</span>
@@ -780,7 +859,9 @@
               }}
             </UiBadge>
           </div>
-          <div class="teacher-dashboard__account-row flex justify-between items-center gap-3 border-b pb-3">
+          <div
+            class="teacher-dashboard__account-row flex justify-between items-center gap-3 border-b pb-3"
+          >
             <span class="teacher-dashboard__account-label">{{
               t("teacher.subjectFocus")
             }}</span>
@@ -793,7 +874,9 @@
               {{ profile?.subject || t("teacher.subjectUnset") }}
             </span>
           </div>
-          <div class="teacher-dashboard__account-row flex justify-between items-center gap-3 border-b pb-3">
+          <div
+            class="teacher-dashboard__account-row flex justify-between items-center gap-3 border-b pb-3"
+          >
             <span class="teacher-dashboard__account-label">{{
               t("teacher.profileCompleteness")
             }}</span>
@@ -805,7 +888,7 @@
         <UiButton color="danger" prepend-icon="LogoutOutlined" @click="logout">
           {{ t("nav.logout") }}
         </UiButton>
-      </UiCard>
+      </UiCard> -->
     </div>
   </ThemePage>
 </template>
@@ -1827,7 +1910,7 @@ const quickLinks = computed<QuickLink[]>(() => {
       label: t("nav.teacherQuestionBanks"),
       icon: "DatabaseOutlined",
       action: goToQuestionBanks,
-      color: "warning",
+      color: "info",
     },
   );
 
@@ -1855,7 +1938,7 @@ const quickLinks = computed<QuickLink[]>(() => {
       label: t("teacher.quickLinkCompleteProfile"),
       icon: "IdcardOutlined",
       action: goToBranding,
-      color: "warning",
+      color: "info",
     });
   }
 
@@ -2118,11 +2201,11 @@ const refreshAll = async () => {
 }
 
 /* ── Sparkline SVG — cannot be expressed as Tailwind utilities ──────── */
-.teacher-dashboard__sparkline svg {
+/* .teacher-dashboard__sparkline svg {
   display: block;
   width: 100%;
   height: 72px;
-}
+} */
 
 .teacher-dashboard__sparkline-area {
   fill: color-mix(in srgb, var(--sakai-primary) 18%, transparent);
@@ -2307,7 +2390,7 @@ const refreshAll = async () => {
 }
 
 /* ── Responsive content grid ────────────────────────────────────────── */
-@media (max-width: 960px) {
+/* @media (max-width: 960px) {
   .teacher-dashboard__content {
     grid-template-columns: 1fr;
   }
@@ -2330,5 +2413,5 @@ const refreshAll = async () => {
   .teacher-dashboard__toolbar {
     justify-content: space-between;
   }
-}
+} */
 </style>

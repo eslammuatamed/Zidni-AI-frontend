@@ -1,5 +1,5 @@
-@use './tokens';
-@use './mixins' as *;
+@use "./tokens";
+@use "./mixins" as *;
 
 :root {
   font-size: var(--sakai-font-size-root);
@@ -22,7 +22,6 @@ body {
   font-family: var(--sakai-font-family-base);
   font-weight: var(--sakai-font-weight-regular);
   color: var(--sakai-text-color);
-  background: var(--sakai-surface-section);
   line-height: var(--sakai-line-height-lg);
 }
 
@@ -33,7 +32,7 @@ a {
 
 a:focus-visible,
 button:focus-visible,
-[tabindex='0']:focus-visible {
+[tabindex="0"]:focus-visible {
   @include sakai-focus-ring;
 }
 

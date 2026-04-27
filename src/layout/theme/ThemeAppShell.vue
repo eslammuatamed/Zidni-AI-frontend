@@ -370,7 +370,7 @@
       <main
         id="main-content"
         ref="mainContentRef"
-        class="theme-app-shell__content"
+        class="theme-app-shell__content max-w-7xl mx-auto"
         tabindex="-1"
       >
         <slot />
@@ -2658,9 +2658,9 @@ const handleNavigate = () => {
   color: var(--sakai-primary-600);
 }
 
-.theme-app-shell__content {
+/* .theme-app-shell__content {
   scroll-margin-top: calc(var(--sakai-topbar-height) + var(--sakai-space-4));
-}
+} */
 
 .theme-topbar__user {
   position: relative;

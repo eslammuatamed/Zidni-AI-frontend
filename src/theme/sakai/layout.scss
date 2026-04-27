@@ -1,9 +1,8 @@
-@use './mixins' as *;
+@use "./mixins" as *;
 
 .theme-app-shell {
   display: flex;
   min-height: 100vh;
-  background: var(--sakai-surface-section);
   color: var(--sakai-text-color);
   --theme-sidebar-hidden-translate: -100%;
   --theme-nav-hover-translate: 0.25rem;
@@ -13,7 +12,7 @@
   --sakai-sidebar-width: var(--sakai-sidebar-width-collapsed);
 }
 
-[dir='rtl'] .theme-app-shell {
+[dir="rtl"] .theme-app-shell {
   --theme-sidebar-hidden-translate: 100%;
   --theme-nav-hover-translate: -0.25rem;
 }
@@ -39,7 +38,7 @@
   box-sizing: border-box;
 }
 
-[dir='rtl'] .theme-app-shell__sidebar {
+[dir="rtl"] .theme-app-shell__sidebar {
   left: auto;
   right: 0;
 }
@@ -144,7 +143,7 @@
   @include sakai-transition(background-color, color, transform);
 
   &:hover {
-    background: rgba(30, 58, 138, 0.14);
+    background: color-mix(in srgb, var(--brand-primary) 14%, transparent);
     color: var(--brand-primary-light);
     transform: translateX(var(--theme-nav-hover-translate));
   }
@@ -274,7 +273,6 @@
 .theme-app-shell__content {
   flex: 1;
   padding: var(--sakai-space-6) var(--sakai-space-6) var(--sakai-space-8);
-  background: linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0%, transparent 11.25rem);
 }
 
 .theme-page {
@@ -294,7 +292,8 @@
   box-shadow: var(--sakai-shadow-md);
   border: 0.0625rem solid var(--sakai-border-color);
   /* Fallback */
-  border: 0.0625rem solid color-mix(in srgb, var(--sakai-primary) 8%, var(--sakai-border-color));
+  border: 0.0625rem solid
+    color-mix(in srgb, var(--sakai-primary) 8%, var(--sakai-border-color));
 }
 
 .theme-page__heading {
@@ -358,7 +357,11 @@
 .theme-page--admin .theme-page__title {
   font-size: 2.25rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--sakai-primary) 0%, var(--sakai-primary-700) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--sakai-primary) 0%,
+    var(--sakai-primary-700) 100%
+  );
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -373,7 +376,8 @@
   .theme-app-shell__sidebar {
     position: fixed;
     transform: translateX(var(--theme-sidebar-hidden-translate));
-    transition: transform var(--sakai-transition-duration) var(--sakai-transition-ease);
+    transition: transform var(--sakai-transition-duration)
+      var(--sakai-transition-ease);
   }
 
   .theme-app-shell.is-sidebar-open .theme-app-shell__sidebar {
@@ -392,8 +396,6 @@
 
   .theme-app-shell__content {
     padding-inline: var(--sakai-space-4);
-    width: 100%;
-    max-width: 100vw;
     overflow-x: auto;
     box-sizing: border-box;
   }
@@ -414,5 +416,4 @@
     padding-block: var(--sakai-space-3);
     flex-wrap: wrap;
   }
-
 }

@@ -1,4 +1,4 @@
-@use '../theme/sakai/mixins' as *;
+@use "../theme/sakai/mixins" as *;
 // IBM Plex Sans Arabic is imported in index.html and set in tokens.scss
 
 :root {
@@ -6,7 +6,6 @@
 }
 
 body {
-  background: var(--sakai-surface-section);
   color: var(--sakai-text-color);
   font-family: var(--sakai-font-family-base);
   font-size: var(--sakai-font-size-md);
@@ -26,9 +25,11 @@ body.rtl {
   display: grid;
   place-items: center;
   padding: clamp(3rem, 7vw, 4.5rem) clamp(1.5rem, 6vw, 3rem);
-  background: linear-gradient(135deg,
-      color-mix(in srgb, var(--sakai-primary) 12%, transparent),
-      color-mix(in srgb, var(--sakai-secondary) 12%, transparent));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--sakai-primary) 12%, transparent),
+    color-mix(in srgb, var(--sakai-secondary) 12%, transparent)
+  );
 }
 
 .auth-card {
@@ -37,7 +38,8 @@ body.rtl {
   border-radius: var(--sakai-border-radius-xl);
   padding: clamp(2.5rem, 5vw, 3rem);
   box-shadow: var(--sakai-shadow-lg);
-  border: 0.0625rem solid color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
+  border: 0.0625rem solid
+    color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
   display: flex;
   flex-direction: column;
   gap: var(--sakai-space-5);
@@ -103,7 +105,8 @@ body.rtl {
   background: var(--sakai-surface-alt);
   padding: 0.75rem 1rem;
   border-radius: var(--sakai-border-radius-md);
-  border: 0.0625rem solid color-mix(in srgb, var(--sakai-border-color) 85%, transparent);
+  border: 0.0625rem solid
+    color-mix(in srgb, var(--sakai-border-color) 85%, transparent);
 }
 
 .auth-input input,
@@ -139,7 +142,8 @@ body.rtl {
   box-shadow: var(--sakai-shadow-md);
   cursor: pointer;
   width: 100%;
-  transition: transform var(--sakai-transition-duration) var(--sakai-transition-ease),
+  transition:
+    transform var(--sakai-transition-duration) var(--sakai-transition-ease),
     box-shadow var(--sakai-transition-duration) var(--sakai-transition-ease);
 }
 
@@ -171,7 +175,8 @@ body.rtl {
   width: 1rem;
   height: 1rem;
   border-radius: 50%;
-  border: 0.125rem solid color-mix(in srgb, var(--sakai-primary-contrast) 35%, transparent);
+  border: 0.125rem solid
+    color-mix(in srgb, var(--sakai-primary-contrast) 35%, transparent);
   border-top-color: var(--sakai-primary-contrast);
   animation: spin 1s linear infinite;
 }
