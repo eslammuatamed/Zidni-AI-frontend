@@ -1,24 +1,42 @@
 <template>
-  <ThemePage :title="t('teacher.assistants.title')" :subtitle="t('teacher.assistants.subtitle')">
+  <ThemePage
+    :title="t('teacher.assistants.title')"
+    :subtitle="t('teacher.assistants.subtitle')"
+  >
     <div class="assistants-management">
-      <section id="assistant-overview" ref="assistantOverviewSection" class="assistants-management__section">
-        <UiCard class="assistants-management__card assistants-management__overview" hover>
-          <template #title>{{ t('teacher.assistants.summary.title') }}</template>
-          <template #subtitle>{{ t('teacher.assistants.summary.subtitle') }}</template>
+      <section
+        id="assistant-overview"
+        ref="assistantOverviewSection"
+        class="assistants-management__section"
+      >
+        <UiCard
+          class="assistants-management__card assistants-management__overview"
+          hover
+        >
+          <template #title>{{
+            t("teacher.assistants.summary.title")
+          }}</template>
+          <template #subtitle>{{
+            t("teacher.assistants.summary.subtitle")
+          }}</template>
           <template #actions>
             <UiButton
               size="sm"
               variant="ghost"
               color="neutral"
-              :disabled="summaryRefreshing || store.rolesLoading || store.assistantsLoading"
+              :disabled="
+                summaryRefreshing ||
+                store.rolesLoading ||
+                store.assistantsLoading
+              "
               @click="refreshOverview"
             >
               <span v-if="summaryRefreshing" class="loader"></span>
               <span>
                 {{
                   summaryRefreshing
-                    ? t('teacher.assistants.summary.refreshing')
-                    : t('teacher.assistants.summary.refresh')
+                    ? t("teacher.assistants.summary.refreshing")
+                    : t("teacher.assistants.summary.refresh")
                 }}
               </span>
             </UiButton>
@@ -27,30 +45,40 @@
             {{ summaryLastUpdated }}
           </p>
           <div class="assistants-management__summary-grid">
-            <div v-for="card in summaryCards" :key="card.key" class="assistants-management__summary-stat">
-              <span class="assistants-management__summary-value">{{ formatNumber(card.value) }}</span>
-              <span class="assistants-management__summary-label">{{ card.label }}</span>
-              <span class="assistants-management__summary-description">{{ card.description }}</span>
+            <div
+              v-for="card in summaryCards"
+              :key="card.key"
+              class="assistants-management__summary-stat"
+            >
+              <span class="assistants-management__summary-value">{{
+                formatNumber(card.value)
+              }}</span>
+              <span class="assistants-management__summary-label">{{
+                card.label
+              }}</span>
+              <span class="assistants-management__summary-description">{{
+                card.description
+              }}</span>
             </div>
           </div>
           <div class="assistants-management__persona-distribution">
             <div class="assistants-management__persona-distribution-header">
-              <h4>{{ t('teacher.assistants.summary.personasTitle') }}</h4>
+              <h4>{{ t("teacher.assistants.summary.personasTitle") }}</h4>
               <span class="assistants-management__persona-distribution-meta">
-                {{ t('teacher.assistants.summary.personasSubtitle') }}
+                {{ t("teacher.assistants.summary.personasSubtitle") }}
               </span>
             </div>
             <p
               v-if="coverageLoading && !hasPersonaDistributionData"
               class="assistants-management__persona-distribution-empty"
             >
-              {{ t('teacher.assistants.summary.personasLoading') }}
+              {{ t("teacher.assistants.summary.personasLoading") }}
             </p>
             <p
               v-else-if="!personaDistribution.length"
               class="assistants-management__persona-distribution-empty"
             >
-              {{ t('teacher.assistants.summary.personasEmpty') }}
+              {{ t("teacher.assistants.summary.personasEmpty") }}
             </p>
             <div v-else class="assistants-management__persona-grid">
               <div
@@ -59,21 +87,25 @@
                 class="assistants-management__persona-card"
               >
                 <div class="assistants-management__persona-card-header">
-                  <UiTag size="sm" class="assistants-management__persona-tag" :color="persona.color">
+                  <UiTag
+                    size="sm"
+                    class="assistants-management__persona-tag"
+                    :color="persona.color"
+                  >
                     {{ persona.label }}
                   </UiTag>
                 </div>
                 <p class="assistants-management__persona-count">
                   {{
-                    t('teacher.assistants.summary.personasRoles', {
-                      count: formatNumber(persona.roleCount)
+                    t("teacher.assistants.summary.personasRoles", {
+                      count: formatNumber(persona.roleCount),
                     })
                   }}
                 </p>
                 <p class="assistants-management__persona-count">
                   {{
-                    t('teacher.assistants.summary.personasAssistants', {
-                      count: formatNumber(persona.assistantCount)
+                    t("teacher.assistants.summary.personasAssistants", {
+                      count: formatNumber(persona.assistantCount),
                     })
                   }}
                 </p>
@@ -82,9 +114,9 @@
           </div>
           <div class="assistants-management__coverage">
             <div class="assistants-management__coverage-header">
-              <h4>{{ t('teacher.assistants.summary.coverage.title') }}</h4>
+              <h4>{{ t("teacher.assistants.summary.coverage.title") }}</h4>
               <span class="assistants-management__coverage-meta">
-                {{ t('teacher.assistants.summary.coverage.subtitle') }}
+                {{ t("teacher.assistants.summary.coverage.subtitle") }}
               </span>
             </div>
             <UiAlert
@@ -93,7 +125,7 @@
               color="danger"
               variant="soft"
             >
-              {{ t('teacher.assistants.summary.coverage.error') }}
+              {{ t("teacher.assistants.summary.coverage.error") }}
             </UiAlert>
             <template v-else>
               <UiAlert
@@ -113,42 +145,54 @@
               >
                 {{ coverageSuccessMessage }}
               </UiAlert>
-              <p v-if="coverageLoading" class="assistants-management__coverage-loading">
-                {{ t('teacher.assistants.summary.coverage.loading') }}
+              <p
+                v-if="coverageLoading"
+                class="assistants-management__coverage-loading"
+              >
+                {{ t("teacher.assistants.summary.coverage.loading") }}
               </p>
-              <div v-else-if="coverageHasData" class="assistants-management__coverage-grid">
+              <div
+                v-else-if="coverageHasData"
+                class="assistants-management__coverage-grid"
+              >
                 <div
                   v-for="item in coverageView"
                   :key="item.key"
                   class="assistants-management__coverage-item"
                 >
                   <div class="assistants-management__coverage-item-header">
-                    <span class="assistants-management__coverage-area">{{ item.areaLabel }}</span>
-                    <UiTag size="sm" :color="item.tagColor">{{ item.statusLabel }}</UiTag>
+                    <span class="assistants-management__coverage-area">{{
+                      item.areaLabel
+                    }}</span>
+                    <UiTag size="sm" :color="item.tagColor">{{
+                      item.statusLabel
+                    }}</UiTag>
                   </div>
                   <p class="assistants-management__coverage-support">
                     {{
-                      t('teacher.assistants.summary.coverage.support', {
+                      t("teacher.assistants.summary.coverage.support", {
                         assistants: formatNumber(item.assistantCount),
-                        roles: formatNumber(item.roleCount)
+                        roles: formatNumber(item.roleCount),
                       })
                     }}
                   </p>
                 </div>
               </div>
               <p v-else class="assistants-management__coverage-empty">
-                {{ t('teacher.assistants.summary.coverage.empty') }}
+                {{ t("teacher.assistants.summary.coverage.empty") }}
               </p>
             </template>
           </div>
           <div class="assistants-management__summary-access">
             <div class="assistants-management__summary-access-header">
-              <h4>{{ t('teacher.assistants.summary.accessTitle') }}</h4>
+              <h4>{{ t("teacher.assistants.summary.accessTitle") }}</h4>
               <span class="assistants-management__summary-access-meta">
                 {{
-                  t('teacher.assistants.summary.rolesCoverage', {
+                  t("teacher.assistants.summary.rolesCoverage", {
                     available: formatNumber(summarySnapshot.totalRoles),
-                    uncovered: formatNumber(summarySnapshot.rolesWithoutMembers)
+                    uncovered: formatNumber(
+                      summarySnapshot.rolesWithoutMembers,
+                    ),
                   })
                 }}
               </span>
@@ -161,82 +205,156 @@
               >
                 <div class="assistants-management__summary-access-item-header">
                   <div class="assistants-management__summary-access-name-group">
-                    <span class="assistants-management__summary-access-name">{{ role.name }}</span>
-                    <UiTag size="sm" class="assistants-management__persona-tag" :color="role.personaColor">
+                    <span class="assistants-management__summary-access-name">{{
+                      role.name
+                    }}</span>
+                    <UiTag
+                      size="sm"
+                      class="assistants-management__persona-tag"
+                      :color="role.personaColor"
+                    >
                       {{ role.personaLabel }}
                     </UiTag>
                   </div>
                   <span class="assistants-management__summary-access-count">
-                    {{ t('teacher.assistants.summary.accessAssistants', { count: role.assistantCount }) }}
+                    {{
+                      t("teacher.assistants.summary.accessAssistants", {
+                        count: role.assistantCount,
+                      })
+                    }}
                   </span>
                 </div>
-                <div v-if="role.appShellOptions.length" class="assistants-management__app-shell-tags">
-                  <UiTag v-for="option in role.appShellOptions" :key="option" size="sm" color="primary">
+                <div
+                  v-if="role.appShellOptions.length"
+                  class="assistants-management__app-shell-tags"
+                >
+                  <UiTag
+                    v-for="option in role.appShellOptions"
+                    :key="option"
+                    size="sm"
+                    color="primary"
+                  >
                     {{ option }}
                   </UiTag>
                 </div>
                 <p v-else class="assistants-management__app-shell-empty">
-                  {{ t('teacher.assistants.summary.accessEmptyRole') }}
+                  {{ t("teacher.assistants.summary.accessEmptyRole") }}
                 </p>
               </li>
-              <li v-if="!roleAccessList.length" class="assistants-management__summary-access-empty">
-                {{ t('teacher.assistants.summary.accessEmpty') }}
+              <li
+                v-if="!roleAccessList.length"
+                class="assistants-management__summary-access-empty"
+              >
+                {{ t("teacher.assistants.summary.accessEmpty") }}
               </li>
             </ul>
           </div>
           <div class="assistants-management__automation">
             <div class="assistants-management__section-header">
-              <h4>{{ t('teacher.assistants.summary.automation.title') }}</h4>
+              <h4>{{ t("teacher.assistants.summary.automation.title") }}</h4>
               <span class="assistants-management__section-meta">
-                {{ t('teacher.assistants.summary.automation.subtitle') }}
+                {{ t("teacher.assistants.summary.automation.subtitle") }}
               </span>
             </div>
-            <p v-if="!automationView.length" class="assistants-management__phase-empty">
-              {{ t('teacher.assistants.summary.automation.empty') }}
+            <p
+              v-if="!automationView.length"
+              class="assistants-management__phase-empty"
+            >
+              {{ t("teacher.assistants.summary.automation.empty") }}
             </p>
             <div v-else class="assistants-management__automation-grid">
-              <div v-for="entry in automationView" :key="entry.key" class="assistants-management__automation-card">
+              <div
+                v-for="entry in automationView"
+                :key="entry.key"
+                class="assistants-management__automation-card"
+              >
                 <div class="assistants-management__automation-card-header">
-                  <UiTag size="sm" class="assistants-management__persona-tag" :color="entry.personaColor">
+                  <UiTag
+                    size="sm"
+                    class="assistants-management__persona-tag"
+                    :color="entry.personaColor"
+                  >
                     {{ entry.personaLabel }}
                   </UiTag>
-                  <span class="assistants-management__automation-template">{{ entry.templateName }}</span>
+                  <span class="assistants-management__automation-template">{{
+                    entry.templateName
+                  }}</span>
                 </div>
                 <p class="assistants-management__automation-sla">
-                  {{ t('teacher.assistants.summary.automation.sla', { duration: entry.slaLabel }) }}
-                </p>
-                <p v-if="entry.reminderLabels.length" class="assistants-management__automation-reminders">
                   {{
-                    t('teacher.assistants.summary.automation.reminders', {
-                      channels: entry.reminderLabels.join(', ')
+                    t("teacher.assistants.summary.automation.sla", {
+                      duration: entry.slaLabel,
+                    })
+                  }}
+                </p>
+                <p
+                  v-if="entry.reminderLabels.length"
+                  class="assistants-management__automation-reminders"
+                >
+                  {{
+                    t("teacher.assistants.summary.automation.reminders", {
+                      channels: entry.reminderLabels.join(", "),
                     })
                   }}
                 </p>
                 <p class="assistants-management__automation-calendar">
                   {{
                     entry.calendarSyncEnabled
-                      ? t('teacher.assistants.summary.automation.calendarEnabled')
-                      : t('teacher.assistants.summary.automation.calendarDisabled')
+                      ? t(
+                          "teacher.assistants.summary.automation.calendarEnabled",
+                        )
+                      : t(
+                          "teacher.assistants.summary.automation.calendarDisabled",
+                        )
                   }}
                 </p>
-                <ul v-if="entry.checklist.length" class="assistants-management__automation-checklist">
-                  <li v-for="item in entry.checklist" :key="item">{{ item }}</li>
+                <ul
+                  v-if="entry.checklist.length"
+                  class="assistants-management__automation-checklist"
+                >
+                  <li v-for="item in entry.checklist" :key="item">
+                    {{ item }}
+                  </li>
                 </ul>
                 <dl class="assistants-management__automation-stats">
                   <div>
-                    <dt>{{ t('teacher.assistants.summary.automation.metrics.active') }}</dt>
+                    <dt>
+                      {{
+                        t(
+                          "teacher.assistants.summary.automation.metrics.active",
+                        )
+                      }}
+                    </dt>
                     <dd>{{ formatNumber(entry.activeAssistants) }}</dd>
                   </div>
                   <div>
-                    <dt>{{ t('teacher.assistants.summary.automation.metrics.pending') }}</dt>
+                    <dt>
+                      {{
+                        t(
+                          "teacher.assistants.summary.automation.metrics.pending",
+                        )
+                      }}
+                    </dt>
                     <dd>{{ formatNumber(entry.pendingAssistants) }}</dd>
                   </div>
                   <div>
-                    <dt>{{ t('teacher.assistants.summary.automation.metrics.backlog') }}</dt>
+                    <dt>
+                      {{
+                        t(
+                          "teacher.assistants.summary.automation.metrics.backlog",
+                        )
+                      }}
+                    </dt>
                     <dd>{{ formatNumber(entry.backlogTasks) }}</dd>
                   </div>
                   <div>
-                    <dt>{{ t('teacher.assistants.summary.automation.metrics.rebalance') }}</dt>
+                    <dt>
+                      {{
+                        t(
+                          "teacher.assistants.summary.automation.metrics.rebalance",
+                        )
+                      }}
+                    </dt>
                     <dd>{{ entry.nextRebalanceLabel }}</dd>
                   </div>
                 </dl>
@@ -245,56 +363,78 @@
           </div>
           <div class="assistants-management__collaboration">
             <div class="assistants-management__section-header">
-              <h4>{{ t('teacher.assistants.summary.collaboration.title') }}</h4>
+              <h4>{{ t("teacher.assistants.summary.collaboration.title") }}</h4>
               <span class="assistants-management__section-meta">
-                {{ t('teacher.assistants.summary.collaboration.subtitle') }}
+                {{ t("teacher.assistants.summary.collaboration.subtitle") }}
               </span>
             </div>
-            <p v-if="!collaborationView.length" class="assistants-management__phase-empty">
-              {{ t('teacher.assistants.summary.collaboration.empty') }}
+            <p
+              v-if="!collaborationView.length"
+              class="assistants-management__phase-empty"
+            >
+              {{ t("teacher.assistants.summary.collaboration.empty") }}
             </p>
             <div v-else class="assistants-management__collaboration-grid">
-              <div v-for="entry in collaborationView" :key="entry.key" class="assistants-management__collaboration-card">
+              <div
+                v-for="entry in collaborationView"
+                :key="entry.key"
+                class="assistants-management__collaboration-card"
+              >
                 <div class="assistants-management__collaboration-card-header">
-                  <UiTag size="sm" class="assistants-management__persona-tag" :color="entry.personaColor">
+                  <UiTag
+                    size="sm"
+                    class="assistants-management__persona-tag"
+                    :color="entry.personaColor"
+                  >
                     {{ entry.personaLabel }}
                   </UiTag>
                   <span class="assistants-management__collaboration-threads">
-                    {{ t('teacher.assistants.summary.collaboration.threads', { count: formatNumber(entry.activeThreads) }) }}
+                    {{
+                      t("teacher.assistants.summary.collaboration.threads", {
+                        count: formatNumber(entry.activeThreads),
+                      })
+                    }}
                   </span>
                 </div>
                 <p class="assistants-management__collaboration-mentions">
                   {{
-                    t('teacher.assistants.summary.collaboration.mentions', {
-                      count: formatNumber(entry.mentionsLastWeek)
+                    t("teacher.assistants.summary.collaboration.mentions", {
+                      count: formatNumber(entry.mentionsLastWeek),
                     })
                   }}
                 </p>
                 <p class="assistants-management__collaboration-audit">
                   {{
-                    t('teacher.assistants.summary.collaboration.auditTrail', {
-                      count: formatNumber(entry.auditEvents)
+                    t("teacher.assistants.summary.collaboration.auditTrail", {
+                      count: formatNumber(entry.auditEvents),
                     })
                   }}
                 </p>
-                <p v-if="entry.presence.length" class="assistants-management__collaboration-presence">
+                <p
+                  v-if="entry.presence.length"
+                  class="assistants-management__collaboration-presence"
+                >
                   {{
-                    t('teacher.assistants.summary.collaboration.presence', {
-                      names: entry.presence.join(', ')
+                    t("teacher.assistants.summary.collaboration.presence", {
+                      names: entry.presence.join(", "),
                     })
                   }}
                 </p>
                 <p class="assistants-management__collaboration-flags">
                   {{
                     entry.realtimePresenceEnabled
-                      ? t('teacher.assistants.summary.collaboration.realtime')
-                      : t('teacher.assistants.summary.collaboration.offline')
+                      ? t("teacher.assistants.summary.collaboration.realtime")
+                      : t("teacher.assistants.summary.collaboration.offline")
                   }}
                   ·
                   {{
                     entry.notesEnabled
-                      ? t('teacher.assistants.summary.collaboration.notesEnabled')
-                      : t('teacher.assistants.summary.collaboration.notesDisabled')
+                      ? t(
+                          "teacher.assistants.summary.collaboration.notesEnabled",
+                        )
+                      : t(
+                          "teacher.assistants.summary.collaboration.notesDisabled",
+                        )
                   }}
                 </p>
               </div>
@@ -302,60 +442,100 @@
           </div>
           <div class="assistants-management__performance">
             <div class="assistants-management__section-header">
-              <h4>{{ t('teacher.assistants.summary.performance.title') }}</h4>
+              <h4>{{ t("teacher.assistants.summary.performance.title") }}</h4>
               <span class="assistants-management__section-meta">
-                {{ t('teacher.assistants.summary.performance.subtitle') }}
+                {{ t("teacher.assistants.summary.performance.subtitle") }}
               </span>
             </div>
-            <p v-if="!performanceView.length" class="assistants-management__phase-empty">
-              {{ t('teacher.assistants.summary.performance.empty') }}
+            <p
+              v-if="!performanceView.length"
+              class="assistants-management__phase-empty"
+            >
+              {{ t("teacher.assistants.summary.performance.empty") }}
             </p>
             <div v-else class="assistants-management__performance-grid">
-              <div v-for="entry in performanceView" :key="entry.key" class="assistants-management__performance-card">
+              <div
+                v-for="entry in performanceView"
+                :key="entry.key"
+                class="assistants-management__performance-card"
+              >
                 <div class="assistants-management__performance-header">
-                  <UiTag size="sm" class="assistants-management__persona-tag" :color="entry.personaColor">
+                  <UiTag
+                    size="sm"
+                    class="assistants-management__persona-tag"
+                    :color="entry.personaColor"
+                  >
                     {{ entry.personaLabel }}
                   </UiTag>
-                  <span class="assistants-management__performance-trend">{{ entry.trendLabel }}</span>
+                  <span class="assistants-management__performance-trend">{{
+                    entry.trendLabel
+                  }}</span>
                 </div>
                 <div class="assistants-management__performance-scores">
                   <div>
-                    <span class="assistants-management__performance-score">{{ entry.currentScore.toFixed(1) }}</span>
-                    <span class="assistants-management__performance-label">{{ t('teacher.assistants.summary.performance.current') }}</span>
+                    <span class="assistants-management__performance-score">{{
+                      entry.currentScore.toFixed(1)
+                    }}</span>
+                    <span class="assistants-management__performance-label">{{
+                      t("teacher.assistants.summary.performance.current")
+                    }}</span>
                   </div>
                   <div>
-                    <span class="assistants-management__performance-delta">{{ entry.deltaLabel }}</span>
-                    <span class="assistants-management__performance-label">{{ t('teacher.assistants.summary.performance.delta') }}</span>
+                    <span class="assistants-management__performance-delta">{{
+                      entry.deltaLabel
+                    }}</span>
+                    <span class="assistants-management__performance-label">{{
+                      t("teacher.assistants.summary.performance.delta")
+                    }}</span>
                   </div>
                   <div>
-                    <span class="assistants-management__performance-score">{{ entry.baselineScore.toFixed(1) }}</span>
-                    <span class="assistants-management__performance-label">{{ t('teacher.assistants.summary.performance.baseline') }}</span>
+                    <span class="assistants-management__performance-score">{{
+                      entry.baselineScore.toFixed(1)
+                    }}</span>
+                    <span class="assistants-management__performance-label">{{
+                      t("teacher.assistants.summary.performance.baseline")
+                    }}</span>
                   </div>
                 </div>
                 <dl class="assistants-management__performance-stats">
                   <div>
-                    <dt>{{ t('teacher.assistants.summary.performance.completed') }}</dt>
+                    <dt>
+                      {{
+                        t("teacher.assistants.summary.performance.completed")
+                      }}
+                    </dt>
                     <dd>{{ formatNumber(entry.completedTasks) }}</dd>
                   </div>
                   <div>
-                    <dt>{{ t('teacher.assistants.summary.performance.overdue') }}</dt>
+                    <dt>
+                      {{ t("teacher.assistants.summary.performance.overdue") }}
+                    </dt>
                     <dd>{{ formatNumber(entry.overdueTasks) }}</dd>
                   </div>
                   <div>
-                    <dt>{{ t('teacher.assistants.summary.performance.utilization') }}</dt>
+                    <dt>
+                      {{
+                        t("teacher.assistants.summary.performance.utilization")
+                      }}
+                    </dt>
                     <dd>{{ entry.utilizationLabel }}</dd>
                   </div>
                 </dl>
                 <p
                   class="assistants-management__performance-coaching"
                   :class="{
-                    'assistants-management__performance-coaching--recommended': entry.coachingRecommended
+                    'assistants-management__performance-coaching--recommended':
+                      entry.coachingRecommended,
                   }"
                 >
                   {{
                     entry.coachingRecommended
-                      ? t('teacher.assistants.summary.performance.coachingNeeded')
-                      : t('teacher.assistants.summary.performance.coachingHealthy')
+                      ? t(
+                          "teacher.assistants.summary.performance.coachingNeeded",
+                        )
+                      : t(
+                          "teacher.assistants.summary.performance.coachingHealthy",
+                        )
                   }}
                 </p>
               </div>
@@ -370,22 +550,36 @@
           :label="t('teacher.assistants.filters.persona.label')"
           class="assistants-management__filters-select"
         >
-          <option v-for="option in personaFilterOptions" :key="option.value" :value="option.value">
+          <option
+            v-for="option in personaFilterOptions"
+            :key="option.value"
+            :value="option.value"
+          >
             {{ option.label }}
           </option>
         </UiSelect>
         <p class="assistants-management__filters-hint">
-          {{ t('teacher.assistants.filters.persona.hint') }}
+          {{ t("teacher.assistants.filters.persona.hint") }}
         </p>
       </div>
 
-      <section id="assistant-roles" ref="assistantRolesSection" class="assistants-management__section">
+      <section
+        id="assistant-roles"
+        ref="assistantRolesSection"
+        class="assistants-management__section"
+      >
         <UiCard class="assistants-management__card" hover>
-          <template #title>{{ t('teacher.assistants.roles.title') }}</template>
-          <template #subtitle>{{ t('teacher.assistants.roles.subtitle') }}</template>
+          <template #title>{{ t("teacher.assistants.roles.title") }}</template>
+          <template #subtitle>{{
+            t("teacher.assistants.roles.subtitle")
+          }}</template>
           <template #actions>
-            <UiButton color="primary" prepend-icon="PlusOutlined" @click="openRoleDialog()">
-              {{ t('teacher.assistants.roles.add') }}
+            <UiButton
+              color="primary"
+              prepend-icon="PlusOutlined"
+              @click="openRoleDialog()"
+            >
+              {{ t("teacher.assistants.roles.add") }}
             </UiButton>
           </template>
           <UiAlert
@@ -394,9 +588,9 @@
             color="danger"
             variant="soft"
           >
-            <span>{{ t('teacher.assistants.roles.loadError') }}</span>
+            <span>{{ t("teacher.assistants.roles.loadError") }}</span>
             <UiButton variant="link" color="primary" @click="reloadRoles">
-              {{ t('common.retry') }}
+              {{ t("common.retry") }}
             </UiButton>
           </UiAlert>
           <UiTable
@@ -406,25 +600,42 @@
             density="comfortable"
           >
             <template #item.persona="{ item }">
-              <UiTag size="sm" class="assistants-management__persona-tag" :color="item.personaColor">
+              <UiTag
+                size="sm"
+                class="assistants-management__persona-tag"
+                :color="item.personaColor"
+              >
                 {{ item.personaLabel }}
               </UiTag>
             </template>
             <template #item.permissions="{ item }">
               <div class="assistants-management__permissions">
-                <UiTag v-for="permission in item.permissions" :key="permission" size="sm" color="secondary">
+                <UiTag
+                  v-for="permission in item.permissions"
+                  :key="permission"
+                  size="sm"
+                  color="secondary"
+                >
                   {{ resolvePermissionLabel(permission) }}
                 </UiTag>
               </div>
             </template>
             <template #item.appShell="{ item }">
-              <div v-if="item.appShellOptions.length" class="assistants-management__app-shell-tags">
-                <UiTag v-for="option in item.appShellOptions" :key="option" size="sm" color="primary">
+              <div
+                v-if="item.appShellOptions.length"
+                class="assistants-management__app-shell-tags"
+              >
+                <UiTag
+                  v-for="option in item.appShellOptions"
+                  :key="option"
+                  size="sm"
+                  color="primary"
+                >
                   {{ option }}
                 </UiTag>
               </div>
               <span v-else class="assistants-management__app-shell-empty">
-                {{ t('teacher.assistants.roles.appShell.empty') }}
+                {{ t("teacher.assistants.roles.appShell.empty") }}
               </span>
             </template>
             <template #item.assistants="{ item }">
@@ -439,7 +650,7 @@
                   prepend-icon="EditOutlined"
                   @click="openRoleDialog(item.id)"
                 >
-                  {{ t('common.edit') }}
+                  {{ t("common.edit") }}
                 </UiButton>
                 <UiButton
                   size="sm"
@@ -448,16 +659,16 @@
                   prepend-icon="DeleteOutlined"
                   @click="confirmDeleteRole(item.id)"
                 >
-                  {{ t('common.delete') }}
+                  {{ t("common.delete") }}
                 </UiButton>
               </div>
             </template>
             <template #empty>
               <p class="assistants-management__empty">
                 {{
-                  personaFilter === 'ALL'
-                    ? t('teacher.assistants.roles.empty')
-                    : t('teacher.assistants.roles.emptyFiltered')
+                  personaFilter === "ALL"
+                    ? t("teacher.assistants.roles.empty")
+                    : t("teacher.assistants.roles.emptyFiltered")
                 }}
               </p>
             </template>
@@ -471,31 +682,52 @@
             >
               <header class="assistants-management__list-header">
                 <h3>{{ item.name }}</h3>
-                <UiTag size="sm" class="assistants-management__persona-tag" :color="item.personaColor">
+                <UiTag
+                  size="sm"
+                  class="assistants-management__persona-tag"
+                  :color="item.personaColor"
+                >
                   {{ item.personaLabel }}
                 </UiTag>
               </header>
               <div class="assistants-management__list-field">
-                <label>{{ t('teacher.assistants.roles.table.members') }}</label>
+                <label>{{ t("teacher.assistants.roles.table.members") }}</label>
                 <span>{{ item.assistants }}</span>
               </div>
               <div class="assistants-management__list-field">
-                <label>{{ t('teacher.assistants.roles.table.permissions') }}</label>
+                <label>{{
+                  t("teacher.assistants.roles.table.permissions")
+                }}</label>
                 <div class="assistants-management__permissions">
-                  <UiTag v-for="permission in item.permissions" :key="permission" size="sm" color="secondary">
+                  <UiTag
+                    v-for="permission in item.permissions"
+                    :key="permission"
+                    size="sm"
+                    color="secondary"
+                  >
                     {{ resolvePermissionLabel(permission) }}
                   </UiTag>
                 </div>
               </div>
               <div class="assistants-management__list-field">
-                <label>{{ t('teacher.assistants.roles.table.appShell') }}</label>
-                <div v-if="item.appShellOptions.length" class="assistants-management__app-shell-tags">
-                  <UiTag v-for="option in item.appShellOptions" :key="option" size="sm" color="primary">
+                <label>{{
+                  t("teacher.assistants.roles.table.appShell")
+                }}</label>
+                <div
+                  v-if="item.appShellOptions.length"
+                  class="assistants-management__app-shell-tags"
+                >
+                  <UiTag
+                    v-for="option in item.appShellOptions"
+                    :key="option"
+                    size="sm"
+                    color="primary"
+                  >
                     {{ option }}
                   </UiTag>
                 </div>
                 <span v-else class="assistants-management__app-shell-empty">
-                  {{ t('teacher.assistants.roles.appShell.empty') }}
+                  {{ t("teacher.assistants.roles.appShell.empty") }}
                 </span>
               </div>
               <div class="assistants-management__list-actions">
@@ -506,7 +738,7 @@
                   prepend-icon="EditOutlined"
                   @click="openRoleDialog(item.id)"
                 >
-                  {{ t('common.edit') }}
+                  {{ t("common.edit") }}
                 </UiButton>
                 <UiButton
                   size="sm"
@@ -515,7 +747,7 @@
                   prepend-icon="DeleteOutlined"
                   @click="confirmDeleteRole(item.id)"
                 >
-                  {{ t('common.delete') }}
+                  {{ t("common.delete") }}
                 </UiButton>
               </div>
             </article>
@@ -523,13 +755,23 @@
         </UiCard>
       </section>
 
-      <section id="assistant-team" ref="assistantTeamSection" class="assistants-management__section">
+      <section
+        id="assistant-team"
+        ref="assistantTeamSection"
+        class="assistants-management__section"
+      >
         <UiCard class="assistants-management__card" hover>
-          <template #title>{{ t('teacher.assistants.team.title') }}</template>
-          <template #subtitle>{{ t('teacher.assistants.team.subtitle') }}</template>
+          <template #title>{{ t("teacher.assistants.team.title") }}</template>
+          <template #subtitle>{{
+            t("teacher.assistants.team.subtitle")
+          }}</template>
           <template #actions>
-            <UiButton color="primary" prepend-icon="UserAddOutlined" @click="openAssistantDialog()">
-              {{ t('teacher.assistants.team.add') }}
+            <UiButton
+              color="primary"
+              prepend-icon="UserAddOutlined"
+              @click="openAssistantDialog()"
+            >
+              {{ t("teacher.assistants.team.add") }}
             </UiButton>
           </template>
           <UiAlert
@@ -538,9 +780,9 @@
             color="danger"
             variant="soft"
           >
-            <span>{{ t('teacher.assistants.team.loadError') }}</span>
+            <span>{{ t("teacher.assistants.team.loadError") }}</span>
             <UiButton variant="link" color="primary" @click="reloadAssistants">
-              {{ t('common.retry') }}
+              {{ t("common.retry") }}
             </UiButton>
           </UiAlert>
           <UiTable
@@ -553,7 +795,9 @@
               <span>{{ item.role }}</span>
             </template>
             <template #item.status="{ item }">
-              <UiTag size="sm" :color="item.statusColor">{{ item.statusLabel }}</UiTag>
+              <UiTag size="sm" :color="item.statusColor">{{
+                item.statusLabel
+              }}</UiTag>
             </template>
             <template #item.actions="{ item }">
               <div class="assistants-management__row-actions">
@@ -564,7 +808,7 @@
                   prepend-icon="EditOutlined"
                   @click="openAssistantDialog(item.id)"
                 >
-                  {{ t('common.edit') }}
+                  {{ t("common.edit") }}
                 </UiButton>
                 <UiButton
                   size="sm"
@@ -573,16 +817,16 @@
                   prepend-icon="DeleteOutlined"
                   @click="confirmDeleteAssistant(item.id)"
                 >
-                  {{ t('common.delete') }}
+                  {{ t("common.delete") }}
                 </UiButton>
               </div>
             </template>
             <template #empty>
               <p class="assistants-management__empty">
                 {{
-                  personaFilter === 'ALL'
-                    ? t('teacher.assistants.team.empty')
-                    : t('teacher.assistants.team.emptyFiltered')
+                  personaFilter === "ALL"
+                    ? t("teacher.assistants.team.empty")
+                    : t("teacher.assistants.team.emptyFiltered")
                 }}
               </p>
             </template>
@@ -596,14 +840,16 @@
             >
               <header class="assistants-management__list-header">
                 <h3>{{ item.name }}</h3>
-                <UiTag size="sm" :color="item.statusColor">{{ item.statusLabel }}</UiTag>
+                <UiTag size="sm" :color="item.statusColor">{{
+                  item.statusLabel
+                }}</UiTag>
               </header>
               <div class="assistants-management__list-field">
-                <label>{{ t('teacher.assistants.team.table.email') }}</label>
+                <label>{{ t("teacher.assistants.team.table.email") }}</label>
                 <span>{{ item.email }}</span>
               </div>
               <div class="assistants-management__list-field">
-                <label>{{ t('teacher.assistants.team.table.role') }}</label>
+                <label>{{ t("teacher.assistants.team.table.role") }}</label>
                 <span>{{ item.role }}</span>
               </div>
               <div class="assistants-management__list-actions">
@@ -614,7 +860,7 @@
                   prepend-icon="EditOutlined"
                   @click="openAssistantDialog(item.id)"
                 >
-                  {{ t('common.edit') }}
+                  {{ t("common.edit") }}
                 </UiButton>
                 <UiButton
                   size="sm"
@@ -623,7 +869,7 @@
                   prepend-icon="DeleteOutlined"
                   @click="confirmDeleteAssistant(item.id)"
                 >
-                  {{ t('common.delete') }}
+                  {{ t("common.delete") }}
                 </UiButton>
               </div>
             </article>
@@ -633,8 +879,15 @@
     </div>
 
     <UiDialog v-model="roleDialog.open" :title="roleDialogTitle" width="520px">
-      <form class="assistants-management__form" @submit.prevent="submitRoleDialog">
-        <UiInput v-model="roleDialog.form.name" :label="t('teacher.assistants.roles.form.name')" required />
+      <form
+        class="assistants-management__form"
+        @submit.prevent="submitRoleDialog"
+      >
+        <UiInput
+          v-model="roleDialog.form.name"
+          :label="t('teacher.assistants.roles.form.name')"
+          required
+        />
         <UiTextarea
           v-model="roleDialog.form.description"
           :label="t('teacher.assistants.roles.form.description')"
@@ -649,8 +902,10 @@
           @change="onPersonaChange"
         />
         <fieldset class="assistants-management__fieldset">
-          <legend>{{ t('teacher.assistants.roles.form.permissions') }}</legend>
-          <p class="assistants-management__hint">{{ t('teacher.assistants.roles.form.permissionsHint') }}</p>
+          <legend>{{ t("teacher.assistants.roles.form.permissions") }}</legend>
+          <p class="assistants-management__hint">
+            {{ t("teacher.assistants.roles.form.permissionsHint") }}
+          </p>
           <div class="assistants-management__permissions-grid">
             <UiCheckbox
               v-for="option in permissionOptions"
@@ -662,27 +917,46 @@
           </div>
           <div class="assistants-management__app-shell-preview">
             <h4 class="assistants-management__app-shell-heading">
-              {{ t('teacher.assistants.roles.appShell.previewTitle') }}
+              {{ t("teacher.assistants.roles.appShell.previewTitle") }}
             </h4>
             <p class="assistants-management__hint">
-              {{ t('teacher.assistants.roles.appShell.previewDescription') }}
+              {{ t("teacher.assistants.roles.appShell.previewDescription") }}
             </p>
-            <div v-if="roleDialogAppShellOptions.length" class="assistants-management__app-shell-tags">
-              <UiTag v-for="option in roleDialogAppShellOptions" :key="option" size="sm" color="primary">
+            <div
+              v-if="roleDialogAppShellOptions.length"
+              class="assistants-management__app-shell-tags"
+            >
+              <UiTag
+                v-for="option in roleDialogAppShellOptions"
+                :key="option"
+                size="sm"
+                color="primary"
+              >
                 {{ option }}
               </UiTag>
             </div>
             <p v-else class="assistants-management__app-shell-empty">
-              {{ t('teacher.assistants.roles.appShell.previewEmpty') }}
+              {{ t("teacher.assistants.roles.appShell.previewEmpty") }}
             </p>
           </div>
         </fieldset>
-        <div v-if="roleDialog.error" class="assistants-management__error">{{ roleDialog.error }}</div>
+        <div v-if="roleDialog.error" class="assistants-management__error">
+          {{ roleDialog.error }}
+        </div>
         <div class="assistants-management__dialog-actions">
-          <UiButton type="button" variant="ghost" color="neutral" @click="closeRoleDialog">
-            {{ t('common.cancel') }}
+          <UiButton
+            type="button"
+            variant="ghost"
+            color="neutral"
+            @click="closeRoleDialog"
+          >
+            {{ t("common.cancel") }}
           </UiButton>
-          <UiButton type="submit" color="primary" :disabled="roleDialog.submitting">
+          <UiButton
+            type="submit"
+            color="primary"
+            :disabled="roleDialog.submitting"
+          >
             <span v-if="roleDialog.submitting" class="loader"></span>
             <span v-else>{{ roleDialog.submitLabel }}</span>
           </UiButton>
@@ -690,10 +964,26 @@
       </form>
     </UiDialog>
 
-    <UiDialog v-model="assistantDialog.open" :title="assistantDialogTitle" width="520px">
-      <form class="assistants-management__form" @submit.prevent="submitAssistantDialog">
-        <UiInput v-model="assistantDialog.form.name" :label="t('teacher.assistants.team.form.name')" required />
-        <UiInput v-model="assistantDialog.form.email" type="email" :label="t('teacher.assistants.team.form.email')" required />
+    <UiDialog
+      v-model="assistantDialog.open"
+      :title="assistantDialogTitle"
+      width="520px"
+    >
+      <form
+        class="assistants-management__form"
+        @submit.prevent="submitAssistantDialog"
+      >
+        <UiInput
+          v-model="assistantDialog.form.name"
+          :label="t('teacher.assistants.team.form.name')"
+          required
+        />
+        <UiInput
+          v-model="assistantDialog.form.email"
+          type="email"
+          :label="t('teacher.assistants.team.form.email')"
+          required
+        />
         <UiInput
           v-model="assistantDialog.form.username"
           :label="t('teacher.assistants.team.form.username')"
@@ -714,14 +1004,27 @@
           :placeholder="t('teacher.assistants.team.form.rolePlaceholder')"
           clearable
         >
-          <option v-for="role in store.roles" :key="role.id" :value="role.id">{{ role.name }}</option>
+          <option v-for="role in store.roles" :key="role.id" :value="role.id">
+            {{ role.name }}
+          </option>
         </UiSelect>
-        <div v-if="assistantDialog.error" class="assistants-management__error">{{ assistantDialog.error }}</div>
+        <div v-if="assistantDialog.error" class="assistants-management__error">
+          {{ assistantDialog.error }}
+        </div>
         <div class="assistants-management__dialog-actions">
-          <UiButton type="button" variant="ghost" color="neutral" @click="closeAssistantDialog">
-            {{ t('common.cancel') }}
+          <UiButton
+            type="button"
+            variant="ghost"
+            color="neutral"
+            @click="closeAssistantDialog"
+          >
+            {{ t("common.cancel") }}
           </UiButton>
-          <UiButton type="submit" color="primary" :disabled="assistantDialog.submitting">
+          <UiButton
+            type="submit"
+            color="primary"
+            :disabled="assistantDialog.submitting"
+          >
             <span v-if="assistantDialog.submitting" class="loader"></span>
             <span v-else>{{ assistantDialog.submitLabel }}</span>
           </UiButton>
@@ -732,27 +1035,41 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
-import ThemePage from '@/layout/theme/ThemePage.vue';
-import UiCard from '@/components/ui/UiCard.vue';
-import UiTable, { type UiTableHeader } from '@/components/ui/UiTable.vue';
-import UiButton from '@/components/ui/UiButton.vue';
-import UiDialog from '@/components/ui/UiDialog.vue';
-import UiInput from '@/components/ui/UiInput.vue';
-import UiTextarea from '@/components/ui/UiTextarea.vue';
-import UiSelect from '@/components/ui/UiSelect.vue';
-import UiCheckbox from '@/components/ui/UiCheckbox.vue';
-import UiTag from '@/components/ui/UiTag.vue';
-import UiAlert from '@/components/ui/UiAlert.vue';
-import UiRadioGroup from '@/components/ui/UiRadioGroup.vue';
-import { useTeacherAssistantsStore, ASSISTANT_PERMISSION_OPTIONS } from '@/stores/teacherAssistants';
-import type { AssistantRolePayload, AssistantPayload } from '@/services/teacherAssistants';
-import { useToast } from '@/composables/useToast';
-import { useFeaturesStore } from '@/stores/features';
-import { FEATURE, type FeatureCode } from '@/constants/featureCatalog';
-import { formatDateTime, formatRelativeTimeToNow } from '@/utils/formatters';
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  watch,
+} from "vue";
+import { useI18n } from "vue-i18n";
+import { useRoute } from "vue-router";
+import ThemePage from "@/layout/theme/ThemePage.vue";
+import UiCard from "@/components/ui/UiCard.vue";
+import UiTable, { type UiTableHeader } from "@/components/ui/UiTable.vue";
+import UiButton from "@/components/ui/UiButton.vue";
+import UiDialog from "@/components/ui/UiDialog.vue";
+import UiInput from "@/components/ui/UiInput.vue";
+import UiTextarea from "@/components/ui/UiTextarea.vue";
+import UiSelect from "@/components/ui/UiSelect.vue";
+import UiCheckbox from "@/components/ui/UiCheckbox.vue";
+import UiTag from "@/components/ui/UiTag.vue";
+import UiAlert from "@/components/ui/UiAlert.vue";
+import UiRadioGroup from "@/components/ui/UiRadioGroup.vue";
+import {
+  useTeacherAssistantsStore,
+  ASSISTANT_PERMISSION_OPTIONS,
+} from "@/stores/teacherAssistants";
+import type {
+  AssistantRolePayload,
+  AssistantPayload,
+} from "@/services/teacherAssistants";
+import { useToast } from "@/composables/useToast";
+import { useFeaturesStore } from "@/stores/features";
+import { FEATURE, type FeatureCode } from "@/constants/featureCatalog";
+import { formatDateTime, formatRelativeTimeToNow } from "@/utils/formatters";
 
 interface AssistantAppShellOptionConfig {
   id: string;
@@ -762,64 +1079,84 @@ interface AssistantAppShellOptionConfig {
 }
 
 const ASSISTANT_APP_SHELL_OPTION_CONFIG: AssistantAppShellOptionConfig[] = [
-  { id: 'courses', labelKey: 'courses.title', permissions: ['courses.manage'] },
+  { id: "courses", labelKey: "courses.title", permissions: ["courses.manage"] },
   {
-    id: 'students',
-    labelKey: 'nav.teacherStudents',
-    permissions: ['students.view'],
-    features: [FEATURE.teacherRosterGroups]
-  },
-  { id: 'liveSessions', labelKey: 'nav.teacherLiveSessions', features: [FEATURE.liveSessionsCore] },
-  { id: 'liveModeration', labelKey: 'nav.teacherLiveModeration', features: [FEATURE.liveSessionsChat] },
-  { id: 'livePolls', labelKey: 'nav.teacherLivePolls', features: [FEATURE.liveSessionsPolls] },
-  { id: 'tutoring', labelKey: 'nav.teacherTutoring', permissions: ['tutoring.manage'] },
-  {
-    id: 'assessments',
-    labelKey: 'nav.teacherAssessments',
-    permissions: ['assessments.manage']
+    id: "students",
+    labelKey: "nav.teacherStudents",
+    permissions: ["students.view"],
+    features: [FEATURE.teacherRosterGroups],
   },
   {
-    id: 'questionBanks',
-    labelKey: 'nav.teacherQuestionBanks',
-    permissions: ['assessments.manage']
+    id: "liveSessions",
+    labelKey: "nav.teacherLiveSessions",
+    features: [FEATURE.liveSessionsCore],
   },
   {
-    id: 'enrollments',
-    labelKey: 'nav.teacherEnrollments',
-    permissions: ['registrations.manage']
+    id: "liveModeration",
+    labelKey: "nav.teacherLiveModeration",
+    features: [FEATURE.liveSessionsChat],
   },
   {
-    id: 'registrations',
-    labelKey: 'nav.teacherRegistrations',
-    permissions: ['registrations.manage'],
-    features: [FEATURE.teacherRegsPayments]
+    id: "livePolls",
+    labelKey: "nav.teacherLivePolls",
+    features: [FEATURE.liveSessionsPolls],
   },
   {
-    id: 'payments',
-    labelKey: 'nav.teacherPayments',
-    permissions: ['registrations.manage'],
-    features: [FEATURE.teacherRegsPayments]
+    id: "tutoring",
+    labelKey: "nav.teacherTutoring",
+    permissions: ["tutoring.manage"],
   },
   {
-    id: 'reports',
-    labelKey: 'nav.teacherReports',
-    permissions: ['reports.view'],
-    features: [FEATURE.reportsTeacher]
-  },
-  { id: 'offers', labelKey: 'nav.teacherOffers', features: [FEATURE.offers] },
-  { id: 'englishLab', labelKey: 'nav.teacherEnglishLab', features: [FEATURE.englishLab] },
-  {
-    id: 'badges',
-    labelKey: 'nav.teacherBadges',
-    permissions: ['courses.manage'],
-    features: [FEATURE.badges]
+    id: "assessments",
+    labelKey: "nav.teacherAssessments",
+    permissions: ["assessments.manage"],
   },
   {
-    id: 'notifications',
-    labelKey: 'nav.teacherNotifications',
-    permissions: ['communications.manage'],
-    features: [FEATURE.notificationsUnified]
-  }
+    id: "questionBanks",
+    labelKey: "nav.teacherQuestionBanks",
+    permissions: ["assessments.manage"],
+  },
+  {
+    id: "enrollments",
+    labelKey: "nav.teacherEnrollments",
+    permissions: ["registrations.manage"],
+  },
+  {
+    id: "registrations",
+    labelKey: "nav.teacherRegistrations",
+    permissions: ["registrations.manage"],
+    features: [FEATURE.teacherRegsPayments],
+  },
+  {
+    id: "payments",
+    labelKey: "nav.teacherPayments",
+    permissions: ["registrations.manage"],
+    features: [FEATURE.teacherRegsPayments],
+  },
+  {
+    id: "reports",
+    labelKey: "nav.teacherReports",
+    permissions: ["reports.view"],
+    features: [FEATURE.reportsTeacher],
+  },
+  { id: "offers", labelKey: "nav.teacherOffers", features: [FEATURE.offers] },
+  {
+    id: "englishLab",
+    labelKey: "nav.teacherEnglishLab",
+    features: [FEATURE.englishLab],
+  },
+  {
+    id: "badges",
+    labelKey: "nav.teacherBadges",
+    permissions: ["courses.manage"],
+    features: [FEATURE.badges],
+  },
+  {
+    id: "notifications",
+    labelKey: "nav.teacherNotifications",
+    permissions: ["communications.manage"],
+    features: [FEATURE.notificationsUnified],
+  },
 ];
 
 const MIN_PASSWORD_LENGTH = 8;
@@ -842,13 +1179,13 @@ const highlightSection = (section: HTMLElement | null, shouldScroll = true) => {
   }
 
   if (shouldScroll) {
-    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  section.classList.add('assistants-management__section--highlight');
+  section.classList.add("assistants-management__section--highlight");
 
   if (highlightTimer) {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       window.clearTimeout(highlightTimer);
     } else {
       clearTimeout(highlightTimer);
@@ -856,11 +1193,11 @@ const highlightSection = (section: HTMLElement | null, shouldScroll = true) => {
   }
 
   const clearHighlight = () => {
-    section.classList.remove('assistants-management__section--highlight');
+    section.classList.remove("assistants-management__section--highlight");
     highlightTimer = null;
   };
 
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     highlightTimer = window.setTimeout(clearHighlight, 1600);
   } else {
     highlightTimer = setTimeout(clearHighlight, 1600);
@@ -872,13 +1209,13 @@ const scrollToHash = (hash: string | undefined | null) => {
     return;
   }
 
-  const normalized = hash.startsWith('#') ? hash.slice(1) : hash;
+  const normalized = hash.startsWith("#") ? hash.slice(1) : hash;
 
-  if (normalized === 'assistant-overview') {
+  if (normalized === "assistant-overview") {
     highlightSection(assistantOverviewSection.value);
-  } else if (normalized === 'assistant-roles') {
+  } else if (normalized === "assistant-roles") {
     highlightSection(assistantRolesSection.value);
-  } else if (normalized === 'assistant-team') {
+  } else if (normalized === "assistant-team") {
     highlightSection(assistantTeamSection.value);
   }
 };
@@ -893,9 +1230,20 @@ const reloadAssistants = () => {
 
 const permissionOptions = ASSISTANT_PERMISSION_OPTIONS;
 
-type AssistantPersonaOptionValue = 'TEACHING_ASSISTANT' | 'SECRETARY' | 'CONTENT_CREATOR' | 'CUSTOM';
-type AssistantPersonaTagColor = 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger' | 'neutral';
-type PersonaFilterValue = AssistantPersonaOptionValue | 'ALL' | 'UNASSIGNED';
+type AssistantPersonaOptionValue =
+  | "TEACHING_ASSISTANT"
+  | "SECRETARY"
+  | "CONTENT_CREATOR"
+  | "CUSTOM";
+type AssistantPersonaTagColor =
+  | "primary"
+  | "secondary"
+  | "success"
+  | "info"
+  | "warning"
+  | "danger"
+  | "neutral";
+type PersonaFilterValue = AssistantPersonaOptionValue | "ALL" | "UNASSIGNED";
 
 interface AssistantPersonaOption {
   value: AssistantPersonaOptionValue;
@@ -907,55 +1255,75 @@ interface AssistantPersonaOption {
 
 const ASSISTANT_PERSONA_OPTIONS: AssistantPersonaOption[] = [
   {
-    value: 'TEACHING_ASSISTANT',
-    labelKey: 'teacher.assistants.roles.persona.teachingAssistant.label',
-    descriptionKey: 'teacher.assistants.roles.persona.teachingAssistant.description',
-    defaultPermissions: ['courses.manage', 'assessments.manage', 'students.view', 'reports.view'],
-    tagColor: 'primary'
+    value: "TEACHING_ASSISTANT",
+    labelKey: "teacher.assistants.roles.persona.teachingAssistant.label",
+    descriptionKey:
+      "teacher.assistants.roles.persona.teachingAssistant.description",
+    defaultPermissions: [
+      "courses.manage",
+      "assessments.manage",
+      "students.view",
+      "reports.view",
+    ],
+    tagColor: "primary",
   },
   {
-    value: 'SECRETARY',
-    labelKey: 'teacher.assistants.roles.persona.secretary.label',
-    descriptionKey: 'teacher.assistants.roles.persona.secretary.description',
-    defaultPermissions: ['registrations.manage', 'communications.manage', 'students.view'],
-    tagColor: 'info'
+    value: "SECRETARY",
+    labelKey: "teacher.assistants.roles.persona.secretary.label",
+    descriptionKey: "teacher.assistants.roles.persona.secretary.description",
+    defaultPermissions: [
+      "registrations.manage",
+      "communications.manage",
+      "students.view",
+    ],
+    tagColor: "info",
   },
   {
-    value: 'CONTENT_CREATOR',
-    labelKey: 'teacher.assistants.roles.persona.contentCreator.label',
-    descriptionKey: 'teacher.assistants.roles.persona.contentCreator.description',
-    defaultPermissions: ['courses.manage', 'communications.manage'],
-    tagColor: 'success'
+    value: "CONTENT_CREATOR",
+    labelKey: "teacher.assistants.roles.persona.contentCreator.label",
+    descriptionKey:
+      "teacher.assistants.roles.persona.contentCreator.description",
+    defaultPermissions: ["courses.manage", "communications.manage"],
+    tagColor: "success",
   },
   {
-    value: 'CUSTOM',
-    labelKey: 'teacher.assistants.roles.persona.custom.label',
-    descriptionKey: 'teacher.assistants.roles.persona.custom.description',
+    value: "CUSTOM",
+    labelKey: "teacher.assistants.roles.persona.custom.label",
+    descriptionKey: "teacher.assistants.roles.persona.custom.description",
     defaultPermissions: [],
-    tagColor: 'neutral'
-  }
+    tagColor: "neutral",
+  },
 ];
 
 const personaOptionLookup = new Map(
-  ASSISTANT_PERSONA_OPTIONS.map((option) => [option.value, option])
+  ASSISTANT_PERSONA_OPTIONS.map((option) => [option.value, option]),
 );
 
-const DEFAULT_PERSONA_VALUE: AssistantPersonaOptionValue = 'TEACHING_ASSISTANT';
+const DEFAULT_PERSONA_VALUE: AssistantPersonaOptionValue = "TEACHING_ASSISTANT";
 
-const isAssistantPersonaOptionValue = (value: unknown): value is AssistantPersonaOptionValue =>
-  typeof value === 'string' && personaOptionLookup.has(value as AssistantPersonaOptionValue);
+const isAssistantPersonaOptionValue = (
+  value: unknown,
+): value is AssistantPersonaOptionValue =>
+  typeof value === "string" &&
+  personaOptionLookup.has(value as AssistantPersonaOptionValue);
 
-const toPersonaOptionValue = (persona: string | null | undefined): AssistantPersonaOptionValue => {
+const toPersonaOptionValue = (
+  persona: string | null | undefined,
+): AssistantPersonaOptionValue => {
   if (!persona) {
-    return 'CUSTOM';
+    return "CUSTOM";
   }
   const normalized = persona.toUpperCase();
-  return isAssistantPersonaOptionValue(normalized) ? (normalized as AssistantPersonaOptionValue) : 'CUSTOM';
+  return isAssistantPersonaOptionValue(normalized)
+    ? (normalized as AssistantPersonaOptionValue)
+    : "CUSTOM";
 };
 
-const resolvePersonaOption = (persona: string | null | undefined): AssistantPersonaOption => {
+const resolvePersonaOption = (
+  persona: string | null | undefined,
+): AssistantPersonaOption => {
   const value = toPersonaOptionValue(persona);
-  return personaOptionLookup.get(value) ?? personaOptionLookup.get('CUSTOM')!;
+  return personaOptionLookup.get(value) ?? personaOptionLookup.get("CUSTOM")!;
 };
 
 const resolvePersonaLabel = (persona: string | null | undefined) => {
@@ -963,7 +1331,9 @@ const resolvePersonaLabel = (persona: string | null | undefined) => {
   return t(option.labelKey);
 };
 
-const resolvePersonaColor = (persona: string | null | undefined): AssistantPersonaTagColor => {
+const resolvePersonaColor = (
+  persona: string | null | undefined,
+): AssistantPersonaTagColor => {
   return resolvePersonaOption(persona).tagColor;
 };
 
@@ -971,39 +1341,64 @@ const personaRadioOptions = computed(() =>
   ASSISTANT_PERSONA_OPTIONS.map((option) => ({
     value: option.value,
     label: t(option.labelKey),
-    description: t(option.descriptionKey)
-  }))
+    description: t(option.descriptionKey),
+  })),
 );
 
-const personaFilter = ref<PersonaFilterValue>('ALL');
+const personaFilter = ref<PersonaFilterValue>("ALL");
 
 const personaFilterOptions = computed(() => {
   const baseOptions = ASSISTANT_PERSONA_OPTIONS.map((option) => ({
     value: option.value as PersonaFilterValue,
-    label: t(option.labelKey)
+    label: t(option.labelKey),
   }));
   return [
-    { value: 'ALL' as PersonaFilterValue, label: t('teacher.assistants.filters.persona.all') },
+    {
+      value: "ALL" as PersonaFilterValue,
+      label: t("teacher.assistants.filters.persona.all"),
+    },
     ...baseOptions,
-    { value: 'UNASSIGNED' as PersonaFilterValue, label: t('teacher.assistants.filters.persona.unassigned') }
+    {
+      value: "UNASSIGNED" as PersonaFilterValue,
+      label: t("teacher.assistants.filters.persona.unassigned"),
+    },
   ];
 });
 
 const roleHeaders = computed<UiTableHeader[]>(() => [
-  { key: 'name', label: t('teacher.assistants.roles.table.name') },
-  { key: 'persona', label: t('teacher.assistants.roles.table.persona') },
-  { key: 'permissions', label: t('teacher.assistants.roles.table.permissions') },
-  { key: 'appShell', label: t('teacher.assistants.roles.table.appShell') },
-  { key: 'assistants', label: t('teacher.assistants.roles.table.members'), align: 'center' },
-  { key: 'actions', label: t('teacher.assistants.roles.table.actions'), align: 'right' }
+  { key: "name", label: t("teacher.assistants.roles.table.name") },
+  { key: "persona", label: t("teacher.assistants.roles.table.persona") },
+  {
+    key: "permissions",
+    label: t("teacher.assistants.roles.table.permissions"),
+  },
+  { key: "appShell", label: t("teacher.assistants.roles.table.appShell") },
+  {
+    key: "assistants",
+    label: t("teacher.assistants.roles.table.members"),
+    align: "center",
+  },
+  {
+    key: "actions",
+    label: t("teacher.assistants.roles.table.actions"),
+    align: "right",
+  },
 ]);
 
 const assistantHeaders = computed<UiTableHeader[]>(() => [
-  { key: 'name', label: t('teacher.assistants.team.table.name') },
-  { key: 'email', label: t('teacher.assistants.team.table.email') },
-  { key: 'role', label: t('teacher.assistants.team.table.role') },
-  { key: 'status', label: t('teacher.assistants.team.table.status'), align: 'center' },
-  { key: 'actions', label: t('teacher.assistants.team.table.actions'), align: 'right' }
+  { key: "name", label: t("teacher.assistants.team.table.name") },
+  { key: "email", label: t("teacher.assistants.team.table.email") },
+  { key: "role", label: t("teacher.assistants.team.table.role") },
+  {
+    key: "status",
+    label: t("teacher.assistants.team.table.status"),
+    align: "center",
+  },
+  {
+    key: "actions",
+    label: t("teacher.assistants.team.table.actions"),
+    align: "right",
+  },
 ]);
 
 const assistantsByRole = computed<Record<number, number>>(() => {
@@ -1022,53 +1417,64 @@ const summarySnapshot = computed(() => store.assistantsSummary);
 const summaryCards = computed(() => {
   const summary = summarySnapshot.value;
   const awaitingAccess =
-    summary.pendingAssistants + summary.inactiveAssistants + summary.disabledAssistants;
+    summary.pendingAssistants +
+    summary.inactiveAssistants +
+    summary.disabledAssistants;
 
   return [
     {
-      key: 'total',
+      key: "total",
       value: summary.totalAssistants,
-      label: t('teacher.assistants.summary.totalAssistants.label'),
-      description: t('teacher.assistants.summary.totalAssistants.description', {
-        count: summary.totalAssistants
-      })
+      label: t("teacher.assistants.summary.totalAssistants.label"),
+      description: t("teacher.assistants.summary.totalAssistants.description", {
+        count: summary.totalAssistants,
+      }),
     },
     {
-      key: 'active',
+      key: "active",
       value: summary.activeAssistants,
-      label: t('teacher.assistants.summary.activeAssistants.label'),
-      description: t('teacher.assistants.summary.activeAssistants.description', {
-        count: summary.activeAssistants
-      })
+      label: t("teacher.assistants.summary.activeAssistants.label"),
+      description: t(
+        "teacher.assistants.summary.activeAssistants.description",
+        {
+          count: summary.activeAssistants,
+        },
+      ),
     },
     {
-      key: 'awaiting',
+      key: "awaiting",
       value: awaitingAccess,
-      label: t('teacher.assistants.summary.awaitingAssistants.label'),
-      description: t('teacher.assistants.summary.awaitingAssistants.description', {
-        count: awaitingAccess
-      })
+      label: t("teacher.assistants.summary.awaitingAssistants.label"),
+      description: t(
+        "teacher.assistants.summary.awaitingAssistants.description",
+        {
+          count: awaitingAccess,
+        },
+      ),
     },
     {
-      key: 'unassigned',
+      key: "unassigned",
       value: summary.unassignedAssistants,
-      label: t('teacher.assistants.summary.unassignedAssistants.label'),
-      description: t('teacher.assistants.summary.unassignedAssistants.description', {
-        count: summary.unassignedAssistants
-      })
-    }
+      label: t("teacher.assistants.summary.unassignedAssistants.label"),
+      description: t(
+        "teacher.assistants.summary.unassignedAssistants.description",
+        {
+          count: summary.unassignedAssistants,
+        },
+      ),
+    },
   ];
 });
 
 const summaryLastUpdated = computed(() => {
   const { lastUpdatedAt } = summarySnapshot.value;
   if (!lastUpdatedAt) {
-    return t('teacher.assistants.summary.neverUpdated');
+    return t("teacher.assistants.summary.neverUpdated");
   }
 
-  return t('teacher.assistants.summary.lastUpdated', {
+  return t("teacher.assistants.summary.lastUpdated", {
     relative: formatRelativeTimeToNow(lastUpdatedAt),
-    date: formatDateTime(lastUpdatedAt)
+    date: formatDateTime(lastUpdatedAt),
   });
 });
 
@@ -1081,12 +1487,12 @@ const personaDistribution = computed(() =>
       const roleCount = Number(insight.roleCount ?? 0);
       const persona = insight.persona ?? null;
       return {
-        key: persona ?? 'CUSTOM',
+        key: persona ?? "CUSTOM",
         personaValue: toPersonaOptionValue(persona),
         label: resolvePersonaLabel(persona),
         color: resolvePersonaColor(persona),
         assistantCount,
-        roleCount
+        roleCount,
       };
     })
     .sort((a, b) => {
@@ -1097,18 +1503,20 @@ const personaDistribution = computed(() =>
         return b.roleCount - a.roleCount;
       }
       return a.label.localeCompare(b.label);
-    })
+    }),
 );
 
 const hasPersonaDistributionData = computed(() =>
-  personaDistribution.value.some((entry) => entry.assistantCount > 0 || entry.roleCount > 0)
+  personaDistribution.value.some(
+    (entry) => entry.assistantCount > 0 || entry.roleCount > 0,
+  ),
 );
 
 const coverageInsights = computed(() => store.coverageInsights);
 
 const normalizeCoverageArea = (area: string | null | undefined) => {
-  if (!area || typeof area !== 'string') {
-    return 'content';
+  if (!area || typeof area !== "string") {
+    return "content";
   }
   const normalized = area.toLowerCase();
   return normalized;
@@ -1120,59 +1528,74 @@ const coverageView = computed(() =>
       const areaKey = normalizeCoverageArea(insight.area);
       const assistantCount = Number(insight.assistantCount ?? 0);
       const roleCount = Number(insight.roleCount ?? 0);
-      let statusKey: 'covered' | 'rolesOnly' | 'uncovered';
+      let statusKey: "covered" | "rolesOnly" | "uncovered";
       let tagColor: AssistantPersonaTagColor;
       if (assistantCount > 0) {
-        statusKey = 'covered';
-        tagColor = 'success';
+        statusKey = "covered";
+        tagColor = "success";
       } else if (roleCount > 0) {
-        statusKey = 'rolesOnly';
-        tagColor = 'warning';
+        statusKey = "rolesOnly";
+        tagColor = "warning";
       } else {
-        statusKey = 'uncovered';
-        tagColor = 'danger';
+        statusKey = "uncovered";
+        tagColor = "danger";
       }
-      const areaLabel = t(`teacher.assistants.summary.coverage.areas.${areaKey}`);
-      const warning = assistantCount > 0
-        ? ''
-        : roleCount > 0
-          ? t('teacher.assistants.summary.coverage.warningNoAssistant', { area: areaLabel })
-          : t('teacher.assistants.summary.coverage.warningNoRole', { area: areaLabel });
+      const areaLabel = t(
+        `teacher.assistants.summary.coverage.areas.${areaKey}`,
+      );
+      const warning =
+        assistantCount > 0
+          ? ""
+          : roleCount > 0
+            ? t("teacher.assistants.summary.coverage.warningNoAssistant", {
+                area: areaLabel,
+              })
+            : t("teacher.assistants.summary.coverage.warningNoRole", {
+                area: areaLabel,
+              });
       return {
         key: areaKey,
         areaLabel,
         assistantCount,
         roleCount,
         statusKey,
-        statusLabel: t(`teacher.assistants.summary.coverage.status.${statusKey}`),
+        statusLabel: t(
+          `teacher.assistants.summary.coverage.status.${statusKey}`,
+        ),
         tagColor,
-        warning
+        warning,
       };
     })
-    .sort((a, b) => a.areaLabel.localeCompare(b.areaLabel))
+    .sort((a, b) => a.areaLabel.localeCompare(b.areaLabel)),
 );
 
-const coverageWarnings = computed(() => coverageView.value.filter((entry) => entry.warning));
+const coverageWarnings = computed(() =>
+  coverageView.value.filter((entry) => entry.warning),
+);
 
 const coverageComplete = computed(
-  () => coverageView.value.length > 0 && coverageWarnings.value.length === 0
+  () => coverageView.value.length > 0 && coverageWarnings.value.length === 0,
 );
 
-const coverageLoading = computed(() => store.insightsLoading && !store.insightsLoadedAt);
+const coverageLoading = computed(
+  () => store.insightsLoading && !store.insightsLoadedAt,
+);
 
 const coverageError = computed(() => store.insightsError);
 
 const coverageHasData = computed(() => coverageView.value.length > 0);
 
 const coverageSuccessMessage = computed(() =>
-  coverageComplete.value ? t('teacher.assistants.summary.coverage.complete') : ''
+  coverageComplete.value
+    ? t("teacher.assistants.summary.coverage.complete")
+    : "",
 );
 
 const automationInsights = computed(() => store.automationInsights);
 
 const reminderChannelLabel = (channel: string) => {
   if (!channel) {
-    return '';
+    return "";
   }
   const normalized = channel.toLowerCase();
   const key = `teacher.assistants.summary.automation.channels.${normalized}`;
@@ -1182,28 +1605,36 @@ const reminderChannelLabel = (channel: string) => {
 
 const formatDurationFromMinutes = (minutes: number) => {
   if (!Number.isFinite(minutes) || minutes <= 0) {
-    return t('teacher.assistants.summary.automation.durationImmediate');
+    return t("teacher.assistants.summary.automation.durationImmediate");
   }
   const wholeMinutes = Math.round(minutes);
   const hours = Math.floor(wholeMinutes / 60);
   const remaining = wholeMinutes % 60;
   const parts: string[] = [];
   if (hours > 0) {
-    parts.push(t('teacher.assistants.summary.automation.hours', { count: hours }));
+    parts.push(
+      t("teacher.assistants.summary.automation.hours", { count: hours }),
+    );
   }
   if (remaining > 0) {
-    parts.push(t('teacher.assistants.summary.automation.minutes', { count: remaining }));
+    parts.push(
+      t("teacher.assistants.summary.automation.minutes", { count: remaining }),
+    );
   }
-  return parts.join(' ');
+  return parts.join(" ");
 };
 
 const automationView = computed(() =>
   automationInsights.value.map((entry) => {
-    const reminders = Array.isArray(entry.reminderChannels) ? entry.reminderChannels : [];
-    const checklist = Array.isArray(entry.checklist) ? entry.checklist.filter(Boolean) : [];
+    const reminders = Array.isArray(entry.reminderChannels)
+      ? entry.reminderChannels
+      : [];
+    const checklist = Array.isArray(entry.checklist)
+      ? entry.checklist.filter(Boolean)
+      : [];
     const persona = entry.persona ?? null;
     return {
-      key: persona ?? 'CUSTOM',
+      key: persona ?? "CUSTOM",
       persona,
       personaLabel: resolvePersonaLabel(persona),
       personaColor: resolvePersonaColor(persona),
@@ -1211,14 +1642,18 @@ const automationView = computed(() =>
       checklist,
       slaMinutes: Number(entry.slaMinutes ?? 0),
       slaLabel: formatDurationFromMinutes(Number(entry.slaMinutes ?? 0)),
-      reminderLabels: reminders.map((channel) => reminderChannelLabel(channel)).filter(Boolean),
+      reminderLabels: reminders
+        .map((channel) => reminderChannelLabel(channel))
+        .filter(Boolean),
       calendarSyncEnabled: Boolean(entry.calendarSyncEnabled),
       activeAssistants: Number(entry.activeAssistants ?? 0),
       pendingAssistants: Number(entry.pendingAssistants ?? 0),
       backlogTasks: Number(entry.backlogTasks ?? 0),
-      nextRebalanceLabel: formatDurationFromMinutes(Number(entry.nextRebalanceMinutes ?? 0))
+      nextRebalanceLabel: formatDurationFromMinutes(
+        Number(entry.nextRebalanceMinutes ?? 0),
+      ),
     };
-  })
+  }),
 );
 
 const collaborationInsights = computed(() => store.collaborationInsights);
@@ -1226,9 +1661,11 @@ const collaborationInsights = computed(() => store.collaborationInsights);
 const collaborationView = computed(() =>
   collaborationInsights.value.map((entry) => {
     const persona = entry.persona ?? null;
-    const presence = Array.isArray(entry.presence) ? entry.presence.filter(Boolean) : [];
+    const presence = Array.isArray(entry.presence)
+      ? entry.presence.filter(Boolean)
+      : [];
     return {
-      key: persona ?? 'CUSTOM',
+      key: persona ?? "CUSTOM",
       persona,
       personaLabel: resolvePersonaLabel(persona),
       personaColor: resolvePersonaColor(persona),
@@ -1237,35 +1674,38 @@ const collaborationView = computed(() =>
       auditEvents: Number(entry.auditEvents ?? 0),
       presence,
       realtimePresenceEnabled: Boolean(entry.realtimePresenceEnabled),
-      notesEnabled: Boolean(entry.notesEnabled)
+      notesEnabled: Boolean(entry.notesEnabled),
     };
-  })
+  }),
 );
 
 const performanceInsights = computed(() => store.performanceInsights);
 
 const performanceTrendLabel = (trend: string) => {
-  const normalized = (trend || 'FLAT').toLowerCase();
+  const normalized = (trend || "FLAT").toLowerCase();
   const key = `teacher.assistants.summary.performance.trend.${normalized}`;
   const translated = t(key);
   return translated === key ? trend : translated;
 };
 
-const formatPercentage = (value: number, options?: Intl.NumberFormatOptions) => {
+const formatPercentage = (
+  value: number,
+  options?: Intl.NumberFormatOptions,
+) => {
   const formatter = new Intl.NumberFormat(undefined, {
-    style: 'percent',
+    style: "percent",
     minimumFractionDigits: options?.minimumFractionDigits ?? 0,
-    maximumFractionDigits: options?.maximumFractionDigits ?? 0
+    maximumFractionDigits: options?.maximumFractionDigits ?? 0,
   });
   return formatter.format(value);
 };
 
 const formatDeltaPercentage = (value: number) => {
   const formatter = new Intl.NumberFormat(undefined, {
-    style: 'percent',
+    style: "percent",
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
-    signDisplay: 'always'
+    signDisplay: "always",
   });
   return formatter.format(value / 100);
 };
@@ -1273,10 +1713,10 @@ const formatDeltaPercentage = (value: number) => {
 const performanceView = computed(() =>
   performanceInsights.value.map((entry) => {
     const persona = entry.persona ?? null;
-    const trend = entry.trend ?? 'FLAT';
+    const trend = entry.trend ?? "FLAT";
     const utilization = Number(entry.utilization ?? 0);
     return {
-      key: persona ?? 'CUSTOM',
+      key: persona ?? "CUSTOM",
       persona,
       personaLabel: resolvePersonaLabel(persona),
       personaColor: resolvePersonaColor(persona),
@@ -1290,9 +1730,12 @@ const performanceView = computed(() =>
       completedTasks: Number(entry.completedTasks ?? 0),
       overdueTasks: Number(entry.overdueTasks ?? 0),
       utilization,
-      utilizationLabel: formatPercentage(utilization, { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+      utilizationLabel: formatPercentage(utilization, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }),
     };
-  })
+  }),
 );
 
 const activeAssistantAppShellOptions = computed(() =>
@@ -1301,17 +1744,21 @@ const activeAssistantAppShellOptions = computed(() =>
       return true;
     }
     return option.features.every((code) => featuresStore.hasFeature(code));
-  })
+  }),
 );
 
-const resolveAppShellOptionLabels = (permissions: readonly string[] | undefined | null) => {
+const resolveAppShellOptionLabels = (
+  permissions: readonly string[] | undefined | null,
+) => {
   const permissionSet = new Set(permissions ?? []);
   return activeAssistantAppShellOptions.value
     .filter((option) => {
       if (!option.permissions?.length) {
         return true;
       }
-      return option.permissions.every((permission) => permissionSet.has(permission));
+      return option.permissions.every((permission) =>
+        permissionSet.has(permission),
+      );
     })
     .map((option) => t(option.labelKey));
 };
@@ -1330,42 +1777,44 @@ const roleRows = computed(() =>
     personaColor: resolvePersonaColor(role.persona ?? null),
     permissions: role.permissions || [],
     appShellOptions: resolveAppShellOptionLabels(role.permissions),
-    assistants: assistantsByRole.value[role.id] || 0
-  }))
+    assistants: assistantsByRole.value[role.id] || 0,
+  })),
 );
 
 const matchesPersonaFilter = (
-  candidate: AssistantPersonaOptionValue | 'UNASSIGNED',
-  filter: PersonaFilterValue
+  candidate: AssistantPersonaOptionValue | "UNASSIGNED",
+  filter: PersonaFilterValue,
 ) => {
-  if (filter === 'ALL') {
+  if (filter === "ALL") {
     return true;
   }
-  if (filter === 'UNASSIGNED') {
-    return candidate === 'UNASSIGNED';
+  if (filter === "UNASSIGNED") {
+    return candidate === "UNASSIGNED";
   }
   return candidate === filter;
 };
 
 const filteredRoleRows = computed(() => {
   const filter = personaFilter.value;
-  if (filter === 'UNASSIGNED') {
+  if (filter === "UNASSIGNED") {
     return [];
   }
-  if (filter === 'ALL') {
+  if (filter === "ALL") {
     return roleRows.value;
   }
-  return roleRows.value.filter((row) => matchesPersonaFilter(row.personaValue, filter));
+  return roleRows.value.filter((row) =>
+    matchesPersonaFilter(row.personaValue, filter),
+  );
 });
 
 const roleDialogSelectedPermissions = computed(() =>
   Object.entries(roleDialog.form.permissionsMap)
     .filter(([, enabled]) => enabled)
-    .map(([id]) => id)
+    .map(([id]) => id),
 );
 
 const roleDialogAppShellOptions = computed(() =>
-  resolveAppShellOptionLabels(roleDialogSelectedPermissions.value)
+  resolveAppShellOptionLabels(roleDialogSelectedPermissions.value),
 );
 
 const roleAccessList = computed(() =>
@@ -1374,67 +1823,73 @@ const roleAccessList = computed(() =>
       ...entry,
       personaLabel: resolvePersonaLabel(entry.persona),
       personaColor: resolvePersonaColor(entry.persona),
-      appShellOptions: resolveAppShellOptionLabels(entry.permissions)
+      appShellOptions: resolveAppShellOptionLabels(entry.permissions),
     }))
     .sort((a, b) => {
       if (b.assistantCount !== a.assistantCount) {
         return b.assistantCount - a.assistantCount;
       }
       return a.name.localeCompare(b.name);
-    })
+    }),
 );
 
 const assistantRows = computed(() =>
   store.assistants.map((assistant) => {
-    const role = assistant.role ?? (assistant.roleId != null ? store.roleById(assistant.roleId) : null);
-    const rawStatus = (assistant.status || 'active').toLowerCase();
+    const role =
+      assistant.role ??
+      (assistant.roleId != null ? store.roleById(assistant.roleId) : null);
+    const rawStatus = (assistant.status || "active").toLowerCase();
     const statusKey = `teacher.assistants.team.status.${rawStatus}`;
     const statusLabel = t(statusKey);
-    let statusColor: 'success' | 'warning' | 'danger' | 'info' = 'success';
-    if (rawStatus === 'inactive') {
-      statusColor = 'warning';
-    } else if (rawStatus === 'disabled') {
-      statusColor = 'danger';
-    } else if (rawStatus === 'pending') {
-      statusColor = 'info';
+    let statusColor: "success" | "warning" | "danger" | "info" = "success";
+    if (rawStatus === "inactive") {
+      statusColor = "warning";
+    } else if (rawStatus === "disabled") {
+      statusColor = "danger";
+    } else if (rawStatus === "pending") {
+      statusColor = "info";
     }
-    const personaValue: AssistantPersonaOptionValue | 'UNASSIGNED' = role
+    const personaValue: AssistantPersonaOptionValue | "UNASSIGNED" = role
       ? toPersonaOptionValue(role.persona ?? null)
-      : 'UNASSIGNED';
+      : "UNASSIGNED";
     return {
       id: assistant.id,
       name: assistant.name,
       email: assistant.email,
-      role: role?.name || t('teacher.assistants.team.roleUnassigned'),
+      role: role?.name || t("teacher.assistants.team.roleUnassigned"),
       statusLabel,
       statusColor,
-      personaValue
+      personaValue,
     };
-  })
+  }),
 );
 
 const filteredAssistantRows = computed(() => {
   const filter = personaFilter.value;
-  if (filter === 'ALL') {
+  if (filter === "ALL") {
     return assistantRows.value;
   }
-  return assistantRows.value.filter((row) => matchesPersonaFilter(row.personaValue, filter));
+  return assistantRows.value.filter((row) =>
+    matchesPersonaFilter(row.personaValue, filter),
+  );
 });
 
 const roleDialog = reactive({
   open: false,
   submitting: false,
   editingId: null as number | null,
-  error: '',
+  error: "",
   form: {
-    name: '',
-    description: '',
+    name: "",
+    description: "",
     persona: DEFAULT_PERSONA_VALUE as AssistantPersonaOptionValue,
-    permissionsMap: {} as Record<string, boolean>
+    permissionsMap: {} as Record<string, boolean>,
   },
   get submitLabel() {
-    return roleDialog.editingId ? t('teacher.assistants.roles.form.update') : t('teacher.assistants.roles.form.create');
-  }
+    return roleDialog.editingId
+      ? t("teacher.assistants.roles.form.update")
+      : t("teacher.assistants.roles.form.create");
+  },
 });
 
 const applyPersonaTemplate = (value: AssistantPersonaOptionValue) => {
@@ -1443,13 +1898,18 @@ const applyPersonaTemplate = (value: AssistantPersonaOptionValue) => {
     return;
   }
   const selected = new Set(option.defaultPermissions);
-  roleDialog.form.permissionsMap = permissionOptions.reduce<Record<string, boolean>>((acc, optionItem) => {
+  roleDialog.form.permissionsMap = permissionOptions.reduce<
+    Record<string, boolean>
+  >((acc, optionItem) => {
     acc[optionItem.id] = selected.has(optionItem.id);
     return acc;
   }, {});
 };
 
-const setRoleDialogPersona = (value: AssistantPersonaOptionValue, applyTemplate = false) => {
+const setRoleDialogPersona = (
+  value: AssistantPersonaOptionValue,
+  applyTemplate = false,
+) => {
   roleDialog.form.persona = value;
   if (applyTemplate) {
     applyPersonaTemplate(value);
@@ -1466,54 +1926,60 @@ const assistantDialog = reactive({
   open: false,
   submitting: false,
   editingId: null as number | null,
-  error: '',
+  error: "",
   form: {
-    name: '',
-    email: '',
-    username: '',
-    password: '',
-    roleId: null as number | null
+    name: "",
+    email: "",
+    username: "",
+    password: "",
+    roleId: null as number | null,
   },
   get requirePassword() {
     return assistantDialog.editingId === null;
   },
   get submitLabel() {
-    return assistantDialog.editingId ? t('teacher.assistants.team.form.update') : t('teacher.assistants.team.form.create');
-  }
+    return assistantDialog.editingId
+      ? t("teacher.assistants.team.form.update")
+      : t("teacher.assistants.team.form.create");
+  },
 });
 
 const resetRoleDialog = () => {
-  roleDialog.form.name = '';
-  roleDialog.form.description = '';
-  roleDialog.form.permissionsMap = permissionOptions.reduce<Record<string, boolean>>((acc, option) => {
+  roleDialog.form.name = "";
+  roleDialog.form.description = "";
+  roleDialog.form.permissionsMap = permissionOptions.reduce<
+    Record<string, boolean>
+  >((acc, option) => {
     acc[option.id] = false;
     return acc;
   }, {});
   setRoleDialogPersona(DEFAULT_PERSONA_VALUE, true);
-  roleDialog.error = '';
+  roleDialog.error = "";
   roleDialog.submitting = false;
   roleDialog.editingId = null;
 };
 
 const resetAssistantDialog = () => {
-  assistantDialog.form.name = '';
-  assistantDialog.form.email = '';
-  assistantDialog.form.username = '';
-  assistantDialog.form.password = '';
+  assistantDialog.form.name = "";
+  assistantDialog.form.email = "";
+  assistantDialog.form.username = "";
+  assistantDialog.form.password = "";
   assistantDialog.form.roleId = null;
-  assistantDialog.error = '';
+  assistantDialog.error = "";
   assistantDialog.submitting = false;
   assistantDialog.editingId = null;
 };
 
 const roleDialogTitle = computed(() =>
-  roleDialog.editingId ? t('teacher.assistants.roles.dialog.editTitle') : t('teacher.assistants.roles.dialog.createTitle')
+  roleDialog.editingId
+    ? t("teacher.assistants.roles.dialog.editTitle")
+    : t("teacher.assistants.roles.dialog.createTitle"),
 );
 
 const assistantDialogTitle = computed(() =>
   assistantDialog.editingId
-    ? t('teacher.assistants.team.dialog.editTitle')
-    : t('teacher.assistants.team.dialog.createTitle')
+    ? t("teacher.assistants.team.dialog.editTitle")
+    : t("teacher.assistants.team.dialog.createTitle"),
 );
 
 const openRoleDialog = (roleId?: number) => {
@@ -1522,8 +1988,10 @@ const openRoleDialog = (roleId?: number) => {
     const role = store.roles.find((item) => item.id === roleId);
     if (role) {
       roleDialog.form.name = role.name;
-      roleDialog.form.description = role.description || '';
-      roleDialog.form.permissionsMap = permissionOptions.reduce<Record<string, boolean>>((acc, option) => {
+      roleDialog.form.description = role.description || "";
+      roleDialog.form.permissionsMap = permissionOptions.reduce<
+        Record<string, boolean>
+      >((acc, option) => {
         acc[option.id] = role.permissions?.includes(option.id) ?? false;
         return acc;
       }, {});
@@ -1540,7 +2008,7 @@ const closeRoleDialog = () => {
 
 const submitRoleDialog = async () => {
   roleDialog.submitting = true;
-  roleDialog.error = '';
+  roleDialog.error = "";
   const isEditing = roleDialog.editingId != null;
   const permissions = Object.entries(roleDialog.form.permissionsMap)
     .filter(([, enabled]) => enabled)
@@ -1549,14 +2017,14 @@ const submitRoleDialog = async () => {
   const personaValue = roleDialog.form.persona;
   const payload: AssistantRolePayload = {
     name: roleDialog.form.name.trim(),
-    persona: personaValue === 'CUSTOM' ? null : personaValue,
+    persona: personaValue === "CUSTOM" ? null : personaValue,
     description: roleDialog.form.description.trim() || null,
-    permissions
+    permissions,
   };
 
   try {
     if (!payload.name) {
-      roleDialog.error = t('teacher.assistants.roles.form.nameRequired');
+      roleDialog.error = t("teacher.assistants.roles.form.nameRequired");
       return;
     }
     const savedRole = isEditing
@@ -1566,13 +2034,15 @@ const submitRoleDialog = async () => {
     highlightSection(assistantRolesSection.value, false);
     showSuccessToast({
       detail: t(
-        isEditing ? 'teacher.assistants.roles.toast.updated' : 'teacher.assistants.roles.toast.created',
-        { name: savedRole.name }
-      )
+        isEditing
+          ? "teacher.assistants.roles.toast.updated"
+          : "teacher.assistants.roles.toast.created",
+        { name: savedRole.name },
+      ),
     });
   } catch (error) {
-    console.error('[assistants] failed to save role', error);
-    roleDialog.error = t('teacher.assistants.roles.form.saveError');
+    console.error("[assistants] failed to save role", error);
+    roleDialog.error = t("teacher.assistants.roles.form.saveError");
     showErrorToast({ detail: roleDialog.error });
   } finally {
     roleDialog.submitting = false;
@@ -1606,10 +2076,12 @@ const refreshOverview = async () => {
   try {
     await store.refreshAll();
     highlightSection(assistantOverviewSection.value, false);
-    showSuccessToast({ detail: t('teacher.assistants.summary.refreshSuccess') });
+    showSuccessToast({
+      detail: t("teacher.assistants.summary.refreshSuccess"),
+    });
   } catch (error) {
-    console.error('[assistants] failed to refresh overview', error);
-    showErrorToast({ detail: t('teacher.assistants.summary.refreshError') });
+    console.error("[assistants] failed to refresh overview", error);
+    showErrorToast({ detail: t("teacher.assistants.summary.refreshError") });
   } finally {
     summaryRefreshing.value = false;
   }
@@ -1617,25 +2089,29 @@ const refreshOverview = async () => {
 
 const submitAssistantDialog = async () => {
   assistantDialog.submitting = true;
-  assistantDialog.error = '';
+  assistantDialog.error = "";
   const isEditing = assistantDialog.editingId != null;
 
   const payload: AssistantPayload = {
     name: assistantDialog.form.name.trim(),
     email: assistantDialog.form.email.trim(),
     username: assistantDialog.form.username.trim(),
-    roleId: assistantDialog.form.roleId ?? null
+    roleId: assistantDialog.form.roleId ?? null,
   };
 
   if (assistantDialog.requirePassword) {
     const passwordValue = assistantDialog.form.password.trim();
     if (!passwordValue) {
-      assistantDialog.error = t('teacher.assistants.team.form.passwordRequired');
+      assistantDialog.error = t(
+        "teacher.assistants.team.form.passwordRequired",
+      );
       assistantDialog.submitting = false;
       return;
     }
     if (passwordValue.length < MIN_PASSWORD_LENGTH) {
-      assistantDialog.error = t('auth.passwordMinLength', { count: MIN_PASSWORD_LENGTH });
+      assistantDialog.error = t("auth.passwordMinLength", {
+        count: MIN_PASSWORD_LENGTH,
+      });
       assistantDialog.submitting = false;
       return;
     }
@@ -1644,7 +2120,9 @@ const submitAssistantDialog = async () => {
     const passwordValue = assistantDialog.form.password.trim();
     if (passwordValue) {
       if (passwordValue.length < MIN_PASSWORD_LENGTH) {
-        assistantDialog.error = t('auth.passwordMinLength', { count: MIN_PASSWORD_LENGTH });
+        assistantDialog.error = t("auth.passwordMinLength", {
+          count: MIN_PASSWORD_LENGTH,
+        });
         assistantDialog.submitting = false;
         return;
       }
@@ -1654,7 +2132,7 @@ const submitAssistantDialog = async () => {
 
   try {
     if (!payload.name || !payload.email || !payload.username) {
-      assistantDialog.error = t('teacher.assistants.team.form.requiredError');
+      assistantDialog.error = t("teacher.assistants.team.form.requiredError");
       return;
     }
     const savedAssistant = isEditing
@@ -1664,13 +2142,15 @@ const submitAssistantDialog = async () => {
     highlightSection(assistantTeamSection.value, false);
     showSuccessToast({
       detail: t(
-        isEditing ? 'teacher.assistants.team.toast.updated' : 'teacher.assistants.team.toast.created',
-        { name: savedAssistant.name }
-      )
+        isEditing
+          ? "teacher.assistants.team.toast.updated"
+          : "teacher.assistants.team.toast.created",
+        { name: savedAssistant.name },
+      ),
     });
   } catch (error) {
-    console.error('[assistants] failed to save assistant', error);
-    assistantDialog.error = t('teacher.assistants.team.form.saveError');
+    console.error("[assistants] failed to save assistant", error);
+    assistantDialog.error = t("teacher.assistants.team.form.saveError");
     showErrorToast({ detail: assistantDialog.error });
   } finally {
     assistantDialog.submitting = false;
@@ -1682,17 +2162,21 @@ const confirmDeleteRole = async (roleId: number) => {
   if (!role) {
     return;
   }
-  const confirmed = window.confirm(t('teacher.assistants.roles.deleteConfirm', { name: role.name }));
+  const confirmed = window.confirm(
+    t("teacher.assistants.roles.deleteConfirm", { name: role.name }),
+  );
   if (!confirmed) {
     return;
   }
   try {
     await store.deleteRole(roleId);
     highlightSection(assistantRolesSection.value, false);
-    showSuccessToast({ detail: t('teacher.assistants.roles.toast.deleted', { name: role.name }) });
+    showSuccessToast({
+      detail: t("teacher.assistants.roles.toast.deleted", { name: role.name }),
+    });
   } catch (error) {
-    console.error('[assistants] failed to delete role', error);
-    showErrorToast({ detail: t('teacher.assistants.roles.form.saveError') });
+    console.error("[assistants] failed to delete role", error);
+    showErrorToast({ detail: t("teacher.assistants.roles.form.saveError") });
   }
 };
 
@@ -1701,17 +2185,23 @@ const confirmDeleteAssistant = async (assistantId: number) => {
   if (!assistant) {
     return;
   }
-  const confirmed = window.confirm(t('teacher.assistants.team.deleteConfirm', { name: assistant.name }));
+  const confirmed = window.confirm(
+    t("teacher.assistants.team.deleteConfirm", { name: assistant.name }),
+  );
   if (!confirmed) {
     return;
   }
   try {
     await store.deleteAssistant(assistantId);
     highlightSection(assistantTeamSection.value, false);
-    showSuccessToast({ detail: t('teacher.assistants.team.toast.deleted', { name: assistant.name }) });
+    showSuccessToast({
+      detail: t("teacher.assistants.team.toast.deleted", {
+        name: assistant.name,
+      }),
+    });
   } catch (error) {
-    console.error('[assistants] failed to delete assistant', error);
-    showErrorToast({ detail: t('teacher.assistants.team.form.saveError') });
+    console.error("[assistants] failed to delete assistant", error);
+    showErrorToast({ detail: t("teacher.assistants.team.form.saveError") });
   }
 };
 
@@ -1721,7 +2211,7 @@ watch(
     if (hash && hash !== previousHash) {
       nextTick(() => scrollToHash(hash));
     }
-  }
+  },
 );
 
 onMounted(() => {
@@ -1735,16 +2225,22 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   if (highlightTimer) {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       window.clearTimeout(highlightTimer);
     } else {
       clearTimeout(highlightTimer);
     }
     highlightTimer = null;
   }
-  assistantOverviewSection.value?.classList.remove('assistants-management__section--highlight');
-  assistantRolesSection.value?.classList.remove('assistants-management__section--highlight');
-  assistantTeamSection.value?.classList.remove('assistants-management__section--highlight');
+  assistantOverviewSection.value?.classList.remove(
+    "assistants-management__section--highlight",
+  );
+  assistantRolesSection.value?.classList.remove(
+    "assistants-management__section--highlight",
+  );
+  assistantTeamSection.value?.classList.remove(
+    "assistants-management__section--highlight",
+  );
 });
 
 const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
@@ -1816,12 +2312,17 @@ const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
 
 .assistants-management__persona-card {
   padding: var(--sakai-space-3);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
   border-radius: var(--sakai-border-radius-md);
   display: flex;
   flex-direction: column;
   gap: var(--sakai-space-2);
-  background-color: color-mix(in srgb, var(--sakai-surface-color) 80%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--sakai-surface-color) 80%,
+    transparent
+  );
 }
 
 .assistants-management__persona-card-header {
@@ -1849,7 +2350,8 @@ const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
 }
 
 .assistants-management__coverage-item {
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
   border-radius: var(--sakai-border-radius-md);
   padding: var(--sakai-space-3);
   display: flex;
@@ -1908,13 +2410,18 @@ const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
 .assistants-management__automation-card,
 .assistants-management__collaboration-card,
 .assistants-management__performance-card {
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 65%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 65%, transparent);
   border-radius: var(--sakai-border-radius-md);
   padding: var(--sakai-space-3);
   display: flex;
   flex-direction: column;
   gap: var(--sakai-space-2);
-  background-color: color-mix(in srgb, var(--sakai-surface-color) 70%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--sakai-surface-color) 70%,
+    transparent
+  );
 }
 
 .assistants-management__automation-card-header,
@@ -2016,11 +2523,19 @@ const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
 .assistants-management__performance-coaching {
   border-radius: var(--sakai-border-radius-sm);
   padding: var(--sakai-space-2);
-  background-color: color-mix(in srgb, var(--sakai-success-100) 70%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--sakai-success-100) 70%,
+    transparent
+  );
 }
 
 .assistants-management__performance-coaching--recommended {
-  background-color: color-mix(in srgb, var(--sakai-warning-100) 70%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--sakai-warning-100) 70%,
+    transparent
+  );
   color: var(--sakai-warning-800);
   font-weight: var(--sakai-font-weight-medium);
 }
@@ -2030,9 +2545,14 @@ const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
   flex-direction: column;
   gap: var(--sakai-space-1);
   padding: var(--sakai-space-3);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
   border-radius: var(--sakai-border-radius-md);
-  background-color: color-mix(in srgb, var(--sakai-surface-color) 60%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--sakai-surface-color) 60%,
+    transparent
+  );
 }
 
 .assistants-management__summary-value {
@@ -2085,7 +2605,8 @@ const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
 }
 
 .assistants-management__summary-access-item {
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
   border-radius: var(--sakai-border-radius-md);
   padding: var(--sakai-space-3);
   display: flex;
@@ -2125,8 +2646,10 @@ const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
 }
 
 .assistants-management__summary-access-empty,
-.assistants-management__summary-access-item + .assistants-management__summary-access-empty {
-  border: 1px dashed color-mix(in srgb, var(--sakai-border-color) 60%, transparent);
+.assistants-management__summary-access-item
+  + .assistants-management__summary-access-empty {
+  border: 1px dashed
+    color-mix(in srgb, var(--sakai-border-color) 60%, transparent);
   border-radius: var(--sakai-border-radius-md);
   padding: var(--sakai-space-4);
 }
@@ -2194,7 +2717,8 @@ const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
 }
 
 .assistants-management__fieldset {
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
   border-radius: var(--sakai-border-radius-md);
   padding: var(--sakai-space-4);
   display: flex;
@@ -2225,7 +2749,8 @@ const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
   gap: var(--sakai-space-3);
   margin-top: var(--sakai-space-3);
   padding-top: var(--sakai-space-3);
-  border-top: 1px solid color-mix(in srgb, var(--sakai-border-color) 60%, transparent);
+  border-top: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 60%, transparent);
 }
 
 .assistants-management__app-shell-heading {
@@ -2267,7 +2792,8 @@ const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
   gap: var(--sakai-space-3);
   padding: var(--sakai-space-4);
   border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
   background: color-mix(in srgb, var(--sakai-surface-card) 96%, transparent);
 }
 

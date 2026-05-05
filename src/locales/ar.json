@@ -1,6 +1,7 @@
 {
   "common": {
     "save": "حفظ",
+    "done": "تم",
     "delete": "حذف",
     "cancel": "إلغاء",
     "apply": "تطبيق",
@@ -21,7 +22,8 @@
     "loading": "جاري التحميل",
     "deleting": "جارٍ الحذف...",
     "maintenanceNotice": "النظام يخضع حالياً للصيانة. يرجى المحاولة لاحقاً.",
-    "back": "رجوع"
+    "back": "رجوع",
+    "select":"اختر"
   },
   "auth": {
     "sessionExpired": "انتهت صلاحية الجلسة، يرجى تسجيل الدخول مرة أخرى.",
@@ -4458,6 +4460,7 @@
       "startAt": "وقت البدء",
       "endAt": "وقت الانتهاء",
       "timeZone": "المنطقة الزمنية",
+      "isRecurring": "موعد متكرر",
       "currencyLabel": "العملة",
       "hourlyRate": "الأجر بالساعة",
       "currencyRequired": "يرجى اختيار العملة.",
@@ -4474,6 +4477,7 @@
       "durationLabel": "{minutes} دقيقة",
       "viewSession": "عرض التفاصيل",
       "statusHeader": "الحالة",
+      "assistantLabel": "المحاضر",
       "sessionStudent": "الطالب",
       "slotHeader": "الوقت",
       "paymentsTitle": "المدفوعات",

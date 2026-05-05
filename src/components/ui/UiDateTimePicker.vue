@@ -63,9 +63,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-import UiIcon from '@/components/ui/UiIcon.vue';
+import { computed, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import UiIcon from "@/components/ui/UiIcon.vue";
 
 defineOptions({ inheritAttrs: false });
 
@@ -86,53 +86,60 @@ const props = withDefaults(
     timeStep?: number;
   }>(),
   {
-    modelValue: '',
-    label: '',
-    hint: '',
-    error: '',
+    modelValue: "",
+    label: "",
+    hint: "",
+    error: "",
     clearable: false,
-    clearLabel: '',
-    confirmLabel: '',
+    clearLabel: "",
+    confirmLabel: "",
     disabled: false,
     readonly: false,
     required: false,
     minDate: undefined,
     maxDate: undefined,
     timeStep: 60,
-  }
+  },
 );
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void;
-  (e: 'change', value: string): void;
-  (e: 'blur', event: FocusEvent): void;
-  (e: 'focus', event: FocusEvent): void;
+  (e: "update:modelValue", value: string): void;
+  (e: "change", value: string): void;
+  (e: "blur", event: FocusEvent): void;
+  (e: "focus", event: FocusEvent): void;
 }>();
 
 const { t, locale } = useI18n();
 
-const resolvedClearLabel = computed(() => props.clearLabel || t('common.clear') || 'Clear');
-const resolvedConfirmLabel = computed(() => props.confirmLabel || t('common.done') || 'Done');
+const resolvedClearLabel = computed(
+  () => props.clearLabel || t("common.clear") || "Clear",
+);
+const resolvedConfirmLabel = computed(
+  () => props.confirmLabel || t("common.done") || "Done",
+);
 
-const datePart = ref('');
-const timePart = ref('');
+const datePart = ref("");
+const timePart = ref("");
 
 const dateInput = ref<HTMLInputElement | null>(null);
 const timeInput = ref<HTMLInputElement | null>(null);
 
 const separatorLabel = computed(() =>
-  new Intl.DateTimeFormat(locale.value, { hour: 'numeric' }).resolvedOptions().hour12 ? '·' : '•'
+  new Intl.DateTimeFormat(locale.value, { hour: "numeric" }).resolvedOptions()
+    .hour12
+    ? "·"
+    : "•",
 );
 
 watch(
   () => props.modelValue,
   (value) => {
     if (!value) {
-      datePart.value = '';
-      timePart.value = '';
+      datePart.value = "";
+      timePart.value = "";
       return;
     }
-    const [date, time] = value.split('T');
+    const [date, time] = value.split("T");
     if (date) {
       datePart.value = date;
     }
@@ -140,34 +147,38 @@ watch(
       timePart.value = time.slice(0, 5);
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const controlClasses = computed(() => ({
-  'ui-datetime-picker__control--error': Boolean(props.error),
-  'ui-datetime-picker__control--disabled': props.disabled,
-  'ui-datetime-picker__control--readonly': props.readonly,
+  "ui-datetime-picker__control--error": Boolean(props.error),
+  "ui-datetime-picker__control--disabled": props.disabled,
+  "ui-datetime-picker__control--readonly": props.readonly,
 }));
 
 const showClear = computed(
-  () => props.clearable && !props.disabled && !props.readonly && Boolean(datePart.value || timePart.value)
+  () =>
+    props.clearable &&
+    !props.disabled &&
+    !props.readonly &&
+    Boolean(datePart.value || timePart.value),
 );
 
 const showConfirm = computed(() => !props.disabled && !props.readonly);
 
 function normalizedValue() {
   if (!datePart.value) {
-    return '';
+    return "";
   }
-  const time = timePart.value || '00:00';
+  const time = timePart.value || "00:00";
   return `${datePart.value}T${time}`;
 }
 
 function updateValue(triggerChange = false) {
   const value = normalizedValue();
-  emit('update:modelValue', value);
+  emit("update:modelValue", value);
   if (triggerChange) {
-    emit('change', value);
+    emit("change", value);
   }
 }
 
@@ -192,24 +203,24 @@ function onTimeChange() {
 }
 
 function onDateBlur(event: FocusEvent) {
-  emit('blur', event);
+  emit("blur", event);
 }
 
 function onTimeBlur(event: FocusEvent) {
-  emit('blur', event);
+  emit("blur", event);
 }
 
 function onDateFocus(event: FocusEvent) {
-  emit('focus', event);
+  emit("focus", event);
 }
 
 function onTimeFocus(event: FocusEvent) {
-  emit('focus', event);
+  emit("focus", event);
 }
 
 function clearValue() {
-  datePart.value = '';
-  timePart.value = '';
+  datePart.value = "";
+  timePart.value = "";
   updateValue(true);
   if (dateInput.value) {
     dateInput.value.focus();
@@ -240,10 +251,13 @@ function confirmValue() {
   transition: all var(--sakai-transition-duration) var(--sakai-transition-ease);
 }
 
-.ui-datetime-picker__control:focus-within:not(.ui-datetime-picker__control--disabled):not(.ui-datetime-picker__control--readonly) {
+.ui-datetime-picker__control:focus-within:not(
+    .ui-datetime-picker__control--disabled
+  ):not(.ui-datetime-picker__control--readonly) {
   border-color: var(--sakai-primary);
   background: var(--sakai-surface-card);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--sakai-primary) 12%, transparent);
+  box-shadow: 0 0 0 4px
+    color-mix(in srgb, var(--sakai-primary) 12%, transparent);
 }
 
 .ui-datetime-picker__control--error {

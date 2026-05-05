@@ -5,7 +5,7 @@
   meta, sidebar, and default content areas.
 -->
 <template>
-  <section class="theme-page">
+  <section class="theme-page w-full">
     <header v-if="hasHeader" class="theme-page__header">
       <div class="theme-page__heading">
         <div class="theme-page__headline">
@@ -23,8 +23,8 @@
         <slot name="meta" />
       </div>
     </header>
-    <div class="theme-page__body">
-      <main class="theme-page__main">
+    <div class="theme-page__body w-full">
+      <main class="theme-page__main w-full">
         <slot />
       </main>
       <aside v-if="$slots.sidebar" class="theme-page__sidebar">
@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useSlots } from 'vue';
+import { computed, useSlots } from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -44,10 +44,10 @@ const props = withDefaults(
     badge?: string;
   }>(),
   {
-    title: '',
-    subtitle: '',
-    badge: ''
-  }
+    title: "",
+    subtitle: "",
+    badge: "",
+  },
 );
 
 const slots = useSlots();
@@ -58,7 +58,16 @@ const slots = useSlots();
  *
  * @returns True when any heading content is available.
  */
-const hasHeader = computed(() => Boolean(props.title || props.subtitle || props.badge || slots.badge || slots.actions || slots.meta));
+const hasHeader = computed(() =>
+  Boolean(
+    props.title ||
+    props.subtitle ||
+    props.badge ||
+    slots.badge ||
+    slots.actions ||
+    slots.meta,
+  ),
+);
 /**
  * Returns the reactive page title so child components can access it in the
  * template.

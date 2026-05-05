@@ -1,6 +1,7 @@
 {
   "common": {
     "save": "Save",
+    "done":"Done",
     "delete": "Delete",
     "cancel": "Cancel",
     "apply": "Apply",
@@ -21,7 +22,8 @@
     "deleting": "Deleting...",
     "maintenanceNotice": "We're performing maintenance right now. Please try again shortly.",
     "clear": "Clear",
-    "back": "Back"
+    "back": "Back",
+    "select":"Select"
   },
   "auth": {
     "sessionExpired": "Your session has expired. Please log in again.",
@@ -4526,6 +4528,7 @@
       "startAt": "Start time",
       "endAt": "End time",
       "timeZone": "Time zone",
+      "isRecurring": "Recurring slot",
       "currencyLabel": "Currency",
       "hourlyRate": "Hourly rate",
       "currencyRequired": "Please select a currency.",
@@ -4542,6 +4545,7 @@
       "durationLabel": "{minutes} min",
       "viewSession": "View details",
       "statusHeader": "Status",
+      "assistantLabel": "Instructor",
       "sessionStudent": "Student",
       "slotHeader": "Slot",
       "paymentsTitle": "Payments",

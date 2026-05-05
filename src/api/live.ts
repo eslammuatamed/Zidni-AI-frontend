@@ -20,6 +20,9 @@ export interface TeacherLiveSession {
   joinUrl?: string | null;
   registeredCount: number;
   attendedCount: number;
+  assistantId?: number | null;
+  studentIds?: number[] | null;
+  isRecurring?: boolean | null;
 }
 
 export interface TeacherLiveSessionsPage {
@@ -38,6 +41,9 @@ export interface TeacherLiveSessionCreatePayload {
   scheduledAt: string;
   durationMinutes: number;
   joinUrl?: string | null;
+  assistantId?: number | null;
+  studentIds?: number[] | null;
+  isRecurring?: boolean;
 }
 
 export interface TeacherLiveSessionUpdatePayload {
@@ -48,6 +54,9 @@ export interface TeacherLiveSessionUpdatePayload {
   scheduledAt?: string | null;
   durationMinutes?: number | null;
   joinUrl?: string | null;
+  assistantId?: number | null;
+  studentIds?: number[] | null;
+  isRecurring?: boolean;
 }
 
 export interface LiveSessionRegistration {

@@ -1,5 +1,8 @@
 <template>
-  <ThemePage :title="t('tutoring.teacher.nav')" :subtitle="t('tutoring.teacher.availabilityTitle')">
+  <ThemePage
+    :title="t('tutoring.teacher.nav')"
+    :subtitle="t('tutoring.teacher.availabilityTitle')"
+  >
     <template #meta>
       <div class="teacher-tutoring__summary">
         <div class="teacher-tutoring__summary-grid">
@@ -25,15 +28,28 @@
             icon="DollarOutlined"
             :label="t('tutoring.teacher.overviewExpectedRevenue')"
             :value="projectedRevenueDisplay"
-            :secondary-stat="t('tutoring.teacher.overviewExpectedRevenueHint', { count: upcomingSessionCount })"
+            :secondary-stat="
+              t('tutoring.teacher.overviewExpectedRevenueHint', {
+                count: upcomingSessionCount,
+              })
+            "
           />
         </div>
         <div class="teacher-tutoring__summary-actions">
-          <UiButton color="primary" prepend-icon="PlusOutlined" @click="openSlotDialog()">
-            {{ t('tutoring.teacher.addSlot') }}
+          <UiButton
+            color="primary"
+            prepend-icon="PlusOutlined"
+            @click="openSlotDialog()"
+          >
+            {{ t("tutoring.teacher.addSlot") }}
           </UiButton>
-          <UiButton variant="outline" color="secondary" prepend-icon="ReloadOutlined" @click="refreshAll">
-            {{ t('common.refresh') }}
+          <UiButton
+            variant="outline"
+            color="secondary"
+            prepend-icon="ReloadOutlined"
+            @click="refreshAll"
+          >
+            {{ t("common.refresh") }}
           </UiButton>
         </div>
       </div>
@@ -42,13 +58,29 @@
     <section class="teacher-tutoring">
       <div class="teacher-tutoring__column teacher-tutoring__column--main">
         <UiCard :title="t('tutoring.teacher.availabilityTitle')" hover>
-          <form class="teacher-tutoring__filters" @submit.prevent="applyAvailabilityFilters">
-            <UiSelect v-model="availabilityView" :label="t('tutoring.teacher.viewMode')">
-              <option value="agenda">{{ t('tutoring.teacher.viewAgenda') }}</option>
-              <option value="list">{{ t('tutoring.teacher.viewList') }}</option>
+          <form
+            class="teacher-tutoring__filters"
+            @submit.prevent="applyAvailabilityFilters"
+          >
+            <UiSelect
+              v-model="availabilityView"
+              :label="t('tutoring.teacher.viewMode')"
+            >
+              <option value="agenda">
+                {{ t("tutoring.teacher.viewAgenda") }}
+              </option>
+              <option value="list">{{ t("tutoring.teacher.viewList") }}</option>
             </UiSelect>
-            <UiInput v-model="availabilityFilters.from" type="date" :label="t('tutoring.teacher.filterFrom')" />
-            <UiInput v-model="availabilityFilters.to" type="date" :label="t('tutoring.teacher.filterTo')" />
+            <UiInput
+              v-model="availabilityFilters.from"
+              type="date"
+              :label="t('tutoring.teacher.filterFrom')"
+            />
+            <UiInput
+              v-model="availabilityFilters.to"
+              type="date"
+              :label="t('tutoring.teacher.filterTo')"
+            />
             <UiInput
               v-model.number="availabilityFilters.size"
               type="number"
@@ -57,17 +89,30 @@
               :label="t('tutoring.teacher.filterPageSize')"
             />
             <div class="teacher-tutoring__filters-actions">
-              <UiButton type="submit" color="primary" :loading="availabilityLoading">
-                {{ t('common.apply') }}
+              <UiButton
+                type="submit"
+                color="primary"
+                :loading="availabilityLoading"
+              >
+                {{ t("common.apply") }}
               </UiButton>
             </div>
           </form>
 
-          <UiAlert v-if="store.error" color="danger" variant="soft">{{ t(`tutoring.errors.${store.error}`) }}</UiAlert>
+          <UiAlert v-if="store.error" color="danger" variant="soft">{{
+            t(`tutoring.errors.${store.error}`)
+          }}</UiAlert>
 
-          <div v-if="availabilityView === 'agenda'" class="teacher-tutoring__agenda">
+          <div
+            v-if="availabilityView === 'agenda'"
+            class="teacher-tutoring__agenda"
+          >
             <template v-if="agendaGroups.length">
-              <div v-for="group in agendaGroups" :key="group.key" class="teacher-tutoring__agenda-day">
+              <div
+                v-for="group in agendaGroups"
+                :key="group.key"
+                class="teacher-tutoring__agenda-day"
+              >
                 <h4>{{ group.label }}</h4>
                 <div class="teacher-tutoring__agenda-slots">
                   <UiCard
@@ -76,7 +121,7 @@
                     class="teacher-tutoring__agenda-slot"
                     :class="{
                       'teacher-tutoring__agenda-slot--booked': slot.booked,
-                      'teacher-tutoring__agenda-slot--available': !slot.booked
+                      'teacher-tutoring__agenda-slot--available': !slot.booked,
                     }"
                   >
                     <header class="teacher-tutoring__agenda-slot-header">
@@ -87,19 +132,34 @@
                           <small>{{ formatLocalTime(slot) }}</small>
                         </div>
                       </div>
-                      <UiTag :color="slot.booked ? 'warning' : 'success'" size="sm">
-                        {{ slot.booked ? t('tutoring.teacher.slotBooked') : t('tutoring.teacher.slotAvailable') }}
+                      <UiTag
+                        :color="slot.booked ? 'warning' : 'success'"
+                        size="sm"
+                      >
+                        {{
+                          slot.booked
+                            ? t("tutoring.teacher.slotBooked")
+                            : t("tutoring.teacher.slotAvailable")
+                        }}
                       </UiTag>
                     </header>
                     <div class="teacher-tutoring__agenda-slot-meta">
                       <span>
                         <UiIcon name="HourglassOutlined" :size="16" />
-                        {{ t('tutoring.teacher.durationLabel', { minutes: slot.durationMinutes }) }}
+                        {{
+                          t("tutoring.teacher.durationLabel", {
+                            minutes: slot.durationMinutes,
+                          })
+                        }}
                       </span>
                       <span>
                         <UiIcon name="DollarOutlined" :size="16" />
-                        <span v-if="hasSlotRate(slot)">{{ formatSlotRate(slot) }}</span>
-                        <UiTag v-else color="neutral" size="sm">{{ t('tutoring.teacher.rateUnset') }}</UiTag>
+                        <span v-if="hasSlotRate(slot)">{{
+                          formatSlotRate(slot)
+                        }}</span>
+                        <UiTag v-else color="neutral" size="sm">{{
+                          t("tutoring.teacher.rateUnset")
+                        }}</UiTag>
                       </span>
                     </div>
                     <div class="teacher-tutoring__agenda-actions">
@@ -111,7 +171,7 @@
                         :disabled="slot.booked"
                         @click="openSlotDialog(slot)"
                       >
-                        {{ t('common.edit') }}
+                        {{ t("common.edit") }}
                       </UiButton>
                       <UiButton
                         variant="link"
@@ -121,15 +181,19 @@
                         :disabled="slot.booked"
                         @click="removeSlot(slot.id)"
                       >
-                        {{ t('common.delete') }}
+                        {{ t("common.delete") }}
                       </UiButton>
-                      <UiTag v-if="slot.booked" color="warning" size="sm">{{ t('tutoring.teacher.slotBooked') }}</UiTag>
+                      <UiTag v-if="slot.booked" color="warning" size="sm">{{
+                        t("tutoring.teacher.slotBooked")
+                      }}</UiTag>
                     </div>
                   </UiCard>
                 </div>
               </div>
             </template>
-            <UiAlert v-else color="info" variant="soft">{{ t('tutoring.teacher.noAvailability') }}</UiAlert>
+            <UiAlert v-else color="info" variant="soft">{{
+              t("tutoring.teacher.noAvailability")
+            }}</UiAlert>
           </div>
 
           <template v-else>
@@ -151,16 +215,32 @@
               </template>
               <template #item.booked="{ item }">
                 <UiTag :color="item.booked ? 'info' : 'success'" size="sm">
-                  {{ item.booked ? t('tutoring.teacher.slotBooked') : t('tutoring.teacher.slotAvailable') }}
+                  {{
+                    item.booked
+                      ? t("tutoring.teacher.slotBooked")
+                      : t("tutoring.teacher.slotAvailable")
+                  }}
                 </UiTag>
               </template>
               <template #item.actions="{ item }">
                 <div class="teacher-tutoring__row-actions">
-                  <UiButton variant="link" color="primary" prepend-icon="EditOutlined" :disabled="item.booked" @click="openSlotDialog(item)">
-                    {{ t('common.edit') }}
+                  <UiButton
+                    variant="link"
+                    color="primary"
+                    prepend-icon="EditOutlined"
+                    :disabled="item.booked"
+                    @click="openSlotDialog(item)"
+                  >
+                    {{ t("common.edit") }}
                   </UiButton>
-                  <UiButton variant="link" color="danger" prepend-icon="DeleteOutlined" :disabled="item.booked" @click="removeSlot(item.id)">
-                    {{ t('common.delete') }}
+                  <UiButton
+                    variant="link"
+                    color="danger"
+                    prepend-icon="DeleteOutlined"
+                    :disabled="item.booked"
+                    @click="removeSlot(item.id)"
+                  >
+                    {{ t("common.delete") }}
                   </UiButton>
                 </div>
               </template>
@@ -181,16 +261,23 @@
                     <span>{{ formatLocalTime(slot) }}</span>
                   </div>
                   <UiTag :color="slot.booked ? 'info' : 'success'" size="sm">
-                    {{ slot.booked ? t('tutoring.teacher.slotBooked') : t('tutoring.teacher.slotAvailable') }}
+                    {{
+                      slot.booked
+                        ? t("tutoring.teacher.slotBooked")
+                        : t("tutoring.teacher.slotAvailable")
+                    }}
                   </UiTag>
                 </header>
                 <dl class="teacher-tutoring__list-grid">
                   <div>
-                    <dt>{{ t('assessments.tableDuration') }}</dt>
-                    <dd>{{ slot.durationMinutes }} {{ t('publicCourse.minutesSuffix') }}</dd>
+                    <dt>{{ t("assessments.tableDuration") }}</dt>
+                    <dd>
+                      {{ slot.durationMinutes }}
+                      {{ t("publicCourse.minutesSuffix") }}
+                    </dd>
                   </div>
                   <div>
-                    <dt>{{ t('tutoring.teacher.hourlyRate') }}</dt>
+                    <dt>{{ t("tutoring.teacher.hourlyRate") }}</dt>
                     <dd>{{ formatSlotRate(slot) }}</dd>
                   </div>
                 </dl>
@@ -203,7 +290,7 @@
                     :disabled="slot.booked"
                     @click="openSlotDialog(slot)"
                   >
-                    {{ t('common.edit') }}
+                    {{ t("common.edit") }}
                   </UiButton>
                   <UiButton
                     variant="outline"
@@ -213,44 +300,79 @@
                     :disabled="slot.booked"
                     @click="removeSlot(slot.id)"
                   >
-                    {{ t('common.delete') }}
+                    {{ t("common.delete") }}
                   </UiButton>
                 </div>
               </article>
             </div>
-            <div class="teacher-tutoring__pagination" v-if="store.teacherAvailability.total > store.teacherAvailability.size">
+            <div
+              class="teacher-tutoring__pagination"
+              v-if="
+                store.teacherAvailability.total > store.teacherAvailability.size
+              "
+            >
               <UiButton
                 variant="link"
                 color="secondary"
                 :disabled="store.teacherAvailability.page === 0"
-                @click="changeAvailabilityPage(store.teacherAvailability.page - 1)"
+                @click="
+                  changeAvailabilityPage(store.teacherAvailability.page - 1)
+                "
               >
-                {{ t('common.previous') }}
+                {{ t("common.previous") }}
               </UiButton>
               <span>{{ pageSummary(store.teacherAvailability) }}</span>
               <UiButton
                 variant="link"
                 color="secondary"
-                :disabled="(store.teacherAvailability.page + 1) * store.teacherAvailability.size >= store.teacherAvailability.total"
-                @click="changeAvailabilityPage(store.teacherAvailability.page + 1)"
+                :disabled="
+                  (store.teacherAvailability.page + 1) *
+                    store.teacherAvailability.size >=
+                  store.teacherAvailability.total
+                "
+                @click="
+                  changeAvailabilityPage(store.teacherAvailability.page + 1)
+                "
               >
-                {{ t('common.next') }}
+                {{ t("common.next") }}
               </UiButton>
             </div>
           </template>
         </UiCard>
 
         <UiCard :title="t('tutoring.teacher.sessionsTitle')" hover>
-          <form class="teacher-tutoring__filters" @submit.prevent="applySessionFilters">
-            <UiSelect v-model="sessionFilters.status" :label="t('tutoring.teacher.statusFilter')">
-              <option value="">{{ t('common.all') }}</option>
-              <option value="pending">{{ t('tutoring.status.pending') }}</option>
-              <option value="confirmed">{{ t('tutoring.status.confirmed') }}</option>
-              <option value="completed">{{ t('tutoring.status.completed') }}</option>
-              <option value="cancelled">{{ t('tutoring.status.cancelled') }}</option>
+          <form
+            class="teacher-tutoring__filters"
+            @submit.prevent="applySessionFilters"
+          >
+            <UiSelect
+              v-model="sessionFilters.status"
+              :label="t('tutoring.teacher.statusFilter')"
+            >
+              <option value="">{{ t("common.all") }}</option>
+              <option value="pending">
+                {{ t("tutoring.status.pending") }}
+              </option>
+              <option value="confirmed">
+                {{ t("tutoring.status.confirmed") }}
+              </option>
+              <option value="completed">
+                {{ t("tutoring.status.completed") }}
+              </option>
+              <option value="cancelled">
+                {{ t("tutoring.status.cancelled") }}
+              </option>
             </UiSelect>
-            <UiInput v-model="sessionFilters.from" type="date" :label="t('tutoring.teacher.filterFrom')" />
-            <UiInput v-model="sessionFilters.to" type="date" :label="t('tutoring.teacher.filterTo')" />
+            <UiInput
+              v-model="sessionFilters.from"
+              type="date"
+              :label="t('tutoring.teacher.filterFrom')"
+            />
+            <UiInput
+              v-model="sessionFilters.to"
+              type="date"
+              :label="t('tutoring.teacher.filterTo')"
+            />
             <UiInput
               v-model.number="sessionFilters.size"
               type="number"
@@ -259,17 +381,23 @@
               :label="t('tutoring.teacher.filterPageSize')"
             />
             <div class="teacher-tutoring__filters-actions">
-              <UiButton type="submit" color="primary" :loading="sessionsLoading">
-                {{ t('common.apply') }}
+              <UiButton
+                type="submit"
+                color="primary"
+                :loading="sessionsLoading"
+              >
+                {{ t("common.apply") }}
               </UiButton>
             </div>
           </form>
 
           <template v-if="!store.teacherSessions.items.length">
-            <UiAlert color="info" variant="soft">{{ t('tutoring.teacher.noSessions') }}</UiAlert>
+            <UiAlert color="info" variant="soft">{{
+              t("tutoring.teacher.noSessions")
+            }}</UiAlert>
           </template>
           <template v-else>
-          <UiTable
+            <UiTable
               class="teacher-tutoring__table"
               :headers="sessionHeaders"
               :items="store.teacherSessions.items"
@@ -283,20 +411,37 @@
                 </div>
               </template>
               <template #item.status="{ item }">
-                <UiTag :color="statusColor(item.status)" size="sm">{{ t(`tutoring.status.${item.status}`) }}</UiTag>
+                <UiTag :color="statusColor(item.status)" size="sm">{{
+                  t(`tutoring.status.${item.status}`)
+                }}</UiTag>
               </template>
               <template #item.latestPayment="{ item }">
-                <div v-if="item.latestPayment" class="teacher-tutoring__slot-meta">
-                  <span>{{ formatPaymentAmount(item.latestPayment, item.slot) }}</span>
-                  <UiTag :color="paymentStatusColor(item.latestPayment.status)" size="sm">
-                    {{ t(`tutoring.paymentStatus.${item.latestPayment.status}`) }}
+                <div
+                  v-if="item.latestPayment"
+                  class="teacher-tutoring__slot-meta"
+                >
+                  <span>{{
+                    formatPaymentAmount(item.latestPayment, item.slot)
+                  }}</span>
+                  <UiTag
+                    :color="paymentStatusColor(item.latestPayment.status)"
+                    size="sm"
+                  >
+                    {{
+                      t(`tutoring.paymentStatus.${item.latestPayment.status}`)
+                    }}
                   </UiTag>
                 </div>
                 <span v-else>—</span>
               </template>
               <template #item.actions="{ item }">
-                <UiButton variant="link" color="primary" prepend-icon="EyeOutlined" @click="openSession(item.id)">
-                  {{ t('tutoring.teacher.viewSession') }}
+                <UiButton
+                  variant="link"
+                  color="primary"
+                  prepend-icon="EyeOutlined"
+                  @click="openSession(item.id)"
+                >
+                  {{ t("tutoring.teacher.viewSession") }}
                 </UiButton>
               </template>
             </UiTable>
@@ -312,21 +457,33 @@
                     <strong>{{ session.studentName }}</strong>
                     <span>{{ session.studentEmail }}</span>
                   </div>
-                  <UiTag :color="session.status === 'completed' ? 'success' : session.status === 'pending' ? 'warning' : 'info'" size="sm">
+                  <UiTag
+                    :color="
+                      session.status === 'completed'
+                        ? 'success'
+                        : session.status === 'pending'
+                          ? 'warning'
+                          : 'info'
+                    "
+                    size="sm"
+                  >
                     {{ t(`tutoring.status.${session.status}`) }}
                   </UiTag>
                 </header>
                 <dl class="teacher-tutoring__list-grid">
                   <div>
-                    <dt>{{ t('tutoring.teacher.startAt') }}</dt>
+                    <dt>{{ t("tutoring.teacher.startAt") }}</dt>
                     <dd>{{ formatTeacherTime(session.slot) }}</dd>
                   </div>
                   <div>
-                    <dt>{{ t('assessments.tableDuration') }}</dt>
-                    <dd>{{ session.durationMinutes }} {{ t('publicCourse.minutesSuffix') }}</dd>
+                    <dt>{{ t("assessments.tableDuration") }}</dt>
+                    <dd>
+                      {{ session.durationMinutes }}
+                      {{ t("publicCourse.minutesSuffix") }}
+                    </dd>
                   </div>
                   <div>
-                    <dt>{{ t('student.tableAmount') }}</dt>
+                    <dt>{{ t("student.tableAmount") }}</dt>
                     <dd>{{ formatSlotRate(session) }}</dd>
                   </div>
                 </dl>
@@ -338,28 +495,35 @@
                     prepend-icon="EyeOutlined"
                     @click="selectSession(session)"
                   >
-                    {{ t('tutoring.teacher.viewDetails') }}
+                    {{ t("tutoring.teacher.viewDetails") }}
                   </UiButton>
                 </div>
               </article>
             </div>
-            <div class="teacher-tutoring__pagination" v-if="store.teacherSessions.total > store.teacherSessions.size">
+            <div
+              class="teacher-tutoring__pagination"
+              v-if="store.teacherSessions.total > store.teacherSessions.size"
+            >
               <UiButton
                 variant="link"
                 color="secondary"
                 :disabled="store.teacherSessions.page === 0"
                 @click="changeSessionPage(store.teacherSessions.page - 1)"
               >
-                {{ t('common.previous') }}
+                {{ t("common.previous") }}
               </UiButton>
               <span>{{ pageSummary(store.teacherSessions) }}</span>
               <UiButton
                 variant="link"
                 color="secondary"
-                :disabled="(store.teacherSessions.page + 1) * store.teacherSessions.size >= store.teacherSessions.total"
+                :disabled="
+                  (store.teacherSessions.page + 1) *
+                    store.teacherSessions.size >=
+                  store.teacherSessions.total
+                "
                 @click="changeSessionPage(store.teacherSessions.page + 1)"
               >
-                {{ t('common.next') }}
+                {{ t("common.next") }}
               </UiButton>
             </div>
           </template>
@@ -369,11 +533,17 @@
       <aside class="teacher-tutoring__column teacher-tutoring__column--side">
         <UiCard :title="t('tutoring.teacher.paymentsTitle')" hover>
           <template v-if="!store.teacherPayments.length">
-            <UiAlert color="info" variant="soft">{{ t('tutoring.teacher.noPayments') }}</UiAlert>
+            <UiAlert color="info" variant="soft">{{
+              t("tutoring.teacher.noPayments")
+            }}</UiAlert>
           </template>
           <template v-else>
             <ul class="teacher-tutoring__payments">
-              <li v-for="payment in store.teacherPayments" :key="payment.id" class="teacher-tutoring__payment-item">
+              <li
+                v-for="payment in store.teacherPayments"
+                :key="payment.id"
+                class="teacher-tutoring__payment-item"
+              >
                 <article class="teacher-tutoring__payment-card">
                   <header class="teacher-tutoring__payment-head">
                     <div class="teacher-tutoring__payment-icon">
@@ -383,7 +553,10 @@
                       <strong>#{{ payment.id }}</strong>
                       <span>{{ formatPaymentAmount(payment) }}</span>
                     </div>
-                    <UiTag :color="paymentStatusColor(payment.status)" size="sm">
+                    <UiTag
+                      :color="paymentStatusColor(payment.status)"
+                      size="sm"
+                    >
                       {{ t(`tutoring.paymentStatus.${payment.status}`) }}
                     </UiTag>
                   </header>
@@ -405,7 +578,7 @@
                       prepend-icon="CheckCircleOutlined"
                       @click="openPaymentDecision(payment)"
                     >
-                      {{ t('tutoring.teacher.reviewPayment') }}
+                      {{ t("tutoring.teacher.reviewPayment") }}
                     </UiButton>
                   </footer>
                 </article>
@@ -416,13 +589,54 @@
       </aside>
     </section>
 
-    <UiDialog v-model="slotDialog" :title="editingSlot ? t('tutoring.teacher.editSlot') : t('tutoring.teacher.addSlot')" width="500px">
-      <form class="teacher-tutoring__form" @submit.prevent="saveSlot">
-        <UiDateTimePicker v-model="slotForm.startAt" :label="t('tutoring.teacher.startAt')" clearable required />
-        <UiDateTimePicker v-model="slotForm.endAt" :label="t('tutoring.teacher.endAt')" clearable required />
-        <UiInput v-model="slotForm.timeZone" :label="t('tutoring.teacher.timeZone')" required />
-        <UiSelect v-model="slotForm.currency" :label="t('tutoring.teacher.currencyLabel')" required>
-          <option v-for="option in currencyOptions" :key="option.value" :value="option.value">
+    <UiDialog
+      v-model="slotDialog"
+      :title="
+        editingSlot
+          ? t('tutoring.teacher.editSlot')
+          : t('tutoring.teacher.addSlot')
+      "
+      width="700px"
+    >
+      <form
+        class="grid md:grid-cols-2 grid-cols-1 gap-2 items-center"
+        @submit.prevent="saveSlot"
+      >
+        <div class="md:col-span-2">
+          <UiDateTimePicker
+            v-model="slotForm.startAt"
+            :label="t('tutoring.teacher.startAt')"
+            clearable
+            required
+          />
+        </div>
+        <div class="md:col-span-2">
+          <UiDateTimePicker
+            v-model="slotForm.endAt"
+            :label="t('tutoring.teacher.endAt')"
+            clearable
+            required
+          />
+        </div>
+        <UiInput
+          v-model="slotForm.timeZone"
+          :label="t('tutoring.teacher.timeZone')"
+          required
+        />
+        <UiCheckbox
+          v-model="slotForm.isRecurring"
+          :label="t('tutoring.teacher.isRecurring')"
+        />
+        <UiSelect
+          v-model="slotForm.currency"
+          :label="t('tutoring.teacher.currencyLabel')"
+          required
+        >
+          <option
+            v-for="option in currencyOptions"
+            :key="option.value"
+            :value="option.value"
+          >
             {{ option.label }}
           </option>
         </UiSelect>
@@ -436,10 +650,45 @@
         >
           <template #suffix>{{ slotCurrencyDisplay }}</template>
         </UiInput>
-        <div class="teacher-tutoring__dialog-actions">
-          <UiButton variant="link" color="secondary" @click="slotDialog = false">{{ t('common.cancel') }}</UiButton>
-          <UiButton button-type="submit" color="primary" :disabled="formSubmitting">
-            {{ editingSlot ? t('common.update') : t('common.create') }}
+        <UiSelect
+          v-model="slotForm.assistantId"
+          :label="t('tutoring.teacher.assistantLabel')"
+          required
+        >
+          <option
+            v-for="option in filteredAssistantOptions"
+            :key="option.id"
+            :value="option.id"
+          >
+            {{ option.name }}
+          </option>
+        </UiSelect>
+        <UiSelect
+          v-model="slotForm.studentId"
+          :label="t('tutoring.teacher.sessionStudent')"
+          required
+        >
+          <option
+            v-for="option in studentOptions"
+            :key="option.id"
+            :value="option.id"
+          >
+            {{ option.name }}
+          </option>
+        </UiSelect>
+        <div class="md:col-span-2 flex gap-2 justify-end">
+          <UiButton
+            variant="link"
+            color="secondary"
+            @click="slotDialog = false"
+            >{{ t("common.cancel") }}</UiButton
+          >
+          <UiButton
+            button-type="submit"
+            color="primary"
+            :disabled="formSubmitting"
+          >
+            {{ editingSlot ? t("common.update") : t("common.create") }}
           </UiButton>
         </div>
       </form>
@@ -450,59 +699,125 @@
         <div class="teacher-tutoring__session">
           <div class="teacher-tutoring__session-header">
             <div class="teacher-tutoring__session-meta">
-              <span class="teacher-tutoring__session-student">{{ store.teacherSelectedSession.studentName }}</span>
-              <span class="teacher-tutoring__session-email">{{ store.teacherSelectedSession.studentEmail }}</span>
+              <span class="teacher-tutoring__session-student">{{
+                store.teacherSelectedSession.studentName
+              }}</span>
+              <span class="teacher-tutoring__session-email">{{
+                store.teacherSelectedSession.studentEmail
+              }}</span>
             </div>
-            <UiTag :color="statusColor(store.teacherSelectedSession.status)" size="sm">
+            <UiTag
+              :color="statusColor(store.teacherSelectedSession.status)"
+              size="sm"
+            >
               {{ t(`tutoring.status.${store.teacherSelectedSession.status}`) }}
             </UiTag>
           </div>
           <div class="teacher-tutoring__session-row">
-            <strong>{{ t('tutoring.teacher.slotWindow') }}</strong>
+            <strong>{{ t("tutoring.teacher.slotWindow") }}</strong>
             <span>
               {{ formatTeacherTime(store.teacherSelectedSession.slot) }} ·
               {{ formatLocalTime(store.teacherSelectedSession.slot) }}
             </span>
           </div>
-          <div v-if="store.teacherSelectedSession.joinUrl" class="teacher-tutoring__session-row">
-            <strong>{{ t('tutoring.teacher.joinLink') }}</strong>
-            <UiButton variant="link" color="primary" append-icon="ExportOutlined" :href="store.teacherSelectedSession.joinUrl" target="_blank">
+          <div
+            v-if="store.teacherSelectedSession.joinUrl"
+            class="teacher-tutoring__session-row"
+          >
+            <strong>{{ t("tutoring.teacher.joinLink") }}</strong>
+            <UiButton
+              variant="link"
+              color="primary"
+              append-icon="ExportOutlined"
+              :href="store.teacherSelectedSession.joinUrl"
+              target="_blank"
+            >
               {{ store.teacherSelectedSession.joinUrl }}
             </UiButton>
           </div>
-          <div v-if="store.teacherSelectedSession.latestPayment" class="teacher-tutoring__session-row">
-            <strong>{{ t('tutoring.teacher.paymentLabel') }}</strong>
+          <div
+            v-if="store.teacherSelectedSession.latestPayment"
+            class="teacher-tutoring__session-row"
+          >
+            <strong>{{ t("tutoring.teacher.paymentLabel") }}</strong>
             <span>
-              {{ formatPaymentAmount(store.teacherSelectedSession.latestPayment, store.teacherSelectedSession.slot) }} ·
-              {{ t(`tutoring.paymentStatus.${store.teacherSelectedSession.latestPayment.status}`) }}
+              {{
+                formatPaymentAmount(
+                  store.teacherSelectedSession.latestPayment,
+                  store.teacherSelectedSession.slot,
+                )
+              }}
+              ·
+              {{
+                t(
+                  `tutoring.paymentStatus.${store.teacherSelectedSession.latestPayment.status}`,
+                )
+              }}
             </span>
           </div>
-          <UiTextarea v-model="notes" :label="t('tutoring.teacher.notesLabel')" :rows="4" @blur="saveNotes" />
+          <UiTextarea
+            v-model="notes"
+            :label="t('tutoring.teacher.notesLabel')"
+            :rows="4"
+            @blur="saveNotes"
+          />
           <div class="teacher-tutoring__session-actions">
-            <UiButton v-if="store.teacherSelectedSession.status === 'pending'" color="primary" @click="openConfirmDialog">
-              {{ t('tutoring.teacher.confirmSession') }}
-            </UiButton>
-            <UiButton v-if="store.teacherSelectedSession.status === 'confirmed'" color="primary" @click="markComplete">
-              {{ t('tutoring.teacher.completeSession') }}
+            <UiButton
+              v-if="store.teacherSelectedSession.status === 'pending'"
+              color="primary"
+              @click="openConfirmDialog"
+            >
+              {{ t("tutoring.teacher.confirmSession") }}
             </UiButton>
             <UiButton
-              v-if="store.teacherSelectedSession.status === 'pending' || store.teacherSelectedSession.status === 'confirmed'"
+              v-if="store.teacherSelectedSession.status === 'confirmed'"
+              color="primary"
+              @click="markComplete"
+            >
+              {{ t("tutoring.teacher.completeSession") }}
+            </UiButton>
+            <UiButton
+              v-if="
+                store.teacherSelectedSession.status === 'pending' ||
+                store.teacherSelectedSession.status === 'confirmed'
+              "
               color="secondary"
               variant="outline"
               @click="openCancelDialog"
             >
-              {{ t('tutoring.teacher.cancelSession') }}
+              {{ t("tutoring.teacher.cancelSession") }}
             </UiButton>
-            <UiButton color="secondary" variant="outline" @click="submitTeacherReview">
-              {{ t('tutoring.teacher.leaveReview') }}
+            <UiButton
+              color="secondary"
+              variant="outline"
+              @click="submitTeacherReview"
+            >
+              {{ t("tutoring.teacher.leaveReview") }}
             </UiButton>
           </div>
-          <UiSlider :model-value="teacherReview.rating" :min="1" :max="5" :step="1" color="secondary" :label="t('tutoring.teacher.reviewRating')" @update:model-value="onReviewRatingChange" />
-          <UiTextarea v-model="teacherReview.comment" :label="t('tutoring.teacher.reviewComment')" :rows="3" />
+          <UiSlider
+            :model-value="teacherReview.rating"
+            :min="1"
+            :max="5"
+            :step="1"
+            color="secondary"
+            :label="t('tutoring.teacher.reviewRating')"
+            @update:model-value="onReviewRatingChange"
+          />
+          <UiTextarea
+            v-model="teacherReview.comment"
+            :label="t('tutoring.teacher.reviewComment')"
+            :rows="3"
+          />
         </div>
       </template>
       <template #footer>
-        <UiButton variant="link" color="secondary" @click="sessionDialog = false">{{ t('common.close') }}</UiButton>
+        <UiButton
+          variant="link"
+          color="secondary"
+          @click="sessionDialog = false"
+          >{{ t("common.close") }}</UiButton
+        >
       </template>
     </UiDialog>
 
@@ -510,59 +825,147 @@
       <template v-if="selectedPayment">
         <div class="teacher-tutoring__payment">
           <div class="teacher-tutoring__payment-row">
-            <span class="teacher-tutoring__payment-label">{{ t('tutoring.teacher.paymentAmount') }}</span>
+            <span class="teacher-tutoring__payment-label">{{
+              t("tutoring.teacher.paymentAmount")
+            }}</span>
             <span>{{ formatPaymentAmount(selectedPayment) }}</span>
           </div>
           <div class="teacher-tutoring__payment-row">
-            <span class="teacher-tutoring__payment-label">{{ t('tutoring.teacher.paymentStatus') }}</span>
-            <UiTag :color="paymentStatusColor(selectedPayment.status)" size="sm">
+            <span class="teacher-tutoring__payment-label">{{
+              t("tutoring.teacher.paymentStatus")
+            }}</span>
+            <UiTag
+              :color="paymentStatusColor(selectedPayment.status)"
+              size="sm"
+            >
               {{ t(`tutoring.paymentStatus.${selectedPayment.status}`) }}
             </UiTag>
           </div>
-          <UiRadioGroup :model-value="paymentDecision.status" :options="decisionOptions" :label="t('tutoring.teacher.decisionLabel')" orientation="horizontal" @update:model-value="onPaymentStatusChange" />
-          <UiSelect v-if="paymentDecision.status === 'approved'" :model-value="paymentDecision.provider" :label="t('tutoring.teacher.providerLabel')" @update:model-value="onPaymentProviderChange">
-            <option v-for="option in providers" :key="option.value" :value="option.value">{{ option.label }}</option>
+          <UiRadioGroup
+            :model-value="paymentDecision.status"
+            :options="decisionOptions"
+            :label="t('tutoring.teacher.decisionLabel')"
+            orientation="horizontal"
+            @update:model-value="onPaymentStatusChange"
+          />
+          <UiSelect
+            v-if="paymentDecision.status === 'approved'"
+            :model-value="paymentDecision.provider"
+            :label="t('tutoring.teacher.providerLabel')"
+            @update:model-value="onPaymentProviderChange"
+          >
+            <option
+              v-for="option in providers"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </option>
           </UiSelect>
           <UiInput
             v-if="paymentDecision.status === 'approved'"
             v-model="paymentDecision.joinUrl"
             :label="t('tutoring.teacher.joinUrlLabel')"
           />
-          <UiTextarea v-model="paymentDecision.notes" :label="t('tutoring.teacher.decisionNotes')" :rows="3" />
+          <UiTextarea
+            v-model="paymentDecision.notes"
+            :label="t('tutoring.teacher.decisionNotes')"
+            :rows="3"
+          />
         </div>
       </template>
       <template #footer>
         <div class="teacher-tutoring__dialog-actions">
-          <UiButton variant="link" color="secondary" @click="paymentDialog = false">{{ t('common.cancel') }}</UiButton>
-          <UiButton color="primary" :disabled="formSubmitting" @click="submitPaymentDecision">
-            {{ t('tutoring.teacher.submitDecision') }}
+          <UiButton
+            variant="link"
+            color="secondary"
+            @click="paymentDialog = false"
+            >{{ t("common.cancel") }}</UiButton
+          >
+          <UiButton
+            color="primary"
+            :disabled="formSubmitting"
+            @click="submitPaymentDecision"
+          >
+            {{ t("tutoring.teacher.submitDecision") }}
           </UiButton>
         </div>
       </template>
     </UiDialog>
 
-    <UiDialog v-model="confirmDialog" :title="t('tutoring.teacher.confirmDialogTitle')" width="420px">
-      <form class="teacher-tutoring__form" @submit.prevent="confirmSelectedSession">
-        <UiSelect v-model="confirmForm.provider" :label="t('tutoring.teacher.providerLabel')" required>
-          <option v-for="option in providers" :key="option.value" :value="option.value">{{ option.label }}</option>
+    <UiDialog
+      v-model="confirmDialog"
+      :title="t('tutoring.teacher.confirmDialogTitle')"
+      width="420px"
+    >
+      <form
+        class="teacher-tutoring__form"
+        @submit.prevent="confirmSelectedSession"
+      >
+        <UiSelect
+          v-model="confirmForm.provider"
+          :label="t('tutoring.teacher.providerLabel')"
+          required
+        >
+          <option
+            v-for="option in providers"
+            :key="option.value"
+            :value="option.value"
+          >
+            {{ option.label }}
+          </option>
         </UiSelect>
-        <UiInput v-model="confirmForm.joinUrl" type="url" :label="t('tutoring.teacher.joinUrlLabel')" required />
+        <UiInput
+          v-model="confirmForm.joinUrl"
+          type="url"
+          :label="t('tutoring.teacher.joinUrlLabel')"
+          required
+        />
         <div class="teacher-tutoring__dialog-actions">
-          <UiButton variant="link" color="secondary" @click="confirmDialog = false">{{ t('common.cancel') }}</UiButton>
-          <UiButton button-type="submit" color="primary" :disabled="formSubmitting">
-            {{ t('common.confirm') }}
+          <UiButton
+            variant="link"
+            color="secondary"
+            @click="confirmDialog = false"
+            >{{ t("common.cancel") }}</UiButton
+          >
+          <UiButton
+            button-type="submit"
+            color="primary"
+            :disabled="formSubmitting"
+          >
+            {{ t("common.confirm") }}
           </UiButton>
         </div>
       </form>
     </UiDialog>
 
-    <UiDialog v-model="cancelDialog" :title="t('tutoring.teacher.cancelDialogTitle')" width="420px">
-      <form class="teacher-tutoring__form" @submit.prevent="cancelSelectedSession">
-        <UiTextarea v-model="cancelForm.reason" :label="t('tutoring.teacher.cancelReason')" :rows="3" />
+    <UiDialog
+      v-model="cancelDialog"
+      :title="t('tutoring.teacher.cancelDialogTitle')"
+      width="420px"
+    >
+      <form
+        class="teacher-tutoring__form"
+        @submit.prevent="cancelSelectedSession"
+      >
+        <UiTextarea
+          v-model="cancelForm.reason"
+          :label="t('tutoring.teacher.cancelReason')"
+          :rows="3"
+        />
         <div class="teacher-tutoring__dialog-actions">
-          <UiButton variant="link" color="secondary" @click="cancelDialog = false">{{ t('common.cancel') }}</UiButton>
-          <UiButton button-type="submit" color="danger" :disabled="formSubmitting">
-            {{ t('tutoring.teacher.cancelSession') }}
+          <UiButton
+            variant="link"
+            color="secondary"
+            @click="cancelDialog = false"
+            >{{ t("common.cancel") }}</UiButton
+          >
+          <UiButton
+            button-type="submit"
+            color="danger"
+            :disabled="formSubmitting"
+          >
+            {{ t("tutoring.teacher.cancelSession") }}
           </UiButton>
         </div>
       </form>
@@ -571,41 +974,212 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useTutoringStore } from '@/stores/tutoring';
-import { useToast } from '@/composables/useToast';
-import UiCard from '@/components/ui/UiCard.vue';
-import UiTable from '@/components/ui/UiTable.vue';
-import UiButton from '@/components/ui/UiButton.vue';
-import UiAlert from '@/components/ui/UiAlert.vue';
-import UiTag from '@/components/ui/UiTag.vue';
-import UiDialog from '@/components/ui/UiDialog.vue';
-import UiInput from '@/components/ui/UiInput.vue';
-import UiTextarea from '@/components/ui/UiTextarea.vue';
-import UiSlider from '@/components/ui/UiSlider.vue';
-import UiRadioGroup from '@/components/ui/UiRadioGroup.vue';
-import UiSelect from '@/components/ui/UiSelect.vue';
-import UiStatCard from '@/components/ui/UiStatCard.vue';
-import UiDateTimePicker from '@/components/ui/UiDateTimePicker.vue';
-import ThemePage from '@/layout/theme/ThemePage.vue';
-import type { AvailabilitySlot, TutoringPayment, TutoringSession } from '@/services/tutoring';
+import { computed, onMounted, reactive, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { useTutoringStore } from "@/stores/tutoring";
+import { useToast } from "@/composables/useToast";
+import UiCard from "@/components/ui/UiCard.vue";
+import UiTable from "@/components/ui/UiTable.vue";
+import UiButton from "@/components/ui/UiButton.vue";
+import UiAlert from "@/components/ui/UiAlert.vue";
+import UiTag from "@/components/ui/UiTag.vue";
+import UiDialog from "@/components/ui/UiDialog.vue";
+import UiInput from "@/components/ui/UiInput.vue";
+import UiCheckbox from "@/components/ui/UiCheckbox.vue";
+import UiTextarea from "@/components/ui/UiTextarea.vue";
+import UiSlider from "@/components/ui/UiSlider.vue";
+import UiRadioGroup from "@/components/ui/UiRadioGroup.vue";
+import UiSelect from "@/components/ui/UiSelect.vue";
+import UiStatCard from "@/components/ui/UiStatCard.vue";
+import UiDateTimePicker from "@/components/ui/UiDateTimePicker.vue";
+import ThemePage from "@/layout/theme/ThemePage.vue";
+import type {
+  AvailabilitySlot,
+  TutoringPayment,
+  TutoringSession,
+} from "@/services/tutoring";
+import { useTeacherAssistantsStore } from "@/stores/teacherAssistants";
+import { useTeacherRosterStore } from "@/stores/teacherRoster";
 
 const { t } = useI18n();
 const store = useTutoringStore();
 const toast = useToast();
 
-const DEFAULT_TUTORING_CURRENCY = 'EGP';
+const DEFAULT_TUTORING_CURRENCY = "EGP";
 
 const currencyOptions = computed(() => [
-  { label: t('courses.currencyOptionEGP'), value: 'EGP' },
-  { label: t('courses.currencyOptionAED'), value: 'AED' },
-  { label: t('courses.currencyOptionSAR'), value: 'SAR' }
+  { label: t("courses.currencyOptionEGP"), value: "EGP" },
+  { label: t("courses.currencyOptionAED"), value: "AED" },
+  { label: t("courses.currencyOptionSAR"), value: "SAR" },
 ]);
 
-const availabilityFilters = reactive({ from: '', to: '', size: 10, page: 0 });
-const sessionFilters = reactive({ status: '', from: '', to: '', size: 10, page: 0 });
-const availabilityView = ref<'agenda' | 'list'>('agenda');
+type AssistantPersonaOptionValue =
+  | "TEACHING_ASSISTANT"
+  | "SECRETARY"
+  | "CONTENT_CREATOR"
+  | "CUSTOM";
+type AssistantPersonaTagColor =
+  | "primary"
+  | "secondary"
+  | "success"
+  | "info"
+  | "warning"
+  | "danger"
+  | "neutral";
+type PersonaFilterValue = AssistantPersonaOptionValue | "ALL" | "UNASSIGNED";
+
+interface AssistantPersonaOption {
+  value: AssistantPersonaOptionValue;
+  labelKey: string;
+  descriptionKey: string;
+  defaultPermissions: string[];
+  tagColor: AssistantPersonaTagColor;
+}
+
+const ASSISTANT_PERSONA_OPTIONS: AssistantPersonaOption[] = [
+  {
+    value: "TEACHING_ASSISTANT",
+    labelKey: "teacher.assistants.roles.persona.teachingAssistant.label",
+    descriptionKey:
+      "teacher.assistants.roles.persona.teachingAssistant.description",
+    defaultPermissions: [
+      "courses.manage",
+      "assessments.manage",
+      "students.view",
+      "reports.view",
+    ],
+    tagColor: "primary",
+  },
+  {
+    value: "SECRETARY",
+    labelKey: "teacher.assistants.roles.persona.secretary.label",
+    descriptionKey: "teacher.assistants.roles.persona.secretary.description",
+    defaultPermissions: [
+      "registrations.manage",
+      "communications.manage",
+      "students.view",
+    ],
+    tagColor: "info",
+  },
+  {
+    value: "CONTENT_CREATOR",
+    labelKey: "teacher.assistants.roles.persona.contentCreator.label",
+    descriptionKey:
+      "teacher.assistants.roles.persona.contentCreator.description",
+    defaultPermissions: ["courses.manage", "communications.manage"],
+    tagColor: "success",
+  },
+  {
+    value: "CUSTOM",
+    labelKey: "teacher.assistants.roles.persona.custom.label",
+    descriptionKey: "teacher.assistants.roles.persona.custom.description",
+    defaultPermissions: [],
+    tagColor: "neutral",
+  },
+];
+
+const personaOptionLookup = new Map(
+  ASSISTANT_PERSONA_OPTIONS.map((option) => [option.value, option]),
+);
+
+const DEFAULT_PERSONA_VALUE: AssistantPersonaOptionValue = "TEACHING_ASSISTANT";
+
+const isAssistantPersonaOptionValue = (
+  value: unknown,
+): value is AssistantPersonaOptionValue =>
+  typeof value === "string" &&
+  personaOptionLookup.has(value as AssistantPersonaOptionValue);
+
+const toPersonaOptionValue = (
+  persona: string | null | undefined,
+): AssistantPersonaOptionValue => {
+  if (!persona) {
+    return "CUSTOM";
+  }
+  const normalized = persona.toUpperCase();
+  return isAssistantPersonaOptionValue(normalized)
+    ? (normalized as AssistantPersonaOptionValue)
+    : "CUSTOM";
+};
+
+const AssistantsStore = useTeacherAssistantsStore();
+const RosterStore = useTeacherRosterStore();
+
+const studentOptions = computed(() => {
+  return RosterStore.students.map((student) => ({
+    id: student.studentId,
+    name: student.name,
+    email: student.email,
+  }));
+});
+
+const assistantRows = computed(() =>
+  AssistantsStore.assistants.map((assistant) => {
+    const role =
+      assistant.role ??
+      (assistant.roleId != null
+        ? AssistantsStore.roleById(assistant.roleId)
+        : null);
+    const rawStatus = (assistant.status || "active").toLowerCase();
+    const statusKey = `teacher.assistants.team.status.${rawStatus}`;
+    const statusLabel = t(statusKey);
+    let statusColor: "success" | "warning" | "danger" | "info" = "success";
+    if (rawStatus === "inactive") {
+      statusColor = "warning";
+    } else if (rawStatus === "disabled") {
+      statusColor = "danger";
+    } else if (rawStatus === "pending") {
+      statusColor = "info";
+    }
+    const personaValue: AssistantPersonaOptionValue | "UNASSIGNED" = role
+      ? toPersonaOptionValue(role.persona ?? null)
+      : "UNASSIGNED";
+    return {
+      id: assistant.id,
+      name: assistant.name,
+      email: assistant.email,
+      role: role?.name || t("teacher.assistants.team.roleUnassigned"),
+      statusLabel,
+      statusColor,
+      personaValue,
+    };
+  }),
+);
+
+const personaFilter = ref<PersonaFilterValue>("ALL");
+
+const matchesPersonaFilter = (
+  candidate: AssistantPersonaOptionValue | "UNASSIGNED",
+  filter: PersonaFilterValue,
+) => {
+  if (filter === "ALL") {
+    return true;
+  }
+  if (filter === "UNASSIGNED") {
+    return candidate === "UNASSIGNED";
+  }
+  return candidate === filter;
+};
+
+const filteredAssistantOptions = computed(() => {
+  const filter = personaFilter.value;
+  if (filter === "ALL") {
+    return assistantRows.value;
+  }
+  return assistantRows.value.filter((row) =>
+    matchesPersonaFilter(row.personaValue, filter),
+  );
+});
+
+const availabilityFilters = reactive({ from: "", to: "", size: 10, page: 0 });
+const sessionFilters = reactive({
+  status: "",
+  from: "",
+  to: "",
+  size: 10,
+  page: 0,
+});
+const availabilityView = ref<"agenda" | "list">("agenda");
 const availabilityLoading = ref(false);
 const sessionsLoading = ref(false);
 const slotDialog = ref(false);
@@ -616,17 +1190,20 @@ const cancelDialog = ref(false);
 const formSubmitting = ref(false);
 const editingSlot = ref<AvailabilitySlot | null>(null);
 const selectedPayment = ref<TutoringPayment | null>(null);
-const notes = ref('');
-const teacherReview = reactive({ rating: 5, comment: '' });
-const confirmForm = reactive({ provider: 'zoom', joinUrl: '' });
-const cancelForm = reactive({ reason: '' });
+const notes = ref("");
+const teacherReview = reactive({ rating: 5, comment: "" });
+const confirmForm = reactive({ provider: "zoom", joinUrl: "" });
+const cancelForm = reactive({ reason: "" });
 
 const slotForm = reactive({
-  startAt: '',
-  endAt: '',
+  startAt: "",
+  endAt: "",
   timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   hourlyRate: null as number | null,
-  currency: DEFAULT_TUTORING_CURRENCY
+  currency: DEFAULT_TUTORING_CURRENCY,
+  assistantId: "",
+  studentId: "",
+  isRecurring: false,
 });
 
 interface DateTimeParts {
@@ -641,12 +1218,12 @@ const parseDateTimeLocal = (value: string): DateTimeParts | null => {
   if (!value) {
     return null;
   }
-  const [datePart, timePart] = value.split('T');
+  const [datePart, timePart] = value.split("T");
   if (!datePart || !timePart) {
     return null;
   }
-  const [yearStr, monthStr, dayStr] = datePart.split('-');
-  const [hourStr, minuteStr] = timePart.split(':');
+  const [yearStr, monthStr, dayStr] = datePart.split("-");
+  const [hourStr, minuteStr] = timePart.split(":");
   if (!yearStr || !monthStr || !dayStr || !hourStr || !minuteStr) {
     return null;
   }
@@ -674,30 +1251,33 @@ const isValidTimeZone = (value: string) => {
 };
 
 const getTimeZoneOffsetMinutes = (date: Date, timeZone: string) => {
-  const formatter = new Intl.DateTimeFormat('en-US', {
+  const formatter = new Intl.DateTimeFormat("en-US", {
     timeZone,
     hour12: false,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
   });
   const parts = formatter.formatToParts(date);
-  const lookup = parts.reduce<Record<string, string>>((acc, part) => {
-    if (part.type !== 'literal') {
-      acc[part.type] = part.value;
-    }
-    return acc;
-  }, {} as Record<string, string>);
+  const lookup = parts.reduce<Record<string, string>>(
+    (acc, part) => {
+      if (part.type !== "literal") {
+        acc[part.type] = part.value;
+      }
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
   const asUtc = Date.UTC(
     Number(lookup.year),
     Number(lookup.month) - 1,
     Number(lookup.day),
     Number(lookup.hour),
     Number(lookup.minute),
-    Number(lookup.second || '0')
+    Number(lookup.second || "0"),
   );
   return (asUtc - date.getTime()) / 60000;
 };
@@ -707,7 +1287,9 @@ const toIsoInTimeZone = (value: string, timeZone: string) => {
   if (!parts) {
     return null;
   }
-  const baseUtc = new Date(Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute));
+  const baseUtc = new Date(
+    Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute),
+  );
   const offset = getTimeZoneOffsetMinutes(baseUtc, timeZone);
   const zoned = new Date(baseUtc.getTime() - offset * 60000);
   return zoned.toISOString();
@@ -715,75 +1297,86 @@ const toIsoInTimeZone = (value: string, timeZone: string) => {
 
 const toDateTimeLocalInput = (isoString: string, timeZone: string) => {
   const date = new Date(isoString);
-  const formatter = new Intl.DateTimeFormat('en-US', {
+  const formatter = new Intl.DateTimeFormat("en-US", {
     timeZone,
     hour12: false,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
   });
   const parts = formatter.formatToParts(date);
-  const lookup = parts.reduce<Record<string, string>>((acc, part) => {
-    if (part.type !== 'literal') {
-      acc[part.type] = part.value;
-    }
-    return acc;
-  }, {} as Record<string, string>);
+  const lookup = parts.reduce<Record<string, string>>(
+    (acc, part) => {
+      if (part.type !== "literal") {
+        acc[part.type] = part.value;
+      }
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
   return `${lookup.year}-${lookup.month}-${lookup.day}T${lookup.hour}:${lookup.minute}`;
 };
 
 const providers = [
-  { value: 'zoom', label: 'Zoom' },
-  { value: 'meet', label: 'Google Meet' },
-  { value: 'teams', label: 'Microsoft Teams' },
-  { value: 'jitsi', label: 'Jitsi' },
-  { value: 'custom', label: t('tutoring.teacher.providerCustom') },
-  { value: 'webrtc', label: 'WebRTC' }
+  { value: "zoom", label: "Zoom" },
+  { value: "meet", label: "Google Meet" },
+  { value: "teams", label: "Microsoft Teams" },
+  { value: "jitsi", label: "Jitsi" },
+  { value: "custom", label: t("tutoring.teacher.providerCustom") },
+  { value: "webrtc", label: "WebRTC" },
 ];
 
 const decisionOptions = computed(() => [
-  { value: 'approved', label: t('tutoring.teacher.decisionApprove') },
-  { value: 'rejected', label: t('tutoring.teacher.decisionReject') }
+  { value: "approved", label: t("tutoring.teacher.decisionApprove") },
+  { value: "rejected", label: t("tutoring.teacher.decisionReject") },
 ]);
 
 const availabilityHeaders = computed(() => [
-  { title: t('tutoring.teacher.slotStart'), key: 'startAt' },
-  { title: t('tutoring.teacher.hourlyRate'), key: 'hourlyRate' },
-  { title: t('tutoring.teacher.bookedLabel'), key: 'booked' },
-  { title: t('common.actions'), key: 'actions', sortable: false }
+  { title: t("tutoring.teacher.slotStart"), key: "startAt" },
+  { title: t("tutoring.teacher.hourlyRate"), key: "hourlyRate" },
+  { title: t("tutoring.teacher.bookedLabel"), key: "booked" },
+  { title: t("common.actions"), key: "actions", sortable: false },
 ]);
 
 const sessionHeaders = computed(() => [
-  { title: t('tutoring.teacher.sessionStudent'), key: 'studentName' },
-  { title: t('tutoring.teacher.slotHeader'), key: 'slot' },
-  { title: t('tutoring.teacher.statusHeader'), key: 'status' },
-  { title: t('tutoring.teacher.paymentColumn'), key: 'latestPayment' },
-  { title: t('common.actions'), key: 'actions', sortable: false }
+  { title: t("tutoring.teacher.sessionStudent"), key: "studentName" },
+  { title: t("tutoring.teacher.slotHeader"), key: "slot" },
+  { title: t("tutoring.teacher.statusHeader"), key: "status" },
+  { title: t("tutoring.teacher.paymentColumn"), key: "latestPayment" },
+  { title: t("common.actions"), key: "actions", sortable: false },
 ]);
 
 const sessionDialogTitle = computed(() =>
   store.teacherSelectedSession
-    ? t('tutoring.teacher.sessionDetailTitle', { id: store.teacherSelectedSession.id })
-    : t('tutoring.teacher.sessionsTitle')
+    ? t("tutoring.teacher.sessionDetailTitle", {
+        id: store.teacherSelectedSession.id,
+      })
+    : t("tutoring.teacher.sessionsTitle"),
 );
 
 const paymentDialogTitle = computed(() =>
   selectedPayment.value
-    ? t('tutoring.teacher.reviewPaymentDialogTitle', { id: selectedPayment.value.id })
-    : t('tutoring.teacher.paymentsTitle')
+    ? t("tutoring.teacher.reviewPaymentDialogTitle", {
+        id: selectedPayment.value.id,
+      })
+    : t("tutoring.teacher.paymentsTitle"),
 );
 
-
 const agendaGroups = computed(() => {
-  const groups: { key: string; label: string; slots: AvailabilitySlot[] }[] = [];
-  const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'full' });
+  const groups: { key: string; label: string; slots: AvailabilitySlot[] }[] =
+    [];
+  const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: "full" });
   store.teacherAvailability.items.forEach((slot) => {
     const key = new Date(slot.startAt).toDateString();
     let group = groups.find((item) => item.key === key);
     if (!group) {
-      group = { key, label: formatter.format(new Date(slot.startAt)), slots: [] };
+      group = {
+        key,
+        label: formatter.format(new Date(slot.startAt)),
+        slots: [],
+      };
       groups.push(group);
     }
     group.slots.push(slot);
@@ -792,38 +1385,42 @@ const agendaGroups = computed(() => {
 });
 
 const statusColor = (status: string) => {
-  if (status === 'confirmed') return 'success';
-  if (status === 'pending') return 'warning';
-  if (status === 'completed') return 'info';
-  if (status === 'cancelled') return 'danger';
-  return 'secondary';
+  if (status === "confirmed") return "success";
+  if (status === "pending") return "warning";
+  if (status === "completed") return "info";
+  if (status === "cancelled") return "danger";
+  return "secondary";
 };
 
 const paymentStatusColor = (status: string) => {
-  if (status === 'approved') return 'success';
-  if (status === 'rejected') return 'danger';
-  return 'warning';
+  if (status === "approved") return "success";
+  if (status === "rejected") return "danger";
+  return "warning";
 };
 
-type SlotLike = AvailabilitySlot | TutoringSession | TutoringSession['slot'];
+type SlotLike = AvailabilitySlot | TutoringSession | TutoringSession["slot"];
 
-const resolveSlot = (value: SlotLike | null | undefined): AvailabilitySlot | TutoringSession['slot'] | null => {
+const resolveSlot = (
+  value: SlotLike | null | undefined,
+): AvailabilitySlot | TutoringSession["slot"] | null => {
   if (!value) {
     return null;
   }
 
-  if ('slot' in value) {
+  if ("slot" in value) {
     return value.slot ?? null;
   }
 
   return value;
 };
 
-const toNumericAmount = (value: number | string | null | undefined): number | null => {
-  if (typeof value === 'number') {
+const toNumericAmount = (
+  value: number | string | null | undefined,
+): number | null => {
+  if (typeof value === "number") {
     return Number.isFinite(value) ? value : null;
   }
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : null;
   }
@@ -832,17 +1429,19 @@ const toNumericAmount = (value: number | string | null | undefined): number | nu
 
 const formatCurrencyDisplay = (
   amount: number | string | null | undefined,
-  currency?: string | null
+  currency?: string | null,
 ) => {
   const numeric = toNumericAmount(amount);
   if (numeric === null) {
-    return '—';
+    return "—";
   }
-  const resolvedCurrency = (currency ?? DEFAULT_TUTORING_CURRENCY).toUpperCase();
+  const resolvedCurrency = (
+    currency ?? DEFAULT_TUTORING_CURRENCY
+  ).toUpperCase();
   try {
     return new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency: resolvedCurrency
+      style: "currency",
+      currency: resolvedCurrency,
     }).format(numeric);
   } catch (error) {
     return `${resolvedCurrency} ${numeric.toFixed(2)}`;
@@ -855,11 +1454,15 @@ const hasSlotRate = (value: SlotLike | null | undefined) => {
 };
 
 const teacherCurrencyCode = computed(() => {
-  const availabilityCurrency = store.teacherAvailability.items.find((slot) => slot.currency)?.currency;
+  const availabilityCurrency = store.teacherAvailability.items.find(
+    (slot) => slot.currency,
+  )?.currency;
   if (availabilityCurrency) {
     return availabilityCurrency.toUpperCase();
   }
-  const sessionCurrency = store.teacherSessions.items.find((session) => session.slot?.currency)?.slot.currency;
+  const sessionCurrency = store.teacherSessions.items.find(
+    (session) => session.slot?.currency,
+  )?.slot.currency;
   if (sessionCurrency) {
     return sessionCurrency.toUpperCase();
   }
@@ -884,12 +1487,15 @@ const slotCurrencyDisplay = computed(() => {
 
 const formatSlotRate = (value: SlotLike | null | undefined) => {
   const slot = resolveSlot(value);
-  return formatCurrencyDisplay(slot?.hourlyRate ?? null, slot?.currency ?? null);
+  return formatCurrencyDisplay(
+    slot?.hourlyRate ?? null,
+    slot?.currency ?? null,
+  );
 };
 
 const formatPaymentAmount = (
   payment: TutoringPayment | null | undefined,
-  slot?: SlotLike | null | undefined
+  slot?: SlotLike | null | undefined,
 ) => {
   const resolvedSlot = resolveSlot(slot ?? null);
   const amount = payment?.amount ?? null;
@@ -899,18 +1505,21 @@ const formatPaymentAmount = (
 
 const formatPaymentTimestamp = (value?: string | null) => {
   if (!value) {
-    return '—';
+    return "—";
   }
   const date = new Date(value);
   if (!Number.isFinite(date.getTime())) {
-    return '—';
+    return "—";
   }
-  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
 };
 
 const paymentMethodLabel = (method?: string | null) => {
   if (!method) {
-    return t('tutoring.teacher.methodLabel');
+    return t("tutoring.teacher.methodLabel");
   }
   const normalized = method.toLowerCase();
   const translationKey = `tutoring.paymentMethod.${normalized}`;
@@ -922,16 +1531,16 @@ const paymentMethodLabel = (method?: string | null) => {
 };
 
 const formatWithFormatter = (
-  slot: AvailabilitySlot | TutoringSession['slot'] | null,
-  options: Intl.DateTimeFormatOptions
+  slot: AvailabilitySlot | TutoringSession["slot"] | null,
+  options: Intl.DateTimeFormatOptions,
 ) => {
   if (!slot?.startAt) {
-    return '—';
+    return "—";
   }
 
   const date = new Date(slot.startAt);
   if (!Number.isFinite(date.getTime())) {
-    return '—';
+    return "—";
   }
 
   try {
@@ -946,8 +1555,8 @@ const formatWithFormatter = (
 const formatTeacherTime = (slot: SlotLike) => {
   const resolved = resolveSlot(slot);
   const options: Intl.DateTimeFormatOptions = {
-    dateStyle: 'medium',
-    timeStyle: 'short'
+    dateStyle: "medium",
+    timeStyle: "short",
   };
 
   if (resolved?.timeZone) {
@@ -959,21 +1568,23 @@ const formatTeacherTime = (slot: SlotLike) => {
 
 const formatLocalTime = (slot: SlotLike) =>
   formatWithFormatter(resolveSlot(slot), {
-    dateStyle: 'medium',
-    timeStyle: 'short'
+    dateStyle: "medium",
+    timeStyle: "short",
   });
 
-const relativeTimeFormatter = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+const relativeTimeFormatter = new Intl.RelativeTimeFormat(undefined, {
+  numeric: "auto",
+});
 
 const toRelativeTime = (target: Date) => {
   const divisions: { amount: number; unit: Intl.RelativeTimeFormatUnit }[] = [
-    { amount: 60, unit: 'second' },
-    { amount: 60, unit: 'minute' },
-    { amount: 24, unit: 'hour' },
-    { amount: 7, unit: 'day' },
-    { amount: 4.34524, unit: 'week' },
-    { amount: 12, unit: 'month' },
-    { amount: Number.POSITIVE_INFINITY, unit: 'year' }
+    { amount: 60, unit: "second" },
+    { amount: 60, unit: "minute" },
+    { amount: 24, unit: "hour" },
+    { amount: 7, unit: "day" },
+    { amount: 4.34524, unit: "week" },
+    { amount: 12, unit: "month" },
+    { amount: Number.POSITIVE_INFINITY, unit: "year" },
   ];
 
   let duration = (target.getTime() - Date.now()) / 1000;
@@ -983,7 +1594,7 @@ const toRelativeTime = (target: Date) => {
     }
     duration /= division.amount;
   }
-  return relativeTimeFormatter.format(Math.round(duration), 'year');
+  return relativeTimeFormatter.format(Math.round(duration), "year");
 };
 
 const upcomingSessions = computed(() => {
@@ -993,7 +1604,7 @@ const upcomingSessions = computed(() => {
       if (!slot?.startAt) {
         return false;
       }
-      if (session.status === 'cancelled' || session.status === 'completed') {
+      if (session.status === "cancelled" || session.status === "completed") {
         return false;
       }
       const timestamp = new Date(slot.startAt).getTime();
@@ -1012,7 +1623,7 @@ const nextUpcomingSession = computed(() => upcomingSessions.value[0] ?? null);
 
 const nextSessionLabel = computed(() => {
   if (!nextUpcomingSession.value) {
-    return t('tutoring.teacher.overviewNoUpcoming');
+    return t("tutoring.teacher.overviewNoUpcoming");
   }
   return formatTeacherTime(nextUpcomingSession.value.slot);
 });
@@ -1021,24 +1632,38 @@ const nextSessionDescription = computed(() => {
   const session = nextUpcomingSession.value;
   const slot = resolveSlot(session ?? null);
   if (!slot?.startAt) {
-    return t('tutoring.teacher.overviewNoUpcomingDescription');
+    return t("tutoring.teacher.overviewNoUpcomingDescription");
   }
   const date = new Date(slot.startAt);
   if (!Number.isFinite(date.getTime())) {
-    return t('tutoring.teacher.overviewNoUpcomingDescription');
+    return t("tutoring.teacher.overviewNoUpcomingDescription");
   }
-  return t('tutoring.teacher.overviewStartsIn', { relative: toRelativeTime(date) });
+  return t("tutoring.teacher.overviewStartsIn", {
+    relative: toRelativeTime(date),
+  });
 });
 
 const confirmedTodayCount = computed(() => {
   const today = new Date();
-  const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const end = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
+  const start = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
+  const end = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+    23,
+    59,
+    59,
+    999,
+  );
   const startTime = start.getTime();
   const endTime = end.getTime();
 
   return store.teacherSessions.items.filter((session) => {
-    if (session.status !== 'confirmed') {
+    if (session.status !== "confirmed") {
       return false;
     }
     const slot = resolveSlot(session);
@@ -1046,7 +1671,11 @@ const confirmedTodayCount = computed(() => {
       return false;
     }
     const timestamp = new Date(slot.startAt).getTime();
-    return Number.isFinite(timestamp) && timestamp >= startTime && timestamp <= endTime;
+    return (
+      Number.isFinite(timestamp) &&
+      timestamp >= startTime &&
+      timestamp <= endTime
+    );
   }).length;
 });
 
@@ -1064,13 +1693,16 @@ const projectedRevenueValue = computed(() => {
 });
 
 const projectedRevenueDisplay = computed(() =>
-  formatCurrencyDisplay(projectedRevenueValue.value, teacherCurrencyCode.value)
+  formatCurrencyDisplay(projectedRevenueValue.value, teacherCurrencyCode.value),
 );
 
-const showToast = (message: string, tone: 'success' | 'error' | 'warning' = 'success') => {
-  if (tone === 'error') {
+const showToast = (
+  message: string,
+  tone: "success" | "error" | "warning" = "success",
+) => {
+  if (tone === "error") {
     toast.error(message);
-  } else if (tone === 'warning') {
+  } else if (tone === "warning") {
     toast.warning(message);
   } else {
     toast.success(message);
@@ -1080,7 +1712,7 @@ const showToast = (message: string, tone: 'success' | 'error' | 'warning' = 'suc
 const pageSummary = (state: { page: number; size: number; total: number }) => {
   const start = state.page * state.size + 1;
   const end = Math.min((state.page + 1) * state.size, state.total);
-  return t('tutoring.teacher.pageSummary', { start, end, total: state.total });
+  return t("tutoring.teacher.pageSummary", { start, end, total: state.total });
 };
 
 const applyAvailabilityFilters = async () => {
@@ -1090,11 +1722,11 @@ const applyAvailabilityFilters = async () => {
       from: availabilityFilters.from || undefined,
       to: availabilityFilters.to || undefined,
       size: availabilityFilters.size,
-      page: availabilityFilters.page
+      page: availabilityFilters.page,
     });
   } catch (error) {
     console.error(error);
-    showToast(t('tutoring.teacher.availabilityLoadFailed'), 'error');
+    showToast(t("tutoring.teacher.availabilityLoadFailed"), "error");
   } finally {
     availabilityLoading.value = false;
   }
@@ -1109,15 +1741,17 @@ const applySessionFilters = async () => {
   sessionsLoading.value = true;
   try {
     await store.loadTeacherSessions({
-      status: sessionFilters.status ? (sessionFilters.status as any) : undefined,
+      status: sessionFilters.status
+        ? (sessionFilters.status as any)
+        : undefined,
       from: sessionFilters.from || undefined,
       to: sessionFilters.to || undefined,
       size: sessionFilters.size,
-      page: sessionFilters.page
+      page: sessionFilters.page,
     });
   } catch (error) {
     console.error(error);
-    showToast(t('tutoring.teacher.sessionsLoadFailed'), 'error');
+    showToast(t("tutoring.teacher.sessionsLoadFailed"), "error");
   } finally {
     sessionsLoading.value = false;
   }
@@ -1129,11 +1763,14 @@ const changeSessionPage = (page: number) => {
 };
 
 const resetSlotForm = () => {
-  slotForm.startAt = '';
-  slotForm.endAt = '';
+  slotForm.startAt = "";
+  slotForm.endAt = "";
   slotForm.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   slotForm.hourlyRate = null;
   slotForm.currency = teacherCurrencyCode.value || DEFAULT_TUTORING_CURRENCY;
+  slotForm.assistantId = "";
+  slotForm.studentId = "";
+  slotForm.isRecurring = false;
 };
 
 const openSlotDialog = (slot?: AvailabilitySlot) => {
@@ -1143,7 +1780,9 @@ const openSlotDialog = (slot?: AvailabilitySlot) => {
     slotForm.startAt = toDateTimeLocalInput(slot.startAt, slot.timeZone);
     slotForm.endAt = toDateTimeLocalInput(slot.endAt, slot.timeZone);
     slotForm.hourlyRate = slot.hourlyRate ?? null;
-    slotForm.currency = slot.currency ? slot.currency.toUpperCase() : teacherCurrencyCode.value || DEFAULT_TUTORING_CURRENCY;
+    slotForm.currency = slot.currency
+      ? slot.currency.toUpperCase()
+      : teacherCurrencyCode.value || DEFAULT_TUTORING_CURRENCY;
   } else {
     resetSlotForm();
   }
@@ -1157,31 +1796,31 @@ const onHourlyRateChange = (value: string | number | null) => {
 
 const saveSlot = async () => {
   if (!slotForm.startAt || !slotForm.endAt) {
-    showToast(t('tutoring.teacher.slotValidation'), 'warning');
+    showToast(t("tutoring.teacher.slotValidation"), "warning");
     return;
   }
   const timeZone = slotForm.timeZone.trim();
   if (!isValidTimeZone(timeZone)) {
-    showToast(t('tutoring.teacher.invalidTimeZone'), 'warning');
+    showToast(t("tutoring.teacher.invalidTimeZone"), "warning");
     return;
   }
   const startIso = toIsoInTimeZone(slotForm.startAt, timeZone);
   const endIso = toIsoInTimeZone(slotForm.endAt, timeZone);
   if (!startIso || !endIso) {
-    showToast(t('tutoring.teacher.slotValidation'), 'warning');
+    showToast(t("tutoring.teacher.slotValidation"), "warning");
     return;
   }
   if (new Date(endIso) <= new Date(startIso)) {
-    showToast(t('tutoring.teacher.slotEndBeforeStart'), 'warning');
+    showToast(t("tutoring.teacher.slotEndBeforeStart"), "warning");
     return;
   }
   if (new Date(startIso) <= new Date()) {
-    showToast(t('tutoring.teacher.slotStartInFuture'), 'warning');
+    showToast(t("tutoring.teacher.slotStartInFuture"), "warning");
     return;
   }
-  const currency = (slotForm.currency || '').trim().toUpperCase();
+  const currency = (slotForm.currency || "").trim().toUpperCase();
   if (!currency) {
-    showToast(t('tutoring.teacher.currencyRequired'), 'warning');
+    showToast(t("tutoring.teacher.currencyRequired"), "warning");
     return;
   }
   formSubmitting.value = true;
@@ -1191,26 +1830,26 @@ const saveSlot = async () => {
       endAt: endIso,
       timeZone,
       hourlyRate: slotForm.hourlyRate ?? undefined,
-      currency
+      currency,
     };
     if (editingSlot.value) {
       await store.editAvailability(editingSlot.value.id, payload);
-      showToast(t('tutoring.teacher.slotUpdated'));
+      showToast(t("tutoring.teacher.slotUpdated"));
     } else {
       await store.addAvailability(payload);
-      showToast(t('tutoring.teacher.slotCreated'));
+      showToast(t("tutoring.teacher.slotCreated"));
     }
     slotDialog.value = false;
   } catch (error: any) {
     const status = error?.response?.status;
     if (status === 409) {
-      showToast(t('tutoring.teacher.slotConflict'), 'error');
+      showToast(t("tutoring.teacher.slotConflict"), "error");
     } else if (status === 422) {
-      showToast(t('tutoring.teacher.slotOverlap'), 'error');
+      showToast(t("tutoring.teacher.slotOverlap"), "error");
     } else if (status === 400) {
-      showToast(t('tutoring.teacher.slotInvalidWindow'), 'error');
+      showToast(t("tutoring.teacher.slotInvalidWindow"), "error");
     } else {
-      showToast(t('tutoring.teacher.slotSaveFailed'), 'error');
+      showToast(t("tutoring.teacher.slotSaveFailed"), "error");
     }
   } finally {
     formSubmitting.value = false;
@@ -1220,10 +1859,10 @@ const saveSlot = async () => {
 const removeSlot = async (slotId: number) => {
   try {
     await store.removeAvailability(slotId);
-    showToast(t('tutoring.teacher.slotRemoved'));
+    showToast(t("tutoring.teacher.slotRemoved"));
   } catch (error) {
     console.error(error);
-    showToast(t('tutoring.teacher.slotRemoveFailed'), 'error');
+    showToast(t("tutoring.teacher.slotRemoveFailed"), "error");
   }
 };
 
@@ -1231,14 +1870,14 @@ const openSession = async (sessionId: number) => {
   try {
     const session = await store.loadTeacherSession(sessionId);
     if (session) {
-      notes.value = session.teacherNotes || '';
+      notes.value = session.teacherNotes || "";
       teacherReview.rating = 5;
-      teacherReview.comment = '';
+      teacherReview.comment = "";
       sessionDialog.value = true;
     }
   } catch (error) {
     console.error(error);
-    showToast(t('tutoring.teacher.sessionLoadFailed'), 'error');
+    showToast(t("tutoring.teacher.sessionLoadFailed"), "error");
   }
 };
 
@@ -1246,10 +1885,10 @@ const saveNotes = async () => {
   if (!store.teacherSelectedSession) return;
   try {
     await store.saveTeacherNotes(store.teacherSelectedSession.id, notes.value);
-    showToast(t('tutoring.teacher.notesSaved'));
+    showToast(t("tutoring.teacher.notesSaved"));
   } catch (error) {
     console.error(error);
-    showToast(t('tutoring.teacher.notesFailed'), 'error');
+    showToast(t("tutoring.teacher.notesFailed"), "error");
   }
 };
 
@@ -1258,18 +1897,18 @@ const markComplete = async () => {
   formSubmitting.value = true;
   try {
     await store.markSessionComplete(store.teacherSelectedSession.id);
-    showToast(t('tutoring.teacher.sessionCompleted'));
+    showToast(t("tutoring.teacher.sessionCompleted"));
   } catch (error) {
     console.error(error);
-    showToast(t('tutoring.teacher.sessionCompleteFailed'), 'error');
+    showToast(t("tutoring.teacher.sessionCompleteFailed"), "error");
   } finally {
     formSubmitting.value = false;
   }
 };
 
 const openConfirmDialog = () => {
-  confirmForm.provider = store.teacherSelectedSession?.provider || 'zoom';
-  confirmForm.joinUrl = store.teacherSelectedSession?.joinUrl || '';
+  confirmForm.provider = store.teacherSelectedSession?.provider || "zoom";
+  confirmForm.joinUrl = store.teacherSelectedSession?.joinUrl || "";
   confirmDialog.value = true;
 };
 
@@ -1279,20 +1918,20 @@ const confirmSelectedSession = async () => {
   try {
     await store.confirmSession(store.teacherSelectedSession.id, {
       provider: confirmForm.provider as any,
-      joinUrl: confirmForm.joinUrl
+      joinUrl: confirmForm.joinUrl,
     });
     confirmDialog.value = false;
-    showToast(t('tutoring.teacher.sessionConfirmed'));
+    showToast(t("tutoring.teacher.sessionConfirmed"));
   } catch (error) {
     console.error(error);
-    showToast(t('tutoring.teacher.sessionConfirmFailed'), 'error');
+    showToast(t("tutoring.teacher.sessionConfirmFailed"), "error");
   } finally {
     formSubmitting.value = false;
   }
 };
 
 const openCancelDialog = () => {
-  cancelForm.reason = '';
+  cancelForm.reason = "";
   cancelDialog.value = true;
 };
 
@@ -1300,13 +1939,15 @@ const cancelSelectedSession = async () => {
   if (!store.teacherSelectedSession) return;
   formSubmitting.value = true;
   try {
-    await store.cancelSession(store.teacherSelectedSession.id, { reason: cancelForm.reason || undefined });
+    await store.cancelSession(store.teacherSelectedSession.id, {
+      reason: cancelForm.reason || undefined,
+    });
     cancelDialog.value = false;
     sessionDialog.value = false;
-    showToast(t('tutoring.teacher.sessionCancelled'), 'warning');
+    showToast(t("tutoring.teacher.sessionCancelled"), "warning");
   } catch (error) {
     console.error(error);
-    showToast(t('tutoring.teacher.sessionCancelFailed'), 'error');
+    showToast(t("tutoring.teacher.sessionCancelFailed"), "error");
   } finally {
     formSubmitting.value = false;
   }
@@ -1321,37 +1962,38 @@ const submitTeacherReview = async () => {
   try {
     await store.leaveTeacherReview(store.teacherSelectedSession.id, {
       rating: teacherReview.rating,
-      comment: teacherReview.comment || undefined
+      comment: teacherReview.comment || undefined,
     });
-    showToast(t('tutoring.teacher.reviewSubmitted'));
+    showToast(t("tutoring.teacher.reviewSubmitted"));
   } catch (error: any) {
     console.error(error);
     const status = error?.response?.status as number | undefined;
     if (status === 403) {
-      showToast(t('tutoring.teacher.reviewForbidden'), 'error');
+      showToast(t("tutoring.teacher.reviewForbidden"), "error");
       return;
     }
-    showToast(t('tutoring.teacher.reviewFailed'), 'error');
+    showToast(t("tutoring.teacher.reviewFailed"), "error");
   }
 };
 
 const openPaymentDecision = (payment: TutoringPayment) => {
   selectedPayment.value = payment;
-  paymentDecision.status = payment.status === 'pending' ? 'approved' : payment.status;
-  paymentDecision.provider = payment.provider || 'zoom';
-  paymentDecision.joinUrl = payment.joinUrl || '';
-  paymentDecision.notes = '';
+  paymentDecision.status =
+    payment.status === "pending" ? "approved" : payment.status;
+  paymentDecision.provider = payment.provider || "zoom";
+  paymentDecision.joinUrl = payment.joinUrl || "";
+  paymentDecision.notes = "";
   paymentDialog.value = true;
 };
 
 const paymentDecision = reactive({
-  status: 'approved' as ManualPaymentStatus,
-  provider: 'zoom',
-  joinUrl: '',
-  notes: ''
+  status: "approved" as ManualPaymentStatus,
+  provider: "zoom",
+  joinUrl: "",
+  notes: "",
 });
 
-type ManualPaymentStatus = 'approved' | 'rejected';
+type ManualPaymentStatus = "approved" | "rejected";
 
 const onPaymentStatusChange = (value: string | number | boolean) => {
   paymentDecision.status = String(value) as ManualPaymentStatus;
@@ -1367,36 +2009,53 @@ const submitPaymentDecision = async () => {
   try {
     await store.decidePayment(selectedPayment.value.id, {
       status: paymentDecision.status,
-      provider: paymentDecision.status === 'approved' ? (paymentDecision.provider as any) : undefined,
-      joinUrl: paymentDecision.status === 'approved' ? paymentDecision.joinUrl || undefined : undefined,
-      notes: paymentDecision.notes || undefined
+      provider:
+        paymentDecision.status === "approved"
+          ? (paymentDecision.provider as any)
+          : undefined,
+      joinUrl:
+        paymentDecision.status === "approved"
+          ? paymentDecision.joinUrl || undefined
+          : undefined,
+      notes: paymentDecision.notes || undefined,
     });
     paymentDialog.value = false;
-    showToast(t('tutoring.teacher.paymentDecided'));
+    showToast(t("tutoring.teacher.paymentDecided"));
   } catch (error) {
     console.error(error);
-    showToast(t('tutoring.teacher.paymentDecisionFailed'), 'error');
+    showToast(t("tutoring.teacher.paymentDecisionFailed"), "error");
   } finally {
     formSubmitting.value = false;
   }
 };
 
 const refreshAll = async () => {
-  await Promise.all([applyAvailabilityFilters(), applySessionFilters(), store.loadTeacherPayments()]);
+  await Promise.all([
+    applyAvailabilityFilters(),
+    applySessionFilters(),
+    store.loadTeacherPayments(),
+  ]);
 };
 
 onMounted(async () => {
+  RosterStore.loadStudents();
   availabilityLoading.value = true;
   sessionsLoading.value = true;
   try {
     await Promise.all([
-      store.loadTeacherAvailability({ size: availabilityFilters.size, page: availabilityFilters.page }),
-      store.loadTeacherSessions({ size: sessionFilters.size, page: sessionFilters.page }),
-      store.loadTeacherPayments()
+      store.loadTeacherAvailability({
+        size: availabilityFilters.size,
+        page: availabilityFilters.page,
+      }),
+      store.loadTeacherSessions({
+        size: sessionFilters.size,
+        page: sessionFilters.page,
+      }),
+      store.loadTeacherPayments(),
     ]);
   } catch (error) {
     console.error(error);
-    showToast(t('tutoring.teacher.initialLoadFailed'), 'error');
+    showToast(t("tutoring.teacher.initialLoadFailed"), "error");
   } finally {
     availabilityLoading.value = false;
     sessionsLoading.value = false;
@@ -1483,12 +2142,17 @@ onMounted(async () => {
   gap: var(--sakai-space-3);
   padding: var(--sakai-space-4);
   border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
   background: color-mix(in srgb, var(--sakai-surface-card) 96%, transparent);
 }
 
 .teacher-tutoring__list--availability .teacher-tutoring__list-item {
-  border-color: color-mix(in srgb, var(--sakai-primary) 25%, var(--sakai-border-color) 60%);
+  border-color: color-mix(
+    in srgb,
+    var(--sakai-primary) 25%,
+    var(--sakai-border-color) 60%
+  );
 }
 
 .teacher-tutoring__list-header {
@@ -1578,15 +2242,19 @@ onMounted(async () => {
   padding: var(--sakai-space-4);
   border-radius: var(--sakai-border-radius-lg);
   background: var(--sakai-surface-card);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 60%, transparent);
-  box-shadow: 0 12px 24px color-mix(in srgb, var(--sakai-shadow-color) 6%, transparent);
-  transition: transform var(--sakai-transition-duration) var(--sakai-transition-ease),
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 60%, transparent);
+  box-shadow: 0 12px 24px
+    color-mix(in srgb, var(--sakai-shadow-color) 6%, transparent);
+  transition:
+    transform var(--sakai-transition-duration) var(--sakai-transition-ease),
     box-shadow var(--sakai-transition-duration) var(--sakai-transition-ease);
 }
 
 .teacher-tutoring__agenda-slot:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 36px color-mix(in srgb, var(--sakai-shadow-color) 14%, transparent);
+  box-shadow: 0 20px 36px
+    color-mix(in srgb, var(--sakai-shadow-color) 14%, transparent);
 }
 
 .teacher-tutoring__agenda-slot--available {
@@ -1724,8 +2392,10 @@ onMounted(async () => {
   padding: var(--sakai-space-4);
   border-radius: var(--sakai-border-radius-lg);
   background: color-mix(in srgb, var(--sakai-surface-card) 98%, transparent);
-  border: 1px solid color-mix(in srgb, var(--sakai-primary) 18%, var(--sakai-border-color) 65%);
-  box-shadow: 0 16px 32px color-mix(in srgb, var(--sakai-primary) 12%, rgba(0, 0, 0, 0.16));
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-primary) 18%, var(--sakai-border-color) 65%);
+  box-shadow: 0 16px 32px
+    color-mix(in srgb, var(--sakai-primary) 12%, rgba(0, 0, 0, 0.16));
 }
 
 .teacher-tutoring__payment-head {
@@ -1841,7 +2511,8 @@ onMounted(async () => {
   }
 
   .teacher-tutoring__payment-card {
-    box-shadow: 0 12px 22px color-mix(in srgb, var(--sakai-primary) 12%, rgba(0, 0, 0, 0.18));
+    box-shadow: 0 12px 22px
+      color-mix(in srgb, var(--sakai-primary) 12%, rgba(0, 0, 0, 0.18));
   }
 
   .teacher-tutoring__pagination {

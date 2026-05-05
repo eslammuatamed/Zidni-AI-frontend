@@ -1,4 +1,4 @@
-﻿<!--
+<!--
   ThemeAppShell.vue builds the primary authenticated layout, including the
   sidebar navigation, global top bar, and responsive drawer behavior. Props: none.
   It derives navigation items from user role/feature flags and exposes slots for
@@ -370,7 +370,7 @@
       <main
         id="main-content"
         ref="mainContentRef"
-        class="theme-app-shell__content max-w-7xl mx-auto"
+        class="theme-app-shell__content max-w-7xl mx-auto w-full"
         tabindex="-1"
       >
         <slot />
