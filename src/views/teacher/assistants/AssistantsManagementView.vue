@@ -991,6 +991,35 @@
           autocomplete="username"
         />
         <UiInput
+          v-model="assistantDialog.form.phone"
+          :label="t('teacher.assistants.team.form.phone')"
+        />
+        <div class="field">
+          <UiFileUpload
+            v-model="photoFiles"
+            :label="t('teacher.assistants.team.form.avatar')"
+            accept="image/*"
+            :disabled="photoUploading"
+            @change="onPhotoFilesChange"
+            @remove="onPhotoFilesRemoved"
+          >
+            <strong>{{ t('teacher.assistants.team.form.avatar') }}</strong>
+          </UiFileUpload>
+          <div v-if="assistantDialog.form.avatar" class="mt-3 flex items-center gap-3">
+            <img :src="assistantDialog.form.avatar" alt="Photo Preview" class="w-16 h-16 rounded-full object-cover" />
+            <UiButton type="button" variant="ghost" size="sm" @click="clearPhoto" :disabled="photoUploading">
+              Remove
+            </UiButton>
+          </div>
+          <p v-if="photoUploading" class="text-sm text-surface-500 mt-2">Uploading...</p>
+          <p v-else-if="photoUploadError" class="text-sm text-red-500 mt-2">{{ photoUploadError }}</p>
+        </div>
+        <UiTextarea
+          v-model="assistantDialog.form.bio"
+          :label="t('teacher.assistants.team.form.bio')"
+          :rows="3"
+        />
+        <UiInput
           v-if="assistantDialog.requirePassword"
           v-model="assistantDialog.form.password"
           type="password"
@@ -1058,13 +1087,15 @@ import UiCheckbox from "@/components/ui/UiCheckbox.vue";
 import UiTag from "@/components/ui/UiTag.vue";
 import UiAlert from "@/components/ui/UiAlert.vue";
 import UiRadioGroup from "@/components/ui/UiRadioGroup.vue";
+import UiFileUpload from "@/components/ui/UiFileUpload.vue";
 import {
   useTeacherAssistantsStore,
   ASSISTANT_PERMISSION_OPTIONS,
 } from "@/stores/teacherAssistants";
-import type {
-  AssistantRolePayload,
-  AssistantPayload,
+import {
+  uploadAssistantAvatar,
+  type AssistantRolePayload,
+  type AssistantPayload,
 } from "@/services/teacherAssistants";
 import { useToast } from "@/composables/useToast";
 import { useFeaturesStore } from "@/stores/features";
@@ -1932,6 +1963,9 @@ const assistantDialog = reactive({
     email: "",
     username: "",
     password: "",
+    phone: "",
+    avatar: "",
+    bio: "",
     roleId: null as number | null,
   },
   get requirePassword() {
@@ -1943,6 +1977,31 @@ const assistantDialog = reactive({
       : t("teacher.assistants.team.form.create");
   },
 });
+
+const photoFiles = ref<File[]>([]);
+const photoUploading = ref(false);
+const photoUploadError = ref("");
+
+const clearPhoto = () => {
+  assistantDialog.form.avatar = "";
+  photoFiles.value = [];
+};
+
+const onPhotoFilesChange = async (files: File[]) => {
+  photoUploadError.value = "";
+  if (!files.length) {
+    return;
+  }
+  const [file] = files;
+  if (!file) {
+    return;
+  }
+  assistantDialog.form.avatar = URL.createObjectURL(file);
+};
+
+const onPhotoFilesRemoved = () => {
+  clearPhoto();
+};
 
 const resetRoleDialog = () => {
   roleDialog.form.name = "";
@@ -1964,10 +2023,15 @@ const resetAssistantDialog = () => {
   assistantDialog.form.email = "";
   assistantDialog.form.username = "";
   assistantDialog.form.password = "";
+  assistantDialog.form.phone = "";
+  assistantDialog.form.avatar = "";
+  assistantDialog.form.bio = "";
   assistantDialog.form.roleId = null;
   assistantDialog.error = "";
   assistantDialog.submitting = false;
   assistantDialog.editingId = null;
+  photoFiles.value = [];
+  photoUploadError.value = "";
 };
 
 const roleDialogTitle = computed(() =>
@@ -2057,6 +2121,9 @@ const openAssistantDialog = (assistantId?: number) => {
       assistantDialog.form.name = assistant.name;
       assistantDialog.form.email = assistant.email;
       assistantDialog.form.username = assistant.username;
+      assistantDialog.form.phone = assistant.phone || "";
+      assistantDialog.form.avatar = assistant.avatarUrl || "";
+      assistantDialog.form.bio = assistant.bio || "";
       assistantDialog.form.roleId = assistant.roleId ?? null;
       assistantDialog.editingId = assistant.id;
     }
@@ -2096,6 +2163,8 @@ const submitAssistantDialog = async () => {
     name: assistantDialog.form.name.trim(),
     email: assistantDialog.form.email.trim(),
     username: assistantDialog.form.username.trim(),
+    phone: assistantDialog.form.phone.trim() || null,
+    bio: assistantDialog.form.bio.trim() || null,
     roleId: assistantDialog.form.roleId ?? null,
   };
 
@@ -2138,6 +2207,18 @@ const submitAssistantDialog = async () => {
     const savedAssistant = isEditing
       ? await store.updateAssistant(assistantDialog.editingId!, payload)
       : await store.createAssistant(payload);
+      
+    if (photoFiles.value.length > 0) {
+      try {
+        await uploadAssistantAvatar(savedAssistant.id, photoFiles.value[0]);
+        // Re-fetch or update store if needed, but refreshAll might handle it if we trigger it, or just let it be.
+        const updated = await store.refreshAll();
+      } catch (uploadError) {
+        console.error("[assistants] failed to upload avatar", uploadError);
+        showErrorToast({ detail: "Assistant saved, but avatar upload failed." });
+      }
+    }
+
     closeAssistantDialog();
     highlightSection(assistantTeamSection.value, false);
     showSuccessToast({

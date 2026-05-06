@@ -31,6 +31,10 @@ export interface AssistantAccount {
   lastLoginAt?: string | null;
   createdAt?: string;
   updatedAt?: string;
+  phone?: string | null;
+  bio?: string | null;
+  avatarUrl?: string | null;
+  avatarKey?: string | null;
 }
 
 export interface AssistantPayload {
@@ -39,6 +43,8 @@ export interface AssistantPayload {
   username: string;
   password?: string;
   roleId?: number | null;
+  phone?: string | null;
+  bio?: string | null;
 }
 
 export interface AssistantPersonaInsight {
@@ -135,6 +141,17 @@ export async function updateAssistant(assistantId: number, payload: AssistantPay
 
 export async function deleteAssistant(assistantId: number) {
   await api.delete(`/api/v1/teacher/assistants/${assistantId}`);
+}
+
+export async function uploadAssistantAvatar(assistantId: number, file: File) {
+  const formData = new FormData();
+  formData.append('file', file);
+  const { data } = await api.post<{ id: number; avatarUrl: string; avatarKey: string }>(
+    `/api/v1/teacher/assistants/${assistantId}/avatar`,
+    formData,
+    { headers: { 'Content-Type': 'multipart/form-data' } }
+  );
+  return data;
 }
 
 export async function fetchAssistantInsights() {
