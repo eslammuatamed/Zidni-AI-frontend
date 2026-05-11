@@ -11,12 +11,12 @@
         ref="selectRef"
         class="ui-select__control"
         v-bind="$attrs"
-        :value="normalizedValue"
+        v-model="internalValue"
         :multiple="isMultiple"
         :disabled="props.disabled"
-        @change="onChange"
         @blur="onBlur"
         @focus="onFocus"
+        @mousedown="onMousedown"
       >
         <slot />
       </select>
@@ -90,20 +90,20 @@ const selectRef = ref<HTMLSelectElement | null>(null);
 
 const isMultiple = computed(() => props.multiple || Boolean(attrs.multiple));
 
-const normalizedValue = computed(() => {
-  if (isMultiple.value) {
-    if (Array.isArray(props.modelValue)) {
-      return props.modelValue.map((value) => String(value));
+const internalValue = computed({
+  get: () => {
+    if (isMultiple.value) {
+      if (Array.isArray(props.modelValue)) {
+        return props.modelValue;
+      }
+      return props.modelValue !== null && props.modelValue !== undefined && props.modelValue !== '' ? [props.modelValue] : [];
     }
-    if (props.modelValue === null || props.modelValue === undefined) {
-      return [];
-    }
-    return [String(props.modelValue)];
+    return props.modelValue ?? '';
+  },
+  set: (val) => {
+    emit('update:modelValue', val);
+    emit('change', val);
   }
-  if (props.modelValue === null || props.modelValue === undefined) {
-    return '';
-  }
-  return String(props.modelValue);
 });
 
 const resolvedStartIcon = computed(() => {
@@ -122,9 +122,9 @@ const hasSuffix = computed(() => Boolean(resolvedEndIcon.value) || Boolean(slots
 const showClear = computed(() => {
   if (!props.clearable || props.disabled) return false;
   if (isMultiple.value) {
-    return Array.isArray(normalizedValue.value) && normalizedValue.value.length > 0;
+    return Array.isArray(internalValue.value) && internalValue.value.length > 0;
   }
-  return normalizedValue.value !== '' && normalizedValue.value !== null;
+  return internalValue.value !== '' && internalValue.value !== null;
 });
 
 const selectClasses = computed(() => ({
@@ -134,38 +134,43 @@ const selectClasses = computed(() => ({
   'ui-select--disabled': props.disabled
 }));
 
-const onChange = (event: Event) => {
-  const target = event.target as HTMLSelectElement;
-  if (isMultiple.value) {
-    const values = Array.from(target.selectedOptions).map((option) => option.value);
-    emit('update:modelValue', values);
-    emit('change', values);
-    return;
-  }
-  emit('update:modelValue', target.value);
-  emit('change', target.value);
-};
+
 
 const onBlur = (event: FocusEvent) => emit('blur', event);
 const onFocus = (event: FocusEvent) => emit('focus', event);
 
+const onMousedown = (event: MouseEvent) => {
+  if (!isMultiple.value || props.disabled) return;
+
+  const target = event.target as HTMLElement;
+  if (target.tagName !== 'OPTION') return;
+
+  event.preventDefault();
+
+  const option = target as HTMLOptionElement;
+  const realValue = '_value' in option ? (option as any)._value : option.value;
+
+  const currentValues = Array.isArray(internalValue.value) ? [...internalValue.value] : [];
+  const index = currentValues.findIndex(v => v === realValue || String(v) === String(realValue));
+
+  if (index === -1) {
+    currentValues.push(realValue);
+  } else {
+    currentValues.splice(index, 1);
+  }
+
+  internalValue.value = currentValues;
+
+  if (selectRef.value) {
+    selectRef.value.focus();
+  }
+};
+
 const clearSelection = () => {
   if (isMultiple.value) {
-    emit('update:modelValue', []);
-    emit('change', []);
+    internalValue.value = [];
   } else {
-    emit('update:modelValue', '');
-    emit('change', '');
-  }
-  if (selectRef.value) {
-    if (isMultiple.value) {
-      Array.from(selectRef.value.options).forEach((option) => {
-        option.selected = false;
-      });
-    } else {
-      selectRef.value.value = '';
-      selectRef.value.selectedIndex = -1;
-    }
+    internalValue.value = '';
   }
   emit('clear');
 };
