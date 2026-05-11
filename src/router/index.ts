@@ -76,6 +76,7 @@ const StudentLearningView = () => import('@/views/StudentLearningView.vue');
 const StudentAssistantView = () => import('@/views/student/assistant/StudentAssistantView.vue');
 const TeacherAssistantsView = () => import('@/views/teacher/assistants/AssistantsManagementView.vue');
 const AssistantDashboardView = () => import('@/views/assistant/AssistantDashboardView.vue');
+const AssistantLiveSessionsList = () => import('@/views/assistant/LiveSessionsList.vue');
 const TeacherCertificatesView = () => import('@/views/TeacherCertificatesView.vue');
 const PlatformAdminPublicationsView = () => import('@/views/PlatformAdmin/PublicationsModeration.vue');
 const PlatformAdminConsoleView = () => import('@/views/PlatformAdminConsoleView.vue');
@@ -972,6 +973,16 @@ const router = createRouter({
         requiresAuth: true,
         roles: ['TEACHER_ASSISTANT'],
         requiresFeature: FEATURE.teacherAssistants
+      },
+      beforeEnter: ensureAppTenantHost
+    },
+    {
+      path: '/assistant/live-sessions',
+      name: 'assistant-live-sessions',
+      component: AssistantLiveSessionsList,
+      meta: {
+        requiresAuth: true,
+        roles: ['TEACHER_ASSISTANT'],
       },
       beforeEnter: ensureAppTenantHost
     },

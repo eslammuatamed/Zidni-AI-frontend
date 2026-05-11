@@ -25,9 +25,17 @@
             {{ item.scheduledAt ? formatDateTime(item.scheduledAt) : t('live.teacher.unscheduled') }}
           </template>
           <template #item.status="{ item }">
-            <UiTag size="sm" :color="statusColor(item.status)">
-              {{ statusLabel(item.status) }}
-            </UiTag>
+            <div class="flex items-center gap-2">
+              <UiTag size="sm" :color="statusColor(item.status)">
+                {{ statusLabel(item.status) }}
+              </UiTag>
+              <UiTag v-if="item.repeatSource" size="sm" color="secondary">
+                {{ t('live.teacher.repeatSource') }}
+              </UiTag>
+              <UiTag v-if="item.repeatedCopy" size="sm" color="neutral">
+                {{ t('live.teacher.repeatedCopy') }}
+              </UiTag>
+            </div>
           </template>
           <template #item.actions="{ item }">
             <div class="live-row-actions">
@@ -62,9 +70,17 @@
           <article v-for="item in sessions" :key="item.id" class="live-list__item" role="listitem">
             <header class="live-list__header">
               <h3>{{ item.title }}</h3>
-              <UiTag size="sm" :color="statusColor(item.status)">
-                {{ statusLabel(item.status) }}
-              </UiTag>
+              <div class="flex items-center gap-2 mt-2">
+                <UiTag size="sm" :color="statusColor(item.status)">
+                  {{ statusLabel(item.status) }}
+                </UiTag>
+                <UiTag v-if="item.repeatSource" size="sm" color="secondary">
+                  {{ t('live.teacher.repeatSource') }}
+                </UiTag>
+                <UiTag v-if="item.repeatedCopy" size="sm" color="neutral">
+                  {{ t('live.teacher.repeatedCopy') }}
+                </UiTag>
+              </div>
             </header>
             <div class="live-list__field">
               <label>{{ t('live.teacher.course') }}</label>
@@ -75,8 +91,8 @@
               <span>{{ item.scheduledAt ? formatDateTime(item.scheduledAt) : t('live.teacher.unscheduled') }}</span>
             </div>
             <div class="live-list__field">
-              <label>{{ t('live.teacher.registered') }}</label>
-              <span>{{ item.registeredCount }}</span>
+              <label>{{ t('live.teacher.assignedStudents') }}</label>
+              <span>{{ item.assignedStudentCount }}</span>
             </div>
             <div class="live-list__actions">
               <UiButton size="sm" variant="link" color="primary" @click="openRegistrations(item)">
@@ -152,6 +168,7 @@ import {
   createTeacherSession,
   updateTeacherSession,
   deleteTeacherSession,
+  listTeacherRegistrations,
   summarizeAttendance,
   type TeacherLiveSession,
   type TeacherLiveSessionCreatePayload,
@@ -187,7 +204,7 @@ const headers = computed<UiTableHeader[]>(() => [
   { key: 'courseTitle', label: t('live.teacher.course') },
   { key: 'scheduledAt', label: t('live.teacher.scheduledAt') },
   { key: 'status', label: t('live.teacher.status') },
-  { key: 'registeredCount', label: t('live.teacher.registered') },
+  { key: 'assignedStudentCount', label: t('live.teacher.assignedStudents') },
   { key: 'actions', label: t('common.actions'), sortable: false }
 ]);
 
@@ -234,10 +251,19 @@ function openCreate() {
   showForm.value = true;
 }
 
-function openEdit(session: TeacherLiveSession) {
-  formMode.value = 'edit';
-  activeSession.value = session;
-  showForm.value = true;
+async function openEdit(session: TeacherLiveSession) {
+  try {
+    loading.value = true;
+    const regs = await listTeacherRegistrations(session.id);
+    const studentIds = regs.map(r => r.studentId);
+    activeSession.value = { ...session, studentIds };
+    formMode.value = 'edit';
+    showForm.value = true;
+  } catch (err: unknown) {
+    toast.error(t('live.teacher.loadError'));
+  } finally {
+    loading.value = false;
+  }
 }
 
 function closeForm() {

@@ -18,6 +18,13 @@
         </option>
       </UiSelect>
 
+      <UiInput
+        v-if="mode === 'create'"
+        v-model.number="form.moduleId"
+        type="number"
+        :label="t('live.teacher.moduleId')"
+      />
+
       <UiInput v-model="form.title" :label="t('live.teacher.title')" required />
       <UiTextarea
         v-model="form.description"
@@ -45,9 +52,37 @@
         :label="t('tutoring.teacher.isRecurring')"
       />
 
+      <UiCheckbox
+        v-if="mode === 'create'"
+        v-model="form.repeatEnabled"
+        :label="t('live.teacher.repeatEnabled')"
+      />
+
+      <div v-if="mode === 'create' && form.repeatEnabled" class="flex gap-4">
+        <UiInput
+          v-model.number="form.repeatCount"
+          type="number"
+          min="1"
+          class="flex-1"
+          :label="t('live.teacher.repeatCount')"
+          required
+        />
+        <UiSelect
+          v-model="form.repeatInterval"
+          class="flex-1"
+          :label="t('live.teacher.repeatInterval')"
+          required
+        >
+          <option value="DAILY">{{ t("live.teacher.repeatDaily") }}</option>
+          <option value="WEEKLY">{{ t("live.teacher.repeatWeekly") }}</option>
+          <option value="MONTHLY">{{ t("live.teacher.repeatMonthly") }}</option>
+        </UiSelect>
+      </div>
+
       <UiSelect
-        v-model="form.assistantId"
+        v-model="form.assignedInstructorId"
         :label="t('tutoring.teacher.assistantLabel')"
+        required
       >
         <option value="">{{ t("common.select") || "Select" }}</option>
         <option
@@ -62,7 +97,7 @@
       <UiSelect
         v-model="form.studentIds"
         :label="t('tutoring.teacher.sessionStudent')"
-        :multiple="true"
+        multiple
       >
         <option
           v-for="option in studentOptions"
@@ -137,6 +172,7 @@ import type {
   TeacherLiveSessionCreatePayload,
   TeacherLiveSessionUpdatePayload,
 } from "@/api/live";
+import { useToast } from "@/composables/useToast";
 
 interface FormState {
   courseId: number | "";
@@ -147,9 +183,13 @@ interface FormState {
   provider: string;
   joinUrl: string;
   providerConfig: Record<string, string>;
-  assistantId: number | "";
+  assignedInstructorId: number | "";
   studentIds: number[];
+  moduleId: number | "";
   isRecurring: boolean;
+  repeatEnabled: boolean;
+  repeatCount: number;
+  repeatInterval: string;
 }
 
 const props = defineProps<{
@@ -166,6 +206,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 const coursesStore = useCoursesStore();
+const toast = useToast();
 const submitting = ref(false);
 
 const form = reactive<FormState>({
@@ -177,9 +218,13 @@ const form = reactive<FormState>({
   provider: "zoom",
   joinUrl: "",
   providerConfig: {},
-  assistantId: "",
+  assignedInstructorId: "",
   studentIds: [],
+  moduleId: "",
   isRecurring: false,
+  repeatEnabled: false,
+  repeatCount: 1,
+  repeatInterval: "WEEKLY",
 });
 
 const assistantsStore = useTeacherAssistantsStore();
@@ -241,9 +286,13 @@ function initialise() {
         typeof value === "string" ? value : (value?.toString() ?? ""),
       ]),
     );
-    form.assistantId = props.session.assistantId ?? "";
+    form.assignedInstructorId = props.session.assignedInstructorId ?? "";
     form.studentIds = props.session.studentIds ?? [];
+    form.moduleId = props.session.moduleId ?? "";
     form.isRecurring = props.session.isRecurring ?? false;
+    form.repeatEnabled = false;
+    form.repeatCount = 1;
+    form.repeatInterval = "WEEKLY";
   } else {
     form.courseId = "";
     form.title = "";
@@ -253,9 +302,13 @@ function initialise() {
     form.provider = "zoom";
     form.joinUrl = "";
     form.providerConfig = {};
-    form.assistantId = "";
+    form.assignedInstructorId = "";
     form.studentIds = [];
+    form.moduleId = "";
     form.isRecurring = false;
+    form.repeatEnabled = false;
+    form.repeatCount = 1;
+    form.repeatInterval = "WEEKLY";
   }
 }
 
@@ -264,6 +317,15 @@ function onProviderChange() {
 }
 
 async function submit() {
+  if (form.studentIds.length === 0) {
+    toast.error(t("live.teacher.studentRequired"));
+    return;
+  }
+  if (!form.assignedInstructorId) {
+    toast.error(t("live.teacher.instructorRequired"));
+    return;
+  }
+
   submitting.value = true;
   try {
     if (props.mode === "create") {
@@ -276,10 +338,15 @@ async function submit() {
         scheduledAt: new Date(form.scheduledAt).toISOString(),
         durationMinutes: form.durationMinutes,
         joinUrl: form.joinUrl || undefined,
-        assistantId:
-          form.assistantId === "" ? undefined : Number(form.assistantId),
-        studentIds: form.studentIds.length > 0 ? form.studentIds : undefined,
+        assignedInstructorId: Number(form.assignedInstructorId),
+        studentIds: form.studentIds,
+        moduleId: form.moduleId === "" ? undefined : Number(form.moduleId),
         isRecurring: form.isRecurring,
+        repeatEnabled: form.repeatEnabled,
+        repeatCount: form.repeatEnabled ? form.repeatCount : undefined,
+        repeatInterval: form.repeatEnabled
+          ? (form.repeatInterval as "WEEKLY" | "DAILY" | "MONTHLY")
+          : undefined,
       };
       emit("create", payload);
     } else {
@@ -293,9 +360,9 @@ async function submit() {
           : undefined,
         durationMinutes: form.durationMinutes,
         joinUrl: form.joinUrl || undefined,
-        assistantId:
-          form.assistantId === "" ? undefined : Number(form.assistantId),
-        studentIds: form.studentIds.length > 0 ? form.studentIds : undefined,
+        assignedInstructorId: Number(form.assignedInstructorId),
+        studentIds: form.studentIds,
+        moduleId: form.moduleId === "" ? undefined : Number(form.moduleId),
         isRecurring: form.isRecurring,
       };
       emit("update", payload);

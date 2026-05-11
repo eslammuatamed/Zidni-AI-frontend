@@ -139,6 +139,9 @@ export const buildTeacherNavModel = ({
   if (isTeacher && allows(liveSessionsCoreEnabled)) {
     items.push({ label: t('nav.teacherLiveSessions'), to: '/teacher/live-sessions', icon: 'VideoCameraOutlined' });
   }
+  if (isAssistant) {
+    items.push({ label: t('nav.teacherLiveSessions'), to: '/assistant/live-sessions', icon: 'VideoCameraOutlined' });
+  }
   if (isTeacher && allows(liveSessionsChatEnabled)) {
     items.push({ label: t('nav.teacherLiveModeration'), to: '/teacher/live-moderation', icon: 'MessageOutlined' });
   }
