@@ -250,7 +250,7 @@ export async function getAttendanceSummary(sessionId: number) {
 }
 
 export async function listStudentSessions(query: StudentLiveSessionsQuery = {}) {
-  const { data } = await api.get<StudentLiveSessionsPage>('/student/live/sessions', { params: query });
+  const { data } = await api.get<StudentLiveSessionsPage>('/v1/students/me/live-sessions', { params: query });
   return data;
 }
 
