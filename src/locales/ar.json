@@ -5754,6 +5754,27 @@
     "PLAN_QUOTA_COURSES": "تم بلوغ حد الدورات لهذه الخطة (حد أقصى {limit} دورة)."
   },
   "live": {
+    "calendar": {
+      "today": "اليوم",
+      "month": "شهر",
+      "week": "أسبوع",
+      "day": "يوم",
+      "fiveDays": "5 أيام",
+      "prev": "السابق",
+      "next": "التالي"
+    },
+    "details": {
+      "course": "الدورة",
+      "instructor": "المعلم",
+      "module": "الوحدة",
+      "students": "الطلاب",
+      "duration": "المدة",
+      "durationMins": "دقيقة",
+      "provider": "المزوّد",
+      "status": "الحالة",
+      "joinLink": "رابط الانضمام",
+      "close": "إغلاق"
+    },
     "teacher": {
       "titlePage": "الجلسات المباشرة",
       "subtitle": "جدول الجلسات المباشرة، إدارة التسجيل والحضور.",

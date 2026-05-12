@@ -1,76 +1,72 @@
 <template>
-  <ThemePage :title="t('live.student.titlePage')" :subtitle="t('live.student.subtitle')">
+  <ThemePage
+    :title="t('live.student.titlePage')"
+    :subtitle="t('live.student.subtitle')"
+  >
     <section class="student-live" dir="ltr">
       <v-row class="fill-height">
         <v-col>
-          <v-sheet height="64">
-            <v-toolbar flat>
+          <v-sheet height="64" color="transparent">
+            <v-toolbar flat color="transparent">
               <v-btn
                 class="me-4"
-                color="grey-darken-2"
+                color="primary"
                 variant="outlined"
                 @click="setToday"
               >
-                Today
+                {{ t("live.calendar.today") }}
               </v-btn>
-              <v-btn
-                color="grey-darken-2"
-                size="small"
-                variant="text"
-                icon
-                @click="prev"
-              >
-                prev
-                <v-icon size="small"> mdi-chevron-left </v-icon>
+              <v-btn size="small" variant="text" icon @click="prev">
+                {{ t("live.calendar.prev") }}
               </v-btn>
-              <v-btn
-                color="grey-darken-2"
-                size="small"
-                variant="text"
-                icon
-                @click="next"
-              >
-                next
-                <v-icon size="small"> mdi-chevron-right </v-icon>
+              <v-btn size="small" variant="text" icon @click="next">
+                {{ t("live.calendar.next") }}
               </v-btn>
               <v-toolbar-title v-if="calendar">
                 {{ calendar.title }}
               </v-toolbar-title>
               <v-menu location="bottom end">
                 <template v-slot:activator="{ props }">
-                  <v-btn
-                    color="grey-darken-2"
-                    variant="outlined"
-                    v-bind="props"
-                  >
+                  <v-btn color="primary" variant="outlined" v-bind="props">
                     <span>{{ typeToLabel[type] }}</span>
                     <v-icon end> mdi-menu-down </v-icon>
                   </v-btn>
                 </template>
                 <v-list>
                   <v-list-item @click="type = 'day'">
-                    <v-list-item-title>Day</v-list-item-title>
+                    <v-list-item-title>{{
+                      t("live.calendar.day")
+                    }}</v-list-item-title>
                   </v-list-item>
                   <v-list-item @click="type = 'week'">
-                    <v-list-item-title>Week</v-list-item-title>
+                    <v-list-item-title>{{
+                      t("live.calendar.week")
+                    }}</v-list-item-title>
                   </v-list-item>
                   <v-list-item @click="type = 'month'">
-                    <v-list-item-title>Month</v-list-item-title>
+                    <v-list-item-title>{{
+                      t("live.calendar.month")
+                    }}</v-list-item-title>
                   </v-list-item>
-                  <v-list-item @click="type = '4day'">
-                    <v-list-item-title>4 days</v-list-item-title>
+                  <v-list-item @click="type = '5day'">
+                    <v-list-item-title>{{
+                      t("live.calendar.fiveDays")
+                    }}</v-list-item-title>
                   </v-list-item>
                 </v-list>
               </v-menu>
             </v-toolbar>
           </v-sheet>
-          <v-sheet height="600">
+          <v-sheet height="600" color="transparent">
             <v-calendar
               ref="calendar"
               v-model="focus"
               :event-color="getEventColor"
               :events="events"
-              :type="type"
+              :type="type === '5day' ? 'custom-daily' : type"
+              :start="type === '5day' ? focusDate : undefined"
+              :end="type === '5day' ? focusPlus4Days : undefined"
+              :first-day-of-week="6"
               color="primary"
               @change="updateRange"
               @click:date="viewDay"
@@ -83,100 +79,190 @@
               :close-on-content-click="false"
               location="end"
             >
-              <v-card min-width="350px" max-width="400px" elevation="4" class="rounded-lg">
-                <div :class="`bg-${selectedEvent.color} text-white pa-4`">
-                  <div class="text-h6 font-weight-bold">{{ selectedEvent.name }}</div>
-                  <div class="text-subtitle-2 opacity-80 mt-1" v-if="selectedEvent.scheduledAt">
-                    {{ new Date(selectedEvent.scheduledAt).toLocaleString() }}
+              <v-card
+                min-width="350px"
+                max-width="400px"
+                elevation="4"
+                class="rounded-xl overflow-hidden border border-border"
+              >
+                <!-- Header -->
+                <div
+                  :class="`bg-${selectedEvent.color} text-white pa-5 relative`"
+                >
+                  <div class="relative z-10">
+                    <div class="d-flex align-center justify-space-between mb-2">
+                      <v-chip
+                        v-if="selectedEvent.registrationStatus"
+                        size="x-small"
+                        class="font-weight-bold text-uppercase"
+                        color="white"
+                        variant="flat"
+                        :class="`text-${selectedEvent.color}`"
+                      >
+                        {{ selectedEvent.registrationStatus }}
+                      </v-chip>
+                      <v-chip
+                        v-else
+                        size="x-small"
+                        class="font-weight-bold text-uppercase"
+                        color="white"
+                        variant="flat"
+                        :class="`text-${selectedEvent.color}`"
+                      >
+                        {{ selectedEvent.status }}
+                      </v-chip>
+                    </div>
+                    <div class="text-h6 font-weight-bold mb-1 leading-tight">
+                      <span
+                        v-if="selectedEvent.courseTitle"
+                        class="opacity-80 text-body-2 d-block mb-1"
+                        >{{ selectedEvent.courseTitle }}</span
+                      >
+                      {{ selectedEvent.name }}
+                    </div>
+                    <div
+                      class="text-caption opacity-90 d-flex align-center gap-1 mt-2"
+                      v-if="selectedEvent.scheduledAt"
+                    >
+                      <UiIcon name="CalendarOutlined" :size="14" />
+                      {{ formatDate(selectedEvent.scheduledAt) }}
+                    </div>
                   </div>
                 </div>
-                
-                <v-card-text class="pa-4 pt-4">
-                  <v-list density="compact" class="pa-0">
-                    <v-list-item class="px-0" v-if="selectedEvent.courseTitle">
-                      <template v-slot:prepend>
-                        <v-icon color="medium-emphasis" class="me-3">mdi-book-open-variant</v-icon>
-                      </template>
-                      <v-list-item-title class="font-weight-medium">Course</v-list-item-title>
-                      <v-list-item-subtitle>{{ selectedEvent.courseTitle }}</v-list-item-subtitle>
-                    </v-list-item>
 
-                    <v-list-item class="px-0" v-if="selectedEvent.assignedInstructorName">
-                      <template v-slot:prepend>
-                        <v-icon color="medium-emphasis" class="me-3">mdi-account-tie</v-icon>
-                      </template>
-                      <v-list-item-title class="font-weight-medium">Instructor</v-list-item-title>
-                      <v-list-item-subtitle>{{ selectedEvent.assignedInstructorName }}</v-list-item-subtitle>
-                    </v-list-item>
+                <v-card-text class="pa-5">
+                  <div class="grid grid-cols-2 gap-y-5 gap-x-4">
+                    <div
+                      class="flex items-start gap-3 col-span-2 sm:col-span-1"
+                      v-if="selectedEvent.assignedInstructorName"
+                    >
+                      <v-avatar
+                        color="primary"
+                        variant="tonal"
+                        rounded="lg"
+                        size="40"
+                        class="shrink-0"
+                      >
+                        <UiIcon name="UserOutlined" :size="20" />
+                      </v-avatar>
+                      <div class="flex flex-col overflow-hidden">
+                        <span class="text-xs text-medium-emphasis truncate">{{
+                          t("live.details.instructor")
+                        }}</span>
+                        <span
+                          class="text-sm font-weight-medium text-high-emphasis truncate"
+                          :title="selectedEvent.assignedInstructorName"
+                        >
+                          {{ selectedEvent.assignedInstructorName }}
+                        </span>
+                      </div>
+                    </div>
 
-                    <v-list-item class="px-0" v-if="selectedEvent.durationMinutes">
-                      <template v-slot:prepend>
-                        <v-icon color="medium-emphasis" class="me-3">mdi-clock-outline</v-icon>
-                      </template>
-                      <v-list-item-title class="font-weight-medium">Duration</v-list-item-title>
-                      <v-list-item-subtitle>{{ selectedEvent.durationMinutes }} mins</v-list-item-subtitle>
-                    </v-list-item>
+                    <!-- Duration -->
+                    <div
+                      class="flex items-start gap-3 col-span-2 sm:col-span-1"
+                      v-if="selectedEvent.durationMinutes"
+                    >
+                      <v-avatar
+                        color="primary"
+                        variant="tonal"
+                        rounded="lg"
+                        size="40"
+                        class="shrink-0"
+                      >
+                        <UiIcon name="ClockCircleOutlined" :size="20" />
+                      </v-avatar>
+                      <div class="flex flex-col overflow-hidden">
+                        <span class="text-xs text-medium-emphasis truncate">{{
+                          t("live.details.duration")
+                        }}</span>
+                        <span
+                          class="text-sm font-weight-medium text-high-emphasis truncate"
+                        >
+                          {{ selectedEvent.durationMinutes }}
+                          {{ t("live.details.durationMins") }}
+                        </span>
+                      </div>
+                    </div>
 
-                    <v-list-item class="px-0" v-if="selectedEvent.provider">
-                      <template v-slot:prepend>
-                        <v-icon color="medium-emphasis" class="me-3">mdi-video</v-icon>
-                      </template>
-                      <v-list-item-title class="font-weight-medium">Provider</v-list-item-title>
-                      <v-list-item-subtitle class="text-capitalize">{{ selectedEvent.provider }}</v-list-item-subtitle>
-                    </v-list-item>
+                    <!-- Provider -->
+                    <div
+                      class="flex items-start gap-3 col-span-2 sm:col-span-1"
+                      v-if="selectedEvent.provider"
+                    >
+                      <v-avatar
+                        color="primary"
+                        variant="tonal"
+                        rounded="lg"
+                        size="40"
+                        class="shrink-0"
+                      >
+                        <UiIcon name="VideoCameraOutlined" :size="20" />
+                      </v-avatar>
+                      <div class="flex flex-col overflow-hidden">
+                        <span class="text-xs text-medium-emphasis truncate">{{
+                          t("live.details.provider")
+                        }}</span>
+                        <span
+                          class="text-sm font-weight-medium text-high-emphasis text-capitalize truncate"
+                        >
+                          {{ selectedEvent.provider }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
 
-                    <v-list-item class="px-0" v-if="selectedEvent.registrationStatus">
-                      <template v-slot:prepend>
-                        <v-icon color="medium-emphasis" class="me-3">mdi-information</v-icon>
-                      </template>
-                      <v-list-item-title class="font-weight-medium">Status</v-list-item-title>
-                      <v-list-item-subtitle class="text-capitalize">{{ selectedEvent.registrationStatus }}</v-list-item-subtitle>
-                    </v-list-item>
-                  </v-list>
-
-                  <div v-if="selectedEvent.displayJoinUrl" class="mt-4 pt-4 border-t">
-                    <div class="text-caption text-medium-emphasis mb-1">Join Link</div>
-                    <a :href="getAbsoluteUrl(selectedEvent.displayJoinUrl)" target="_blank" class="text-primary text-decoration-none text-body-2" style="word-break: break-all;">
+                  <!-- Join Link -->
+                  <div
+                    v-if="selectedEvent.displayJoinUrl"
+                    class="mt-5 p-3 rounded-lg border border-border flex flex-col gap-2"
+                  >
+                    <div
+                      class="text-xs font-weight-medium text-medium-emphasis flex items-center gap-1"
+                    >
+                      <UiIcon name="ExportOutlined" :size="14" />
+                      {{ t("live.details.joinLink") }}
+                    </div>
+                    <a
+                      :href="getAbsoluteUrl(selectedEvent.displayJoinUrl)"
+                      target="_blank"
+                      class="text-sm font-weight-bold text-primary hover:underline break-all"
+                    >
                       {{ selectedEvent.displayJoinUrl }}
                     </a>
                   </div>
                 </v-card-text>
 
-                <v-card-actions class="px-4 pb-4 pt-0 d-flex flex-wrap gap-2">
+                <v-divider></v-divider>
+
+                <v-card-actions class="pa-4 bg-surface-alt d-flex gap-2">
                   <UiButton
                     size="sm"
                     color="primary"
                     variant="solid"
-                    :disabled="selectedEvent.registrationStatus === 'registered' || selectedEvent.registrationStatus === 'banned'"
-                    @click="register(selectedEvent)"
-                  >
-                    {{ t('live.student.register') }}
-                  </UiButton>
-                  <UiButton
-                    size="sm"
-                    color="secondary"
-                    variant="outline"
+                    class="flex-1"
                     :disabled="!selectedEvent.canJoin"
                     @click="join(selectedEvent)"
                   >
-                    {{ t('live.student.join') }}
+                    {{ t("live.student.join") }}
                   </UiButton>
                   <UiButton
                     v-if="liveSessionsChatEnabled"
                     size="sm"
                     color="secondary"
-                    variant="link"
+                    variant="outline"
+                    class="flex-1 text-nowrap"
                     @click="openChat(selectedEvent)"
                   >
-                    {{ t('live.student.openChat') }}
+                    {{ t("live.student.openChat") }}
                   </UiButton>
-                  <v-spacer></v-spacer>
                   <v-btn
-                    color="grey-darken-1"
+                    color="medium-emphasis"
                     variant="text"
+                    class="flex-1"
                     @click="selectedOpen = false"
                   >
-                    Close
+                    {{ t("live.details.close") }}
                   </v-btn>
                 </v-card-actions>
               </v-card>
@@ -193,10 +279,11 @@ import { onMounted, ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import ThemePage from "@/layout/theme/ThemePage.vue";
 import UiButton from "@/components/ui/UiButton.vue";
+import UiIcon from "@/components/ui/UiIcon.vue";
 import { useToast } from "@/composables/useToast";
-import { useFeaturesStore } from '@/stores/features';
-import { FEATURE } from '@/constants/featureCatalog';
-import { useRouter } from 'vue-router';
+import { useFeaturesStore } from "@/stores/features";
+import { FEATURE } from "@/constants/featureCatalog";
+import { useRouter } from "vue-router";
 import {
   listStudentSessions,
   registerForSession,
@@ -204,10 +291,22 @@ import {
   type StudentLiveSession,
 } from "@/api/live";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const toast = useToast();
 const featuresStore = useFeaturesStore();
 const router = useRouter();
+
+function formatDate(dateString: string) {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat(locale.value, {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date);
+}
 
 const calendar = ref<any>(null);
 const focus = ref("");
@@ -219,20 +318,24 @@ const events = ref<any[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
-const liveSessionsChatEnabled = computed(() => featuresStore.hasFeature(FEATURE.liveSessionsChat));
+const liveSessionsChatEnabled = computed(() =>
+  featuresStore.hasFeature(FEATURE.liveSessionsChat),
+);
 
-const typeToLabel: Record<string, string> = {
-  month: "Month",
-  week: "Week",
-  day: "Day",
-  "4day": "4 Days",
-};
+const typeToLabel = computed<Record<string, string>>(() => ({
+  month: t("live.calendar.month"),
+  week: t("live.calendar.week"),
+  day: t("live.calendar.day"),
+  "5day": t("live.calendar.fiveDays"),
+}));
 
-let currentRange = { start: { date: '' }, end: { date: '' } };
+let currentRange = { start: { date: "" }, end: { date: "" } };
 
 function getAbsoluteUrl(url: string | null | undefined): string {
   if (!url) return "#";
-  return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
+  return url.startsWith("http://") || url.startsWith("https://")
+    ? url
+    : `https://${url}`;
 }
 
 onMounted(() => {
@@ -254,12 +357,40 @@ function setToday() {
   focus.value = "";
 }
 
+function toLocalISOString(date: Date) {
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offset).toISOString().split("T")[0];
+}
+
+const focusDate = computed(() => {
+  const d = focus.value ? new Date(focus.value) : new Date();
+  return toLocalISOString(d);
+});
+
+const focusPlus4Days = computed(() => {
+  const d = focus.value ? new Date(focus.value) : new Date();
+  d.setDate(d.getDate() + 4);
+  return toLocalISOString(d);
+});
+
 function prev() {
-  if (calendar.value) calendar.value.prev();
+  if (type.value === "5day") {
+    const d = focus.value ? new Date(focus.value) : new Date();
+    d.setDate(d.getDate() - 5);
+    focus.value = toLocalISOString(d);
+  } else if (calendar.value) {
+    calendar.value.prev();
+  }
 }
 
 function next() {
-  if (calendar.value) calendar.value.next();
+  if (type.value === "5day") {
+    const d = focus.value ? new Date(focus.value) : new Date();
+    d.setDate(d.getDate() + 5);
+    focus.value = toLocalISOString(d);
+  } else if (calendar.value) {
+    calendar.value.next();
+  }
 }
 
 function showEvent(nativeEvent: Event, { event }: { event: any }) {
@@ -291,12 +422,14 @@ async function loadEvents() {
   try {
     const data = await listStudentSessions(query);
     events.value = data.items.map((session) => {
-      const startD = session.scheduledAt ? new Date(session.scheduledAt) : new Date();
+      const startD = session.scheduledAt
+        ? new Date(session.scheduledAt)
+        : new Date();
       const endD = new Date(startD.getTime() + session.durationMinutes * 60000);
 
       let color = "primary";
       if (session.status === "live") color = "success";
-      if (session.status === "ended") color = "grey";
+      if (session.status === "ended") color = "surface-variant";
       if (session.status === "cancelled") color = "error";
 
       return {
@@ -330,30 +463,36 @@ async function updateRange({
 async function register(session: StudentLiveSession) {
   try {
     await registerForSession(session.sessionId);
-    toast.success(t('live.student.registerSuccess'));
+    toast.success(t("live.student.registerSuccess"));
     await loadEvents();
-    if (selectedEvent.value && selectedEvent.value.sessionId === session.sessionId) {
-        selectedOpen.value = false;
+    if (
+      selectedEvent.value &&
+      selectedEvent.value.sessionId === session.sessionId
+    ) {
+      selectedOpen.value = false;
     }
   } catch (err: unknown) {
-    toast.error(t('live.student.registerError'));
+    toast.error(t("live.student.registerError"));
   }
 }
 
 async function join(session: StudentLiveSession) {
   try {
     const view = await joinSession(session.sessionId);
-    toast.success(t('live.student.joinSuccess'));
+    toast.success(t("live.student.joinSuccess"));
     if (view.joinUrl) {
-      window.open(view.joinUrl, '_blank');
+      window.open(getAbsoluteUrl(view.joinUrl), "_blank");
     }
     await loadEvents();
   } catch (err: unknown) {
-    toast.error(t('live.student.joinError'));
+    toast.error(t("live.student.joinError"));
   }
 }
 
 function openChat(session: StudentLiveSession) {
-  router.push({ name: 'student-live-chat', query: { sessionId: String(session.sessionId) } });
+  router.push({
+    name: "student-live-chat",
+    query: { sessionId: String(session.sessionId) },
+  });
 }
 </script>

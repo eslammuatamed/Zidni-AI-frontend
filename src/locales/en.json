@@ -5877,6 +5877,27 @@
     "PLAN_QUOTA_COURSES": "Course limit reached for this plan ({limit} courses max)."
   },
   "live": {
+    "calendar": {
+      "today": "Today",
+      "month": "Month",
+      "week": "Week",
+      "day": "Day",
+      "fiveDays": "5 Days",
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "details": {
+      "course": "Course",
+      "instructor": "Instructor",
+      "module": "Module",
+      "students": "Students",
+      "duration": "Duration",
+      "durationMins": "mins",
+      "provider": "Provider",
+      "status": "Status",
+      "joinLink": "Join Link",
+      "close": "Close"
+    },
     "teacher": {
       "titlePage": "Live sessions",
       "subtitle": "Schedule live classes, manage registrations and attendance.",
