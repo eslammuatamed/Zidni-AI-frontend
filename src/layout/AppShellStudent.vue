@@ -144,16 +144,33 @@
         class="ms-1 flex-shrink-0"
       ></v-app-bar-nav-icon>
 
-      <!-- User identity chip -->
-      <div class="header-identity ms-3">
-        <v-avatar size="36" class="user-avatar-mini flex-shrink-0">{{
-          brandInitials
-        }}</v-avatar>
-        <div class="d-none d-md-flex flex-col ms-2">
-          <span class="header-user-name">{{ headerUserName }}</span>
-          <span class="header-user-role">{{ t("nav.student") }}</span>
-        </div>
-      </div>
+      <!-- User identity chip with dropdown -->
+      <v-menu min-width="200px" location="bottom start">
+        <template #activator="{ props }">
+          <div
+            class="header-identity ms-3"
+            v-bind="props"
+            style="cursor: pointer"
+          >
+            <v-avatar size="36" class="user-avatar-mini flex-shrink-0">{{
+              brandInitials
+            }}</v-avatar>
+            <div class="d-none d-md-flex flex-col ms-2">
+              <span class="header-user-name">{{ headerUserName }}</span>
+              <span class="header-user-role">{{ t("nav.student") }}</span>
+            </div>
+          </div>
+        </template>
+        <v-card rounded="lg" elevation="2">
+          <v-list density="compact" nav>
+            <v-list-item
+              prepend-icon="pi pi-sign-out"
+              :title="t('nav.logout')"
+              @click="handleLogout"
+            ></v-list-item>
+          </v-list>
+        </v-card>
+      </v-menu>
 
       <!-- Utility icons -->
       <div class="flex items-center ms-2">

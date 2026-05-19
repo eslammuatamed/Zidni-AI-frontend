@@ -122,6 +122,11 @@ export const buildTeacherNavModel = ({
 
   if (can('courses.manage')) {
     items.push({ label: t('courses.title'), to: '/teacher/courses', icon: 'ReadOutlined' });
+    items.push({
+      label: t('nav.teacherAssignments'),
+      to: '/teacher/learning',
+      icon: 'FileTextOutlined'
+    });
   } else {
     recordSuppressed('courses', 'courses.title', 'missing-permission', 'courses.manage');
   }

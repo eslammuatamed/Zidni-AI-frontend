@@ -5,6 +5,7 @@ import type {
   LessonProgressPayload,
   CourseProgressSummary,
   Assignment,
+  AssignmentAttachment,
   AssignmentRequestPayload,
   AssignmentSubmission,
   AssignmentSubmissionPayload,
@@ -26,6 +27,8 @@ import {
   createTeacherAssignment,
   updateTeacherAssignment,
   deleteTeacherAssignment,
+  uploadAssignmentAttachment,
+  uploadStudentAssignmentAttachment,
   fetchAssignmentSubmissions,
   gradeSubmission,
   createTeacherThread,
@@ -118,6 +121,33 @@ export const useLearningStore = defineStore('learning', () => {
   async function deleteAssignment(assignmentId: number) {
     await deleteTeacherAssignment(assignmentId);
     await loadTeacherAssignments();
+  }
+
+  async function uploadAttachment(
+    file: File,
+    onProgress?: (progress: number) => void
+  ): Promise<AssignmentAttachment> {
+    return uploadAssignmentAttachment(file, onProgress);
+  }
+
+  async function uploadStudentAttachment(
+    file: File,
+    onProgress?: (progress: number) => void
+  ): Promise<AssignmentAttachment> {
+    return uploadStudentAssignmentAttachment(file, onProgress);
+  }
+
+  // After saving an assignment we navigate back to the course editor and need
+  // to re-open the assignments dialog at the lesson the teacher was editing.
+  // Set this from the editor route, consume it from CourseEditorView.
+  const pendingAssignmentsDialogLessonId = ref<number | null>(null);
+  function setPendingAssignmentsDialog(lessonId: number | null) {
+    pendingAssignmentsDialogLessonId.value = lessonId;
+  }
+  function consumePendingAssignmentsDialog(): number | null {
+    const value = pendingAssignmentsDialogLessonId.value;
+    pendingAssignmentsDialogLessonId.value = null;
+    return value;
   }
 
   async function loadAssignmentSubmissions(assignmentId: number) {
@@ -222,6 +252,11 @@ export const useLearningStore = defineStore('learning', () => {
     loadCourseContent,
     updateAssignment,
     deleteAssignment,
+    uploadAttachment,
+    uploadStudentAttachment,
+    pendingAssignmentsDialogLessonId,
+    setPendingAssignmentsDialog,
+    consumePendingAssignmentsDialog,
     clear
   };
 });

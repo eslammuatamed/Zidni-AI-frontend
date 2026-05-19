@@ -24,7 +24,7 @@
     "deleting": "جارٍ الحذف...",
     "maintenanceNotice": "النظام يخضع حالياً للصيانة. يرجى المحاولة لاحقاً.",
     "back": "رجوع",
-    "select":"اختر"
+    "select": "اختر"
   },
   "auth": {
     "sessionExpired": "انتهت صلاحية الجلسة، يرجى تسجيل الدخول مرة أخرى.",
@@ -847,7 +847,8 @@
     "adminOps": "لوحة العمليات",
     "adminOpsAlerts": "تنبيهات المعلمين",
     "adminOpsPayments": "سجلات المدفوعات",
-    "adminOpsAudit": "سجل التدقيق"
+    "adminOpsAudit": "سجل التدقيق",
+    "teacherAssignments": "الواجبات"
   },
   "feedback": {
     "cardTitle": "أرسل ملاحظاتك",
@@ -2326,10 +2327,10 @@
       "title": "انطلق في رحلتك التعليمية",
       "subtitle": "جلسات مختارة بعناية لتجربة تعلّم ممتعة.",
       "empty": "لا توجد دروس عامة بعد - عد لاحقًا!",
-      "detailDuration": "\u0627\u0644\u0645\u062f\u0629",
-      "detailLectures": "\u0627\u0644\u0645\u062d\u0627\u0636\u0631\u0627\u062a",
-      "cta": "\u0639\u0631\u0636 \u0627\u0644\u062f\u0648\u0631\u0629",
-      "ctaFree": "\u0627\u0628\u062f\u0623 \u0645\u062c\u0627\u0646\u0627\u064b"
+      "detailDuration": "المدة",
+      "detailLectures": "المحاضرات",
+      "cta": "عرض الدورة",
+      "ctaFree": "ابدأ مجاناً"
     },
     "testimonials": {
       "badge": "آراء الطلاب",
@@ -2343,7 +2344,7 @@
       "login": "دخول الطلاب",
       "assistant": "دخول المدرب المساعد",
       "explore": "استكشف الدروس",
-      "floating": "\u062a\u0648\u0627\u0635\u0644 \u0645\u0639 \u0627\u0644\u0645\u062f\u0631\u0633"
+      "floating": "تواصل مع المدرس"
     },
     "inquiry": {
       "title": "الاستفسار عن الدورة",
@@ -3310,7 +3311,119 @@
       "قدّم تعليمات لكل لغة لتهيئة الطالب قبل الدفع.",
       "عطّل الطريقة في حال توقف صفحة الدفع مؤقتًا."
     ],
-    "paymentSettingsLeaveConfirm": "لديك تغييرات غير محفوظة. هل تريد مغادرة الصفحة؟"
+    "paymentSettingsLeaveConfirm": "لديك تغييرات غير محفوظة. هل تريد مغادرة الصفحة؟",
+    "assignments": {
+      "title": "الواجبات",
+      "titleForLesson": "واجبات الدرس: {lesson}",
+      "subtitle": "أدر الواجبات والتصحيح وتسليمات الطلاب عبر جميع دوراتك.",
+      "add": "إضافة واجب",
+      "edit": "تعديل الواجب",
+      "delete": "حذف الواجب",
+      "empty": "لا توجد واجبات لهذا الدرس بعد.",
+      "emptyCrossCourse": "لم تقم بإنشاء أي واجبات بعد.",
+      "confirmDelete": "هل تريد حذف «{title}»؟ سيتم حذف جميع تسليمات الطلاب أيضًا.",
+      "backToCourse": "العودة إلى الدورة",
+      "viewSubmissions": "عرض التسليمات",
+      "submissionsCount": "لا توجد تسليمات | تسليم واحد | تسليمان | {count} تسليمات | {count} تسليمًا | {count} تسليم",
+      "attachmentsCount": "لا توجد مرفقات | مرفق واحد | مرفقان | {count} مرفقات | {count} مرفقًا | {count} مرفق",
+      "dueAt": "موعد التسليم {date}",
+      "noDueDate": "بدون موعد تسليم",
+      "maxScoreShort": "الدرجة القصوى {score}",
+      "columns": {
+        "title": "العنوان",
+        "lesson": "الدرس",
+        "course": "الدورة",
+        "dueAt": "موعد التسليم",
+        "maxScore": "الدرجة القصوى",
+        "attachments": "المرفقات",
+        "createdAt": "تاريخ الإنشاء",
+        "actions": "الإجراءات"
+      },
+      "fields": {
+        "title": "العنوان",
+        "titlePlaceholder": "مثال: الفصل الثالث — ورقة عمل",
+        "description": "الوصف",
+        "descriptionPlaceholder": "اشرح المطلوب، المخرجات المتوقعة، ومعايير التقييم...",
+        "dueAt": "موعد التسليم",
+        "maxScore": "الدرجة القصوى",
+        "attachments": "المرفقات",
+        "course": "الدورة",
+        "coursePlaceholder": "اختر دورة",
+        "lesson": "الدرس",
+        "lessonPlaceholder": "اختر درسًا",
+        "lessonLoading": "جارٍ تحميل الدروس...",
+        "lessonPickCourseFirst": "اختر دورة أولًا"
+      },
+      "editor": {
+        "createTitle": "إنشاء واجب جديد",
+        "editTitle": "تعديل الواجب",
+        "save": "حفظ الواجب",
+        "saving": "جارٍ الحفظ...",
+        "cancel": "إلغاء",
+        "lessonHeading": "واجب للدرس: {lesson}"
+      },
+      "validation": {
+        "titleRequired": "الرجاء إدخال عنوان الواجب.",
+        "descriptionRequired": "الرجاء كتابة وصف للواجب.",
+        "dueAtRequired": "الرجاء اختيار موعد التسليم.",
+        "maxScoreRequired": "الرجاء إدخال درجة قصوى أكبر من الصفر."
+      },
+      "upload": {
+        "label": "المرفقات",
+        "dropHint": "اسحب الملفات هنا أو انقر للرفع",
+        "browse": "اختيار الملفات",
+        "uploading": "جارٍ رفع {name}...",
+        "success": "تم رفع المرفق.",
+        "failed": "تعذّر رفع {name}. حاول مرة أخرى.",
+        "remove": "إزالة",
+        "empty": "لم يتم إرفاق أي ملفات بعد.",
+        "sizeHint": "يتم رفع كل ملف فور اختياره. يمكنك إزالة الملفات قبل الحفظ."
+      },
+      "submissions": {
+        "title": "التسليمات",
+        "titleFor": "التسليمات — {assignment}",
+        "empty": "لا توجد تسليمات بعد.",
+        "studentName": "الطالب",
+        "status": "الحالة",
+        "submittedAt": "تاريخ التسليم",
+        "score": "الدرجة",
+        "grade": "تصحيح",
+        "attachments": "المرفقات",
+        "attachmentsNone": "لم يتم تسليم ملفات",
+        "loadFailed": "تعذّر تحميل التسليمات."
+      },
+      "status": {
+        "submitted": "تم التسليم",
+        "resubmissionRequested": "مطلوب إعادة التسليم",
+        "graded": "تم التصحيح",
+        "notSubmitted": "لم يُسلَّم"
+      },
+      "grade": {
+        "title": "تصحيح التسليم",
+        "titleFor": "تصحيح {student}",
+        "status": "الحالة",
+        "score": "الدرجة",
+        "scoreHint": "من أصل {max}",
+        "feedback": "الملاحظات",
+        "feedbackPlaceholder": "شارك ملاحظاتك أو التصحيحات أو الخطوات التالية...",
+        "save": "حفظ التصحيح"
+      },
+      "toast": {
+        "created": "تم إنشاء الواجب.",
+        "updated": "تم تحديث الواجب.",
+        "deleted": "تم حذف الواجب.",
+        "graded": "تم حفظ التصحيح.",
+        "uploadFailed": "تعذّر رفع الملف. حاول مرة أخرى.",
+        "loadFailed": "تعذّر تحميل الواجبات."
+      },
+      "errors": {
+        "generic": "حدث خطأ ما. حاول مرة أخرى.",
+        "notFound": "تعذّر العثور على الواجب.",
+        "permissionDenied": "ليست لديك صلاحية لتنفيذ هذا الإجراء.",
+        "conflict": "تم تحديث هذا الواجب من قِبل شخص آخر. أعِد التحميل وحاول مجددًا."
+      },
+      "backToList": "العودة إلى الواجبات"
+    }
   },
   "assistant": {
     "login": "تسجيل دخول المساعد",
@@ -3613,7 +3726,63 @@
     "freeCheckoutAction": "تأكيد التسجيل",
     "freeCheckoutSuccess": "تم إكمال التسجيل بنجاح.",
     "freeCheckoutNotesLabel": "ملاحظات للمعلم (اختياري)",
-    "emailInvalid": "يرجى إدخال بريد إلكتروني صالح."
+    "emailInvalid": "يرجى إدخال بريد إلكتروني صالح.",
+    "assignments": {
+      "title": "الواجبات",
+      "empty": "لا توجد واجبات لهذه الدورة بعد.",
+      "loadFailed": "تعذّر تحميل الواجبات. حاول مرة أخرى.",
+      "accessDenied": "لا يمكنك الوصول إلى واجبات هذه الدورة.",
+      "actions": {
+        "submit": "تسليم الواجب",
+        "resubmit": "إعادة التسليم"
+      },
+      "status": {
+        "notSubmitted": "لم يُسلَّم",
+        "submitted": "تم التسليم",
+        "resubmissionRequested": "مطلوب إعادة التسليم",
+        "graded": "تم التصحيح"
+      },
+      "columns": {
+        "title": "العنوان",
+        "lesson": "الدرس",
+        "dueAt": "موعد التسليم",
+        "maxScore": "الدرجة القصوى",
+        "status": "الحالة",
+        "score": "الدرجة",
+        "attachments": "المرفقات",
+        "actions": "الإجراءات"
+      },
+      "submit": {
+        "title": "تسليم الواجب",
+        "resubmitTitle": "إعادة تسليم الواجب",
+        "notes": "ملاحظات (اختياري)",
+        "notesPlaceholder": "أضف ملاحظات لمعلمك...",
+        "attachments": "ملفاتك",
+        "attachmentsRequired": "الرجاء إرفاق ملف واحد على الأقل قبل التسليم.",
+        "send": "إرسال التسليم",
+        "sending": "جارٍ الإرسال...",
+        "cancel": "إلغاء",
+        "teacherFeedbackHeading": "ملاحظات المعلم على تسليمك السابق"
+      },
+      "result": {
+        "submittedAt": "تاريخ التسليم",
+        "feedback": "ملاحظات المعلم"
+      },
+      "due": {
+        "label": "موعد التسليم {date}",
+        "passed": "انقضى موعد التسليم",
+        "noDueDate": "بدون موعد تسليم"
+      },
+      "toast": {
+        "submitted": "تم تسليم الواجب.",
+        "resubmitted": "تم إرسال التسليم.",
+        "uploadFailed": "تعذّر رفع الملف. حاول مرة أخرى."
+      },
+      "errors": {
+        "alreadySubmitted": "تم تسليم هذا الواجب بالفعل أو لا يمكن إعادة تسليمه الآن.",
+        "generic": "حدث خطأ ما. حاول مرة أخرى."
+      }
+    }
   },
   "achievements": {
     "title": "الإنجازات",
@@ -4013,7 +4182,8 @@
     "visibilityDraftLabel": "الدورة مخفية",
     "visibilityDraftNotice": "الدورة غير ظاهرة للطلاب. انشرها عندما تكون جاهزًا.",
     "visibilityPublishedLabel": "الدورة منشورة",
-    "visibilityPublishedNotice": "الدورة منشورة للطلاب."
+    "visibilityPublishedNotice": "الدورة منشورة للطلاب.",
+    "assignmentsCount": "عدد الواجبات: {count}"
   },
   "assessments": {
     "banksTitle": "بنوك الأسئلة",
@@ -4871,7 +5041,6 @@
       "embeddedDialogHint": "سيتم تحميل النموذج بالأسفل لتجيب دون مغادرة المنصة.",
       "submissionUrl": "رابط التسليم",
       "submissionKey": "مفتاح التخزين",
-      "submissionNotes": "ملاحظات",
       "submitAction": "إرسال",
       "assignmentSubmitted": "تم إرسال الواجب.",
       "assignmentFailed": "تعذر إرسال الواجب.",

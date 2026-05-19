@@ -27,6 +27,17 @@ export interface CourseProgressSummary {
   progressPercent: number;
 }
 
+export interface AssignmentAttachment {
+  id: number | null;
+  fileUrl: string;
+  fileKey: string;
+  fileName: string;
+  contentType: string;
+  fileSizeBytes: number;
+  attachmentType: string;
+  position: number;
+}
+
 export interface Assignment {
   id: number;
   lessonId: number;
@@ -35,11 +46,18 @@ export interface Assignment {
   courseTitle: string;
   teacherId: number;
   title: string;
-  description?: string;
-  dueAt?: string;
-  maxScore?: number;
-  attachmentUrl?: string;
+  description: string;
+  dueAt: string;
+  maxScore: number;
+  attachments: AssignmentAttachment[];
   createdAt: string;
+  // Student-only fields — present on student endpoints, null/undefined on teacher endpoints.
+  submissionId?: number | null;
+  submissionStatus?: AssignmentSubmissionStatus | null;
+  submittedAt?: string | null;
+  gradedAt?: string | null;
+  score?: number | null;
+  feedback?: string | null;
 }
 
 export interface AssignmentSubmission {
@@ -48,34 +66,39 @@ export interface AssignmentSubmission {
   studentId: number;
   studentName: string;
   status: AssignmentSubmissionStatus;
-  fileUrl?: string;
+  attachments: AssignmentAttachment[];
   submittedAt: string;
-  gradedAt?: string;
-  score?: number;
-  feedback?: string;
-  gradedBy?: number;
-  gradedByName?: string;
+  gradedAt?: string | null;
+  score?: number | null;
+  feedback?: string | null;
+  gradedBy?: number | null;
+  gradedByName?: string | null;
 }
 
 export interface AssignmentRequestPayload {
   lessonId: number;
   title: string;
-  description?: string;
-  dueAt?: string;
-  maxScore?: number;
-  attachmentUrl?: string;
+  description: string;
+  dueAt: string;
+  maxScore: number;
+  attachments: AssignmentAttachment[];
 }
 
 export interface AssignmentSubmissionPayload {
-  fileUrl?: string;
-  fileKey?: string;
-  notes?: string;
+  assignmentId: number;
+  attachments: AssignmentAttachment[];
+  notes: string;
 }
 
 export interface AssignmentGradePayload {
   status: AssignmentSubmissionStatus;
-  score?: number;
-  feedback?: string;
+  score: number;
+  feedback: string;
+}
+
+export interface UploadProgressEvent {
+  loaded: number;
+  total?: number | null;
 }
 
 export interface DiscussionThread {
@@ -195,9 +218,61 @@ export async function submitAssignment(assignmentId: number, payload: Assignment
   return data;
 }
 
+export async function uploadStudentAssignmentAttachment(
+  file: File,
+  onProgress?: (progress: number) => void
+) {
+  const formData = new FormData();
+  formData.append('file', file);
+  const { data } = await api.post<AssignmentAttachment>(
+    '/api/v1/students/learning/assignments/upload',
+    formData,
+    {
+      timeout: 0,
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: (event: UploadProgressEvent) => {
+        const total = event.total ?? 0;
+        if (total <= 0) {
+          onProgress?.(0);
+          return;
+        }
+        const progress = Math.min(100, Math.max(0, Math.floor((event.loaded / total) * 100)));
+        onProgress?.(progress);
+      }
+    }
+  );
+  return data;
+}
+
 export async function fetchTeacherAssignments(courseId?: number) {
   const params = typeof courseId === 'number' ? { courseId } : undefined;
   const { data } = await api.get<Assignment[]>('/api/v1/teacher/learning/assignments', { params });
+  return data;
+}
+
+export async function uploadAssignmentAttachment(
+  file: File,
+  onProgress?: (progress: number) => void
+) {
+  const formData = new FormData();
+  formData.append('file', file);
+  const { data } = await api.post<AssignmentAttachment>(
+    '/api/v1/teacher/learning/assignments/upload',
+    formData,
+    {
+      timeout: 0,
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: (event: UploadProgressEvent) => {
+        const total = event.total ?? 0;
+        if (total <= 0) {
+          onProgress?.(0);
+          return;
+        }
+        const progress = Math.min(100, Math.max(0, Math.floor((event.loaded / total) * 100)));
+        onProgress?.(progress);
+      }
+    }
+  );
   return data;
 }
 

@@ -126,12 +126,12 @@
                   <span class="text-white text-h6">{{ userInitials }}</span>
                </v-avatar>
              </template>
-             <v-list-item-title class="font-weight-bold">{{ auth.user?.name }} (Assistant)</v-list-item-title>
+             <v-list-item-title class="font-weight-bold">{{ auth.user?.assistantName }} (Assistant)</v-list-item-title>
              <v-list-item-subtitle>{{ auth.user?.email }}</v-list-item-subtitle>
           </v-list-item>
           <v-divider></v-divider>
           <v-list density="compact" nav>
-            <v-list-item prepend-icon="pi pi-sign-out" :title="t('nav.logout')" value="logout" @click="auth.logout()" color="error"></v-list-item>
+            <v-list-item prepend-icon="pi pi-sign-out" :title="t('nav.logout')" value="logout" @click="handleNavAction('logout')" color="error"></v-list-item>
           </v-list>
         </v-card>
       </v-menu>
@@ -203,7 +203,7 @@ const toggleLanguage = async () => {
 };
 
 const userInitials = computed(() => {
-  const name = auth.user?.name || '';
+  const name = auth.user?.assistantName || '';
   return name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
 });
 

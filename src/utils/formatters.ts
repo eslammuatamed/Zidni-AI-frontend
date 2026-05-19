@@ -51,3 +51,19 @@ export function formatRelativeTimeToNow(value: DateLike): string {
 
   return '';
 }
+
+const FILE_SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB'] as const;
+
+export function formatFileSize(bytes: number | null | undefined): string {
+  if (bytes == null || !Number.isFinite(bytes) || bytes <= 0) {
+    return '0 B';
+  }
+  let value = bytes;
+  let unitIndex = 0;
+  while (value >= 1024 && unitIndex < FILE_SIZE_UNITS.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
+  }
+  const rounded = value >= 10 || unitIndex === 0 ? Math.round(value) : Math.round(value * 10) / 10;
+  return `${rounded} ${FILE_SIZE_UNITS[unitIndex]}`;
+}

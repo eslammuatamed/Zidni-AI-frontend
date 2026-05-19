@@ -554,8 +554,12 @@ const handleSettingsClick = () => {
 };
 
 const buildLogoutAction = async () => {
+  const target: RouteLocationRaw = auth.isStudent
+    ? { name: "login-student" }
+    : auth.isAssistant
+      ? { name: "assistant-login" }
+      : { name: "login-teacher" };
   await auth.logout();
-  const target = { name: "login-teacher" } as const;
   try {
     await router.replace(target);
   } catch (error) {
@@ -566,29 +570,28 @@ const buildLogoutAction = async () => {
 };
 
 const userMenuItems = computed<UserMenuItem[]>(() => {
-  if (!teacherPaymentSettingsAvailable.value) {
-    return [];
-  }
+  const items: UserMenuItem[] = [];
 
-  const items: UserMenuItem[] = [
-    {
+  if (teacherPaymentSettingsAvailable.value) {
+    items.push({
       id: "payments",
       label: t("nav.teacherPaymentSettings"),
       to: { name: "teacher-payment-settings" },
-    },
-  ];
+    });
+    items.push({
+      id: "landing",
+      label: t("nav.teacherLandingContent"),
+      to: { name: "teacher-landing-content" },
+    });
+  }
 
-  items.push({
-    id: "landing",
-    label: t("nav.teacherLandingContent"),
-    to: { name: "teacher-landing-content" },
-  });
-
-  items.push({
-    id: "logout",
-    label: t("nav.logout"),
-    action: buildLogoutAction,
-  });
+  if (auth.isAuthenticated) {
+    items.push({
+      id: "logout",
+      label: t("nav.logout"),
+      action: buildLogoutAction,
+    });
+  }
 
   return items;
 });

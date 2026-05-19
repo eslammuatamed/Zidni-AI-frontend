@@ -76,7 +76,14 @@ describe('learning store', () => {
     serviceMocks.createTeacherAssignment.mockResolvedValueOnce({ id: 5, courseId: 2 });
     serviceMocks.fetchTeacherAssignments.mockResolvedValue([]);
 
-    await store.createAssignment({ lessonId: 10, title: 'Essay' });
+    await store.createAssignment({
+      lessonId: 10,
+      title: 'Essay',
+      description: 'Write a short essay.',
+      dueAt: '2026-06-01T23:59:00Z',
+      maxScore: 100,
+      attachments: []
+    });
 
     expect(serviceMocks.createTeacherAssignment).toHaveBeenCalled();
     expect(serviceMocks.fetchTeacherAssignments).toHaveBeenCalled();

@@ -82,7 +82,7 @@
                 @click="logoutAndOpen(link)"
               >
                 <span v-if="switchingId === link.teacherId">{{ t('common.loading') }}…</span>
-                <span v-else>{{ t('student.tenantSwitcher.logoutAction') }}</span>
+                <span v-else>{{ t('nav.logout') }}</span>
               </UiButton>
             </div>
           </li>

@@ -1,7 +1,7 @@
 {
   "common": {
     "save": "Save",
-    "done":"Done",
+    "done": "Done",
     "view": "View",
     "delete": "Delete",
     "cancel": "Cancel",
@@ -24,7 +24,7 @@
     "maintenanceNotice": "We're performing maintenance right now. Please try again shortly.",
     "clear": "Clear",
     "back": "Back",
-    "select":"Select"
+    "select": "Select"
   },
   "auth": {
     "sessionExpired": "Your session has expired. Please log in again.",
@@ -832,7 +832,8 @@
     "teacherPaymentSettings": "Payment & transfer details",
     "teacherDowngradeTitle": "Your plan just changed",
     "teacherDowngradeBody": "Some tools are no longer available in this workspace. The sidebar now only shows modules your plan supports.",
-    "teacherDowngradeModules": "Removed modules"
+    "teacherDowngradeModules": "Removed modules",
+    "teacherAssignments": "Assignments"
   },
   "feedback": {
     "cardTitle": "Share feedback",
@@ -2304,75 +2305,6 @@
       "title": "What students are saying"
     },
     "defaults": {
-      "testimonials": {
-        "omar": {
-          "author": "Omar",
-          "quote": "Clear explanations and a motivating learning style."
-        },
-        "salma": {
-          "author": "Salma",
-          "quote": "Structured lessons that helped me improve quickly."
-        }
-      }
-    },
-    "faqs": {
-      "badge": "FAQs",
-      "title": "Frequently asked questions"
-    },
-    "contact": {
-      "badge": "Let's connect",
-      "title": "Stay connected with {name}",
-      "subtitle": "Reach out, explore the latest lessons, and join the learning community.",
-      "register": "Register now",
-      "login": "Student login",
-      "assistant": "Assistant login",
-      "explore": "Explore lessons",
-      "floating": "Contact the instructor"
-    },
-    "inquiry": {
-      "title": "Course inquiry",
-      "subtitle": "Share your name, phone, and email. We will get back to you soon.",
-      "nameLabel": "Full name",
-      "namePlaceholder": "Enter your full name",
-      "phoneLabel": "Phone number",
-      "phonePlaceholder": "Enter your phone number",
-      "emailLabel": "Email address",
-      "emailPlaceholder": "Enter your email address",
-      "messageLabel": "Message",
-      "messagePlaceholder": "Tell us which course you want to ask about",
-      "submit": "Send inquiry",
-      "submitting": "Sending...",
-      "success": "Your inquiry has been sent. We will contact you soon.",
-      "error": "We could not send your inquiry. Please try again.",
-      "validation": {
-        "nameRequired": "Please enter your name.",
-        "phoneRequired": "Please enter your phone number.",
-        "emailRequired": "Please enter your email address.",
-        "messageRequired": "Please enter a message."
-      }
-    },
-    "social": {
-      "whatsapp": "WhatsApp",
-      "telegram": "Telegram",
-      "youtube": "YouTube",
-      "website": "Website",
-      "facebook": "Facebook",
-      "instagram": "Instagram",
-      "tiktok": "TikTok",
-      "email": "Email"
-    },
-    "footerContact": {
-      "whatsapp": "WhatsApp",
-      "phone": "Phone number",
-      "email": "Email",
-      "website": "Website",
-      "facebook": "Facebook",
-      "instagram": "Instagram",
-      "linkedin": "LinkedIn",
-      "telegram": "Telegram",
-      "empty": "Add contact details from the dashboard to show them here."
-    },
-    "defaults": {
       "teacherName": "Elite Learning Academy",
       "teacherHeadline": "Live STEM tutoring for ambitious students",
       "teacherBio": "Elite Learning Academy delivers interactive classes that blend science, technology, engineering, and mathematics concepts with real-life projects to help students stay ahead.",
@@ -2437,6 +2369,63 @@
         "title": "Elite Learning Academy - Interactive Live Lessons",
         "description": "Join Elite Learning Academy for engaging live STEM sessions led by expert mentors. Build confidence, master exams, and stay inspired."
       }
+    },
+    "faqs": {
+      "badge": "FAQs",
+      "title": "Frequently asked questions"
+    },
+    "contact": {
+      "badge": "Let's connect",
+      "title": "Stay connected with {name}",
+      "subtitle": "Reach out, explore the latest lessons, and join the learning community.",
+      "register": "Register now",
+      "login": "Student login",
+      "assistant": "Assistant login",
+      "explore": "Explore lessons",
+      "floating": "Contact the instructor"
+    },
+    "inquiry": {
+      "title": "Course inquiry",
+      "subtitle": "Share your name, phone, and email. We will get back to you soon.",
+      "nameLabel": "Full name",
+      "namePlaceholder": "Enter your full name",
+      "phoneLabel": "Phone number",
+      "phonePlaceholder": "Enter your phone number",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "Enter your email address",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Tell us which course you want to ask about",
+      "submit": "Send inquiry",
+      "submitting": "Sending...",
+      "success": "Your inquiry has been sent. We will contact you soon.",
+      "error": "We could not send your inquiry. Please try again.",
+      "validation": {
+        "nameRequired": "Please enter your name.",
+        "phoneRequired": "Please enter your phone number.",
+        "emailRequired": "Please enter your email address.",
+        "messageRequired": "Please enter a message."
+      }
+    },
+    "social": {
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram",
+      "youtube": "YouTube",
+      "website": "Website",
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "tiktok": "TikTok",
+      "email": "Email"
+    },
+    "footerContact": {
+      "whatsapp": "WhatsApp",
+      "phone": "Phone number",
+      "email": "Email",
+      "website": "Website",
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn",
+      "telegram": "Telegram",
+      "empty": "Add contact details from the dashboard to show them here."
     },
     "course": {
       "tooltipTitle": "What will you learn?"
@@ -3040,7 +3029,6 @@
     "paymentsReviewedAt": "Reviewed at",
     "paymentsSubmittedAt": "Submitted at",
     "paymentsViewProof": "View proof",
-    "paymentRejectDialogTitle": "Reject payment",
     "paymentApproveDialogTitle": "Approve payment",
     "paymentApproveDialogPrompt": "Please confirm the access type for this student.",
     "accessTypeModules": "Specific Modules",
@@ -3378,7 +3366,119 @@
         }
       }
     },
-    "emailInvalid": "Enter a valid email address."
+    "emailInvalid": "Enter a valid email address.",
+    "assignments": {
+      "title": "Assignments",
+      "titleForLesson": "Assignments for: {lesson}",
+      "subtitle": "Manage homework, grading, and student submissions across your courses.",
+      "add": "Add assignment",
+      "edit": "Edit assignment",
+      "delete": "Delete assignment",
+      "empty": "No assignments for this lesson yet.",
+      "emptyCrossCourse": "You have not created any assignments yet.",
+      "confirmDelete": "Delete \"{title}\"? This will also remove all submissions.",
+      "backToCourse": "Back to course",
+      "viewSubmissions": "View submissions",
+      "submissionsCount": "{count} submission | {count} submissions",
+      "attachmentsCount": "no attachments | 1 attachment | {count} attachments",
+      "dueAt": "Due {date}",
+      "noDueDate": "No due date",
+      "maxScoreShort": "Max {score}",
+      "columns": {
+        "title": "Title",
+        "lesson": "Lesson",
+        "course": "Course",
+        "dueAt": "Due date",
+        "maxScore": "Max score",
+        "attachments": "Attachments",
+        "createdAt": "Created",
+        "actions": "Actions"
+      },
+      "fields": {
+        "title": "Title",
+        "titlePlaceholder": "e.g. Chapter 3 — Worksheet",
+        "description": "Description",
+        "descriptionPlaceholder": "Describe the task, expected output, and rubric...",
+        "dueAt": "Due date",
+        "maxScore": "Max score",
+        "attachments": "Attachments",
+        "course": "Course",
+        "coursePlaceholder": "Select a course",
+        "lesson": "Lesson",
+        "lessonPlaceholder": "Select a lesson",
+        "lessonLoading": "Loading lessons...",
+        "lessonPickCourseFirst": "Pick a course first"
+      },
+      "editor": {
+        "createTitle": "Create assignment",
+        "editTitle": "Edit assignment",
+        "save": "Save assignment",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "lessonHeading": "Assignment for lesson: {lesson}"
+      },
+      "validation": {
+        "titleRequired": "Please enter a title.",
+        "descriptionRequired": "Please write a description.",
+        "dueAtRequired": "Please pick a due date.",
+        "maxScoreRequired": "Please enter a max score greater than zero."
+      },
+      "upload": {
+        "label": "Attachments",
+        "dropHint": "Drag files here or click to upload",
+        "browse": "Select files",
+        "uploading": "Uploading {name}...",
+        "success": "Attachment uploaded.",
+        "failed": "Could not upload {name}. Try again.",
+        "remove": "Remove",
+        "empty": "No files attached yet.",
+        "sizeHint": "Each file is uploaded immediately. You can remove files before saving."
+      },
+      "submissions": {
+        "title": "Submissions",
+        "titleFor": "Submissions — {assignment}",
+        "empty": "No submissions yet.",
+        "studentName": "Student",
+        "status": "Status",
+        "submittedAt": "Submitted",
+        "score": "Score",
+        "grade": "Grade",
+        "attachments": "Attachments",
+        "attachmentsNone": "No files submitted",
+        "loadFailed": "Could not load submissions."
+      },
+      "status": {
+        "submitted": "Submitted",
+        "resubmissionRequested": "Resubmission requested",
+        "graded": "Graded",
+        "notSubmitted": "Not submitted"
+      },
+      "grade": {
+        "title": "Grade submission",
+        "titleFor": "Grade {student}",
+        "status": "Status",
+        "score": "Score",
+        "scoreHint": "Out of {max}",
+        "feedback": "Feedback",
+        "feedbackPlaceholder": "Share notes, corrections, or next steps...",
+        "save": "Save grade"
+      },
+      "toast": {
+        "created": "Assignment created.",
+        "updated": "Assignment updated.",
+        "deleted": "Assignment deleted.",
+        "graded": "Submission graded.",
+        "uploadFailed": "Could not upload the file. Please try again.",
+        "loadFailed": "Could not load assignments."
+      },
+      "errors": {
+        "generic": "Something went wrong. Please try again.",
+        "notFound": "We could not find this assignment.",
+        "permissionDenied": "You do not have permission to do that.",
+        "conflict": "This assignment was updated by someone else. Please reload and try again."
+      },
+      "backToList": "Back to assignments"
+    }
   },
   "assistant": {
     "login": "Assistant Login",
@@ -3681,7 +3781,63 @@
     "paymentBankName": "Bank name",
     "paymentBankDetails": "Bank details or branch information",
     "paymentInstaPayMobile": "InstaPay mobile number",
-    "paymentInstaPayLink": "InstaPay link"
+    "paymentInstaPayLink": "InstaPay link",
+    "assignments": {
+      "title": "Assignments",
+      "empty": "No assignments for this course yet.",
+      "loadFailed": "Could not load assignments. Try again.",
+      "accessDenied": "You do not have access to assignments for this course.",
+      "actions": {
+        "submit": "Submit",
+        "resubmit": "Resubmit"
+      },
+      "status": {
+        "notSubmitted": "Not Submitted",
+        "submitted": "Submitted",
+        "resubmissionRequested": "Resubmission Requested",
+        "graded": "Graded"
+      },
+      "columns": {
+        "title": "Title",
+        "lesson": "Lesson",
+        "dueAt": "Due date",
+        "maxScore": "Max score",
+        "status": "Status",
+        "score": "Score",
+        "attachments": "Attachments",
+        "actions": "Actions"
+      },
+      "submit": {
+        "title": "Submit assignment",
+        "resubmitTitle": "Resubmit assignment",
+        "notes": "Notes (optional)",
+        "notesPlaceholder": "Add notes for your teacher...",
+        "attachments": "Your files",
+        "attachmentsRequired": "Please attach at least one file before submitting.",
+        "send": "Send submission",
+        "sending": "Sending...",
+        "cancel": "Cancel",
+        "teacherFeedbackHeading": "Teacher feedback on your previous submission"
+      },
+      "result": {
+        "submittedAt": "Submitted",
+        "feedback": "Teacher feedback"
+      },
+      "due": {
+        "label": "Due {date}",
+        "passed": "Due date has passed",
+        "noDueDate": "No due date"
+      },
+      "toast": {
+        "submitted": "Assignment submitted.",
+        "resubmitted": "Resubmission sent.",
+        "uploadFailed": "Could not upload the file. Try again."
+      },
+      "errors": {
+        "alreadySubmitted": "This assignment has already been submitted or cannot be resubmitted right now.",
+        "generic": "Something went wrong. Try again."
+      }
+    }
   },
   "achievements": {
     "title": "Achievements",
@@ -4082,7 +4238,8 @@
     "visibilityDraftLabel": "Course hidden",
     "visibilityDraftNotice": "The course is hidden from students. Publish it when you're ready.",
     "visibilityPublishedLabel": "Course published",
-    "visibilityPublishedNotice": "The course is published to students."
+    "visibilityPublishedNotice": "The course is published to students.",
+    "assignmentsCount": "{count} assignments"
   },
   "assessments": {
     "banksTitle": "Question Banks",
@@ -4940,7 +5097,6 @@
       "embeddedDialogHint": "The form will load below so you can submit without leaving the platform.",
       "submissionUrl": "Submission URL",
       "submissionKey": "Storage key",
-      "submissionNotes": "Notes",
       "submitAction": "Submit",
       "assignmentSubmitted": "Assignment submitted.",
       "assignmentFailed": "Failed to submit assignment.",
@@ -5467,13 +5623,13 @@
       "name": "Display name",
       "subject": "Subject",
       "phoneCountryCode": "Country code",
-        "phoneNumber": "Phone number",
-        "plan": "Plan",
-        "active": "Tenant is active",
-        "studentMultiDeviceLoginEnabled": "Students can log in from multiple devices",
-        "studentMultiDeviceLoginHint": "Disabled keeps the current one-device rule. Enable this to allow this teacher's students to sign in from different devices.",
-        "save": "Save changes",
-        "slug": "Tenant slug",
+      "phoneNumber": "Phone number",
+      "plan": "Plan",
+      "active": "Tenant is active",
+      "studentMultiDeviceLoginEnabled": "Students can log in from multiple devices",
+      "studentMultiDeviceLoginHint": "Disabled keeps the current one-device rule. Enable this to allow this teacher's students to sign in from different devices.",
+      "save": "Save changes",
+      "slug": "Tenant slug",
       "updateSlug": "Update slug",
       "joined": "Joined",
       "studentCount": "Students",
@@ -5935,14 +6091,14 @@
       "selectCourse": "Select a course",
       "createSuccess": "Live session scheduled successfully.",
       "updateSuccess": "Live session updated successfully.",
-      "createError": "Failed to schedule live session. Please check your inputs.",
-      "updateError": "Failed to update live session. Please try again.",
-      "deleteSuccess": "Live session deleted successfully.",
-      "deleteError": "Failed to delete live session. Please try again.",
-      "deleteConfirm": "Are you sure you want to delete '{title}'?",
-      "summarizeSuccess": "Attendance summarized successfully.",
-      "summarizeError": "Failed to summarize attendance. Please try again.",
-      "openModeration": "Open chat moderation",
+      "createError": "Could not schedule the session.",
+      "updateError": "Could not update the session.",
+      "deleteSuccess": "Live session deleted.",
+      "deleteError": "Could not delete the session.",
+      "deleteConfirm": "Delete the session \"{title}\"?",
+      "summarizeSuccess": "Attendance summary updated.",
+      "summarizeError": "Could not summarize attendance.",
+      "openModeration": "Moderate & chat",
       "moduleId": "Module ID (optional)",
       "repeatEnabled": "Repeat this session",
       "repeatCount": "Number of occurrences",
@@ -5962,15 +6118,6 @@
       "zoomPasscode": "Zoom passcode",
       "meetCode": "Google Meet code",
       "meetEventId": "Google Calendar event ID",
-      "createSuccess": "Live session scheduled successfully.",
-      "createError": "Could not schedule the session.",
-      "updateSuccess": "Live session updated successfully.",
-      "updateError": "Could not update the session.",
-      "deleteConfirm": "Delete the session \"{title}\"?",
-      "deleteSuccess": "Live session deleted.",
-      "deleteError": "Could not delete the session.",
-      "summarizeSuccess": "Attendance summary updated.",
-      "summarizeError": "Could not summarize attendance.",
       "registeredCount": "Registered ({count})",
       "student": "Student",
       "email": "Email",
@@ -5980,7 +6127,6 @@
       "attendedNo": "Not attended",
       "registrationsTitle": "Session registrations",
       "loadRegistrationsError": "Unable to load registrations.",
-      "openModeration": "Moderate & chat",
       "statusLabel": {
         "scheduled": "Scheduled",
         "live": "Live",

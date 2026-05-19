@@ -118,6 +118,13 @@
                             })
                           }}
                         </UiTag>
+                        <UiTag size="sm" color="neutral">
+                          {{
+                            t("courses.assignmentsCount", {
+                              count: assignmentsCountByLesson[lesson.id] ?? 0,
+                            })
+                          }}
+                        </UiTag>
                         <UiTag size="sm" color="info" v-if="lesson.duration">
                           {{ formatDuration(lesson.duration) }}
                         </UiTag>
@@ -229,6 +236,14 @@
                         @click.stop="goToLessonEdit(item.module, lesson)"
                       >
                         {{ t("common.edit") }}
+                      </UiButton>
+                      <UiButton
+                        variant="link"
+                        color="secondary"
+                        prepend-icon="FileTextOutlined"
+                        @click.stop="openAssignments(lesson)"
+                      >
+                        {{ t("teacher.assignments.title") }}
                       </UiButton>
                       <UiButton
                         variant="link"
@@ -868,6 +883,13 @@
         </UiButton>
       </template>
     </UiDialog>
+
+    <TeacherAssignmentsDialog
+      v-model="assignmentsDialog.open"
+      :course-id="courseId"
+      :lesson-id="assignmentsDialog.lessonId"
+      :lesson-title="assignmentsDialog.lessonTitle"
+    />
   </ThemePage>
 </template>
 
@@ -918,6 +940,8 @@ import UiCheckbox from "@/components/ui/UiCheckbox.vue";
 import { useToast } from "@/composables/useToast";
 import MediaVideoPlayer from "@/components/media/MediaVideoPlayer.vue";
 import UploadVideo from "@/components/uploadVideo/UploadVideo.vue";
+import TeacherAssignmentsDialog from "@/components/teacher/assignments/TeacherAssignmentsDialog.vue";
+import { useLearningStore } from "@/stores/learning";
 
 type DialogMode = "create" | "edit";
 const editorVal = ref("");
@@ -926,9 +950,31 @@ const router = useRouter();
 const { t, te } = useI18n();
 const store = useCoursesStore();
 const usageStore = useTeacherUsageStore();
+const learningStore = useLearningStore();
 const { summary: usageSummary } = storeToRefs(usageStore);
 const courseId = Number(route.params.courseId);
 const toast = useToast();
+
+const assignmentsDialog = reactive({
+  open: false,
+  lessonId: null as number | null,
+  lessonTitle: ''
+});
+
+const openAssignments = (lesson: LessonPayload) => {
+  assignmentsDialog.lessonId = lesson.id;
+  assignmentsDialog.lessonTitle = lesson.title;
+  assignmentsDialog.open = true;
+};
+
+const assignmentsCountByLesson = computed<Record<number, number>>(() => {
+  const counts: Record<number, number> = {};
+  for (const assignment of learningStore.teacherAssignments) {
+    if (assignment.courseId !== courseId) continue;
+    counts[assignment.lessonId] = (counts[assignment.lessonId] ?? 0) + 1;
+  }
+  return counts;
+});
 const course = computed(() => store.current);
 const pageTitle = computed(() => course.value?.title || t("courses.untitled"));
 const courseSubtitle = computed(
@@ -2062,6 +2108,17 @@ onMounted(async () => {
     await store.fetchCourse(courseId);
   }
   void usageStore.loadSummary();
+  void learningStore.loadTeacherAssignments(courseId);
+
+  const pendingLessonId = learningStore.consumePendingAssignmentsDialog();
+  if (pendingLessonId !== null) {
+    const lesson = course.value?.modules
+      .flatMap((module) => module.lessons.map((lessonItem) => ({ module, lesson: lessonItem })))
+      .find((entry) => entry.lesson.id === pendingLessonId);
+    if (lesson) {
+      openAssignments(lesson.lesson);
+    }
+  }
 });
 
 const resetModuleDialog = () => {

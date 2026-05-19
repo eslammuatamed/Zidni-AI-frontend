@@ -155,6 +155,17 @@
                       </div>
                       <UiTag
                         size="sm"
+                        class="learning-content__lesson-assignments"
+                        color="neutral"
+                      >
+                        {{
+                          t("courses.assignmentsCount", {
+                            count: assignmentsCountByLesson[lesson.id] ?? 0,
+                          })
+                        }}
+                      </UiTag>
+                      <UiTag
+                        size="sm"
                         class="learning-content__lesson-status"
                         :color="
                           statusColors[lesson.status as LessonProgressStatus] ||
@@ -659,120 +670,15 @@
         <UiAlert v-if="!filteredAssignments.length" color="info">
           {{ t("learning.student.noAssignments") }}
         </UiAlert>
-        <template v-else>
-          <UiTable
-            class="learning-assignments__table"
-            :headers="assignmentHeaders"
-            :items="filteredAssignments"
-            density="comfortable"
-          >
-            <template #item.courseTitle="{ item }">
-              <span>{{ item.courseTitle }}</span>
-            </template>
-            <template #item.lessonTitle="{ item }">
-              <span>{{ item.lessonTitle }}</span>
-            </template>
-            <template #item.dueAt="{ item }">
-              <span v-if="item.dueAt">{{ formatDateTime(item.dueAt) }}</span>
-              <span v-else>—</span>
-            </template>
-            <template #item.maxScore="{ item }">
-              <span v-if="item.maxScore != null">{{ item.maxScore }}</span>
-              <span v-else>—</span>
-            </template>
-            <template #item.attachmentUrl="{ item }">
-              <a
-                v-if="item.attachmentUrl"
-                :href="item.attachmentUrl"
-                class="learning-assignments__attachment-link"
-                target="_blank"
-                rel="noopener"
-              >
-                {{ t("learning.student.assignmentAttachmentLink") }}
-              </a>
-              <span v-else>—</span>
-            </template>
-            <template #item.createdAt="{ item }">
-              <span>{{ formatDateTime(item.createdAt) }}</span>
-            </template>
-            <template #item.actions="{ item }">
-              <UiButton
-                variant="link"
-                color="primary"
-                prepend-icon="UploadOutlined"
-                @click="openSubmissionDialog(item)"
-              >
-                {{ t("learning.student.submitWork") }}
-              </UiButton>
-            </template>
-          </UiTable>
-          <div class="learning-assignments__list" role="list">
-            <article
-              v-for="assignment in filteredAssignments"
-              :key="assignment.id"
-              class="learning-assignments__list-item"
-              role="listitem"
-            >
-              <header class="learning-assignments__list-header">
-                <h3>{{ assignment.title }}</h3>
-                <span v-if="assignment.dueAt">{{
-                  formatDateTime(assignment.dueAt)
-                }}</span>
-              </header>
-              <p
-                v-if="assignment.description"
-                class="learning-assignments__list-description"
-              >
-                {{ assignment.description }}
-              </p>
-              <dl class="learning-assignments__details">
-                <div class="learning-assignments__detail">
-                  <dt>{{ t("learning.student.assignmentCourse") }}</dt>
-                  <dd>{{ assignment.courseTitle }}</dd>
-                </div>
-                <div class="learning-assignments__detail">
-                  <dt>{{ t("learning.student.assignmentLesson") }}</dt>
-                  <dd>{{ assignment.lessonTitle }}</dd>
-                </div>
-                <div class="learning-assignments__detail">
-                  <dt>{{ t("learning.student.assignmentMaxScore") }}</dt>
-                  <dd>
-                    <span v-if="assignment.maxScore != null">{{
-                      assignment.maxScore
-                    }}</span>
-                    <span v-else>—</span>
-                  </dd>
-                </div>
-                <div class="learning-assignments__detail">
-                  <dt>{{ t("learning.student.assignmentAssigned") }}</dt>
-                  <dd>{{ formatDateTime(assignment.createdAt) }}</dd>
-                </div>
-                <div class="learning-assignments__detail">
-                  <dt>{{ t("learning.student.assignmentAttachment") }}</dt>
-                  <dd>
-                    <a
-                      v-if="assignment.attachmentUrl"
-                      :href="assignment.attachmentUrl"
-                      target="_blank"
-                      rel="noopener"
-                    >
-                      {{ t("learning.student.assignmentAttachmentLink") }}
-                    </a>
-                    <span v-else>—</span>
-                  </dd>
-                </div>
-              </dl>
-              <UiButton
-                class="learning-assignments__list-action"
-                color="primary"
-                prepend-icon="UploadOutlined"
-                @click="openSubmissionDialog(assignment)"
-              >
-                {{ t("learning.student.submitWork") }}
-              </UiButton>
-            </article>
-          </div>
-        </template>
+        <div v-else class="learning-assignments__cards" role="list">
+          <StudentAssignmentCard
+            v-for="assignment in filteredAssignments"
+            :key="assignment.id"
+            role="listitem"
+            :assignment="assignment"
+            @submit="onAssignmentSubmit"
+          />
+        </div>
       </UiCard>
     </section>
 
@@ -918,45 +824,11 @@
       </template>
     </UiDialog>
 
-    <UiDialog
-      v-model="submissionDialog"
-      :title="selectedAssignment?.title || t('learning.student.assignmentList')"
-      width="480px"
-    >
-      <template v-if="selectedAssignment">
-        <form class="learning-dialog__form" @submit.prevent="submitAssignment">
-          <UiInput
-            v-model="submissionForm.fileUrl"
-            :label="t('learning.student.submissionUrl')"
-          />
-          <UiInput
-            v-model="submissionForm.fileKey"
-            :label="t('learning.student.submissionKey')"
-          />
-          <UiTextarea
-            v-model="submissionForm.notes"
-            :label="t('learning.student.submissionNotes')"
-            :rows="4"
-          />
-          <div class="learning-dialog__actions">
-            <UiButton
-              variant="link"
-              color="secondary"
-              @click.prevent="closeSubmissionDialog"
-            >
-              {{ t("common.cancel") }}
-            </UiButton>
-            <UiButton
-              button-type="submit"
-              color="primary"
-              :disabled="formSubmitting"
-            >
-              {{ t("learning.student.submitAction") }}
-            </UiButton>
-          </div>
-        </form>
-      </template>
-    </UiDialog>
+    <StudentAssignmentSubmitDialog
+      v-model="assignmentSubmitDialogOpen"
+      :assignment="selectedAssignment"
+      @submitted="onAssignmentSubmitted"
+    />
 
     <section class="learning-certificates">
       <UiCard :title="t('certificates.student.title')">
@@ -1060,6 +932,8 @@ import UiAccordion, {
   type UiAccordionItem,
 } from "@/components/ui/UiAccordion.vue";
 import UiTag from "@/components/ui/UiTag.vue";
+import StudentAssignmentCard from "@/components/student/assignments/StudentAssignmentCard.vue";
+import StudentAssignmentSubmitDialog from "@/components/student/assignments/StudentAssignmentSubmitDialog.vue";
 import UiSwitch from "@/components/ui/UiSwitch.vue";
 import UiIcon from "@/components/ui/UiIcon.vue";
 import StudentLessonAiPanel from "@/components/ai/StudentLessonAiPanel.vue";
@@ -1109,7 +983,7 @@ const pendingCourseFromRoute = ref<number | null>(null);
 const teacherCourses = ref<
   Array<{ id: number; title: string; useModulePricing?: boolean }>
 >([]);
-const submissionDialog = ref(false);
+const assignmentSubmitDialogOpen = ref(false);
 const selectedAssignment = ref<Assignment | null>(null);
 const selectedThreadId = ref<number | null>(null);
 const formSubmitting = ref(false);
@@ -1146,12 +1020,6 @@ const isStudentLoggedIn = computed(
   () => authStore.isAuthenticated && authStore.isStudent,
 );
 
-const submissionForm = reactive({
-  fileUrl: "",
-  fileKey: "",
-  notes: "",
-});
-
 const progressSelections = reactive<Record<number, string>>({});
 
 const progressStatuses = [
@@ -1167,21 +1035,6 @@ const progressHeaders = [
   { title: t("learning.student.lessonTitle"), key: "lessonTitle" },
   { title: t("learning.student.progressStatusHeader"), key: "status" },
   { title: t("learning.student.progressUpdated"), key: "updatedAt" },
-];
-
-const assignmentHeaders = [
-  { title: t("learning.student.assignmentTitle"), key: "title" },
-  { title: t("learning.student.assignmentCourse"), key: "courseTitle" },
-  { title: t("learning.student.assignmentLesson"), key: "lessonTitle" },
-  { title: t("learning.student.assignmentDue"), key: "dueAt" },
-  { title: t("learning.student.assignmentMaxScore"), key: "maxScore" },
-  {
-    title: t("learning.student.assignmentAttachment"),
-    key: "attachmentUrl",
-    sortable: false,
-  },
-  { title: t("learning.student.assignmentAssigned"), key: "createdAt" },
-  { title: t("common.actions"), key: "actions", sortable: false },
 ];
 
 const assignmentSearch = ref("");
@@ -1333,6 +1186,14 @@ const courseAssignments = computed(() => {
   return learning.studentAssignments.filter(
     (assignment) => assignment.courseId === selectedCourseId.value,
   );
+});
+
+const assignmentsCountByLesson = computed<Record<number, number>>(() => {
+  const counts: Record<number, number> = {};
+  for (const assignment of courseAssignments.value) {
+    counts[assignment.lessonId] = (counts[assignment.lessonId] ?? 0) + 1;
+  }
+  return counts;
 });
 
 const filteredAssignments = computed(() => {
@@ -2395,35 +2256,18 @@ const updateProgress = async (lessonId: number, status: string) => {
   }
 };
 
-const openSubmissionDialog = (assignment: Assignment) => {
+const onAssignmentSubmit = (assignment: Assignment) => {
   selectedAssignment.value = assignment;
-  submissionForm.fileUrl = "";
-  submissionForm.fileKey = "";
-  submissionForm.notes = "";
-  submissionDialog.value = true;
+  assignmentSubmitDialogOpen.value = true;
 };
 
-const closeSubmissionDialog = () => {
-  submissionDialog.value = false;
-  selectedAssignment.value = null;
-};
-
-const submitAssignment = async () => {
-  if (!selectedAssignment.value) return;
-  formSubmitting.value = true;
-  try {
-    await learning.submitStudentAssignment(selectedAssignment.value.id, {
-      fileUrl: submissionForm.fileUrl || undefined,
-      fileKey: submissionForm.fileKey || undefined,
-      notes: submissionForm.notes || undefined,
-    });
-    showToast(t("learning.student.assignmentSubmitted"));
-    submissionDialog.value = false;
-  } catch (error) {
-    console.error(error);
-    showToast(t("learning.student.assignmentFailed"), "error");
-  } finally {
-    formSubmitting.value = false;
+const onAssignmentSubmitted = async () => {
+  if (selectedCourseId.value) {
+    try {
+      await learning.loadStudentAssignments(selectedCourseId.value);
+    } catch (error) {
+      console.error('[StudentLearning] reload after submit failed', error);
+    }
   }
 };
 
@@ -2475,7 +2319,7 @@ watch(
   { immediate: true },
 );
 
-watch(submissionDialog, (open) => {
+watch(assignmentSubmitDialogOpen, (open) => {
   if (!open) {
     selectedAssignment.value = null;
   }

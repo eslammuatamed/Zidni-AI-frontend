@@ -12,6 +12,7 @@ const TeacherQuestionBanksView = () => import('@/views/TeacherQuestionBanksView.
 const CourseListView = () => import('@/views/CourseListView.vue');
 const CourseEditorView = () => import('@/views/CourseEditorView.vue');
 const LessonEditorView = () => import('@/views/LessonEditorView.vue');
+const TeacherAssignmentEditorView = () => import('@/views/TeacherAssignmentEditorView.vue');
 const PublicLandingView = () => import('@/views/PublicLandingView.vue');
 const PublicCourseDetailView = () => import('@/views/PublicCourseDetailView.vue');
 const PublicCoursesView = () => import('@/views/PublicCoursesView.vue');
@@ -563,6 +564,26 @@ const router = createRouter({
       }
     },
     {
+      path: '/teacher/courses/:courseId/lessons/:lessonId/assignments/new',
+      name: 'teacher-assignment-create',
+      component: TeacherAssignmentEditorView,
+      meta: {
+        requiresAuth: true,
+        roles: ['TEACHER', 'TEACHER_ASSISTANT'],
+        requiresAssistantPermissions: ['courses.manage']
+      }
+    },
+    {
+      path: '/teacher/courses/:courseId/lessons/:lessonId/assignments/:assignmentId/edit',
+      name: 'teacher-assignment-edit',
+      component: TeacherAssignmentEditorView,
+      meta: {
+        requiresAuth: true,
+        roles: ['TEACHER', 'TEACHER_ASSISTANT'],
+        requiresAssistantPermissions: ['courses.manage']
+      }
+    },
+    {
       path: '/teacher/question-banks',
       name: 'teacher-question-banks',
       component: TeacherQuestionBanksView,
@@ -691,6 +712,26 @@ const router = createRouter({
       name: 'teacher-learning',
       component: TeacherLearningView,
       meta: { requiresAuth: true, roles: ['TEACHER'] }
+    },
+    {
+      path: '/teacher/learning/assignments/new',
+      name: 'teacher-assignment-create-global',
+      component: TeacherAssignmentEditorView,
+      meta: {
+        requiresAuth: true,
+        roles: ['TEACHER', 'TEACHER_ASSISTANT'],
+        requiresAssistantPermissions: ['courses.manage']
+      }
+    },
+    {
+      path: '/teacher/learning/assignments/:assignmentId/edit',
+      name: 'teacher-assignment-edit-global',
+      component: TeacherAssignmentEditorView,
+      meta: {
+        requiresAuth: true,
+        roles: ['TEACHER', 'TEACHER_ASSISTANT'],
+        requiresAssistantPermissions: ['courses.manage']
+      }
     },
     {
       path: '/teacher/reports',
