@@ -143,6 +143,8 @@ export interface CourseContentModule {
   id: number;
   title: string;
   position: number;
+  accessible?: boolean;
+  lockedReason?: string | null;
   lessons: CourseContentLesson[];
 }
 

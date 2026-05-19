@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <UiCard class="checkout-payment-panel">
     <header class="checkout-payment-panel__header">
       <div class="checkout-payment-panel__header-icon">
@@ -598,6 +598,7 @@ type CourseOption = {
   title: string;
   price: number;
   currency: string | null;
+  useModulePricing?: boolean;
 };
 
 const normalizeCurrencyCode = normalizeCheckoutCurrency;
@@ -1070,7 +1071,8 @@ const courseOptions = computed<CourseOption[]>(() => {
     id: item.courseId,
     title: item.title?.trim() ? item.title : fallback(item.courseId),
     price: item.price ?? 0,
-    currency: normalizeCurrencyCode(item.currency)
+    currency: normalizeCurrencyCode(item.currency),
+    useModulePricing: item.useModulePricing
   }));
 });
 
@@ -1137,6 +1139,9 @@ const amountLocked = computed(() => {
   }
   if (validation.value) {
     return true;
+  }
+  if (selectedCourse.value?.useModulePricing) {
+    return false;
   }
   return subtotal.value > 0;
 });

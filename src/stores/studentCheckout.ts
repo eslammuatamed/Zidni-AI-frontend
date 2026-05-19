@@ -7,6 +7,7 @@ export interface CheckoutItem {
   title?: string;
   price?: number;
   currency?: string | null;
+  useModulePricing?: boolean;
 }
 
 export interface OfferValidationState extends OfferValidationResponse {

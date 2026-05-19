@@ -184,7 +184,8 @@ const hydrateCheckoutItems = async () => {
             qty: 1,
             title: matchedCourse.title,
             price: matchedCourse.price,
-            currency: normalizeCurrency(matchedCourse.currency)
+            currency: normalizeCurrency(matchedCourse.currency),
+            useModulePricing: matchedCourse.useModulePricing
           }
         ]);
         return;
@@ -207,15 +208,17 @@ const hydrateCheckoutItems = async () => {
       const title = item.title?.trim() ? item.title : match.title;
       const price = match.price ?? item.price;
       const currency = normalizeCurrency(match.currency ?? existingCurrency);
+      const useModulePricing = match.useModulePricing ?? item.useModulePricing;
       if (
         title === item.title &&
         price === item.price &&
+        useModulePricing === item.useModulePricing &&
         currency === existingCurrency &&
         (item.currency === currency || (item.currency == null && currency == null))
       ) {
         return item;
       }
-      return { ...item, title, price, currency };
+      return { ...item, title, price, currency, useModulePricing };
     });
 
     const changed = hydrated.some((item, index) => item !== checkoutStore.items[index]);

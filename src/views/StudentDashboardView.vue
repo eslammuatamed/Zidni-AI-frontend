@@ -491,7 +491,7 @@ const featuresStore = useFeaturesStore();
 const auth = useAuthStore();
 const router = useRouter();
 
-const courses = ref<Array<{ id: number; title: string; price?: number | null; currency?: string | null }>>([]);
+const courses = ref<Array<{ id: number; title: string; price?: number | null; currency?: string | null; useModulePricing?: boolean }>>([]);
 const fetchedCourses = ref<Array<{ id: number; title: string; price?: number | null; currency?: string | null }>>([]);
 const checkoutStore = useStudentCheckoutStore();
 const showTenantPrompt = ref(false);
@@ -539,6 +539,7 @@ type CourseSummary = {
   paymentStatus: ManualPaymentStatus | null;
   teacherActive: boolean;
   accessible: boolean;
+  useModulePricing?: boolean;
 };
 
 const courseAccessDialog = reactive({
@@ -647,13 +648,13 @@ const welcomeMessage = computed(() => {
 const multiTeacherEnabled = computed(() => featuresStore.hasFeature(FEATURE.multiTeacherStudent));
 
 const combinedCourses = computed(() => {
-  const map = new Map<number, { id: number; title: string }>();
+  const map = new Map<number, { id: number; title: string; useModulePricing?: boolean }>();
   courses.value.forEach((course) => {
     if (course.id != null) map.set(course.id, course);
   });
   studentStore.enrollments.forEach((enrollment) => {
     if (!map.has(enrollment.courseId)) {
-      map.set(enrollment.courseId, { id: enrollment.courseId, title: enrollment.courseTitle });
+      map.set(enrollment.courseId, { id: enrollment.courseId, title: enrollment.courseTitle, useModulePricing: enrollment.useModulePricing });
     }
   });
   return Array.from(map.values()).sort((a, b) => a.title.localeCompare(b.title));
@@ -700,7 +701,10 @@ const courseSummaries = computed<CourseSummary[]>(() => {
     let badgeColor: CourseSummary['badgeColor'] = 'info';
     let statusLabel = '';
 
-    if (!hasEnrollment) {
+    if (course.useModulePricing) {
+      badgeColor = 'success';
+      statusLabel = t('student.courseAccessStatusReady');
+    } else if (!hasEnrollment) {
       badgeColor = 'warning';
       statusLabel = t('student.courseAccessStatusEnroll');
     } else if (!enrollmentActive) {
@@ -732,7 +736,8 @@ const courseSummaries = computed<CourseSummary[]>(() => {
       enrollmentActive,
       paymentStatus,
       teacherActive,
-      accessible: hasEnrollment && enrollmentActive && teacherActive && paymentApproved
+      accessible: hasEnrollment && enrollmentActive && teacherActive && paymentApproved,
+      useModulePricing: course.useModulePricing
     };
   });
 });
@@ -746,7 +751,7 @@ const quickActions = computed(() => [
 ]);
 
 const handleCourseClick = (course: CourseSummary) => {
-  if (course.accessible) {
+  if (course.accessible || course.useModulePricing) {
     router.push({ name: 'student-learning', query: { courseId: String(course.id) } });
     return;
   }
@@ -874,14 +879,16 @@ const loadCourses = async () => {
       id: c.id,
       title: c.title || t('student.course'),
       price: c.price,
-      currency: normalizeCurrency(c.currency)
+      currency: normalizeCurrency(c.currency),
+      useModulePricing: c.useModulePricing
     }));
   } catch (e) { console.warn('Failed to load courses', e); }
 
   const enrollmentCourses = studentStore.enrollments.map((e) => ({
     id: e.courseId,
     title: e.courseTitle,
-    currency: null
+    currency: null,
+    useModulePricing: e.useModulePricing
   }));
 
   const map = new Map<number, any>();

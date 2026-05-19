@@ -2,6 +2,55 @@
   <ThemePage :title="t('teacher.paymentsTitle')" :subtitle="t('teacher.enrollmentsTitle')">
     <div class="teacher-enrollments grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
       <UiDialog
+        v-model="approveDialog.open"
+        :title="t('teacher.paymentApproveDialogTitle')"
+        :mask-closable="false"
+      >
+        <p class="teacher-enrollments__dialog-lead mb-4">{{ t('teacher.paymentApproveDialogPrompt') }}</p>
+
+        <template v-if="approveDialog.payment?.useModulePricing">
+          <div class="teacher-enrollments__approve-access-type mb-6">
+            <UiRadioGroup
+              v-model="approveDialog.accessType"
+              :options="[
+                { value: 'MODULES', label: t('teacher.accessTypeModules') },
+                { value: 'FULL_COURSE', label: t('teacher.accessTypeFullCourse') }
+              ]"
+            />
+          </div>
+
+          <div v-if="approveDialog.accessType === 'MODULES'" class="teacher-enrollments__approve-modules mb-6">
+            <label class="block mb-3 font-medium">{{ t('teacher.selectModules') }}</label>
+            <div class="flex flex-col gap-2">
+              <UiCheckbox
+                v-for="mod in approveDialog.payment.availableModules"
+                :key="mod.moduleId"
+                :model-value="approveDialog.moduleIds.includes(mod.moduleId)"
+                @update:model-value="(checked) => toggleModule(mod.moduleId, checked)"
+                :label="mod.priced ? `${mod.title} (${mod.price} ${mod.priceCurrency})` : mod.title"
+              />
+            </div>
+          </div>
+        </template>
+
+        <UiTextarea
+          v-model="approveDialog.notes"
+          :label="t('teacher.paymentApproveDialogNotesLabel')"
+          :rows="3"
+          maxlength="2000"
+        />
+
+        <template #footer>
+          <UiButton variant="outline" :disabled="approveDialog.loading" @click="closeApproveDialog">
+            {{ t('common.cancel') }}
+          </UiButton>
+          <UiButton color="success" :loading="approveDialog.loading" @click="submitApproveDialog">
+            {{ t('teacher.approve') }}
+          </UiButton>
+        </template>
+      </UiDialog>
+
+      <UiDialog
         v-model="decisionDialog.open"
         :title="t('teacher.paymentRejectDialogTitle')"
         :mask-closable="false"
@@ -284,6 +333,8 @@ import UiSelect from '@/components/ui/UiSelect.vue';
 import UiButton from '@/components/ui/UiButton.vue';
 import UiDialog from '@/components/ui/UiDialog.vue';
 import UiTextarea from '@/components/ui/UiTextarea.vue';
+import UiRadioGroup from '@/components/ui/UiRadioGroup.vue';
+import UiCheckbox from '@/components/ui/UiCheckbox.vue';
 
 const { t } = useI18n();
 const auth = useAuthStore();
@@ -294,6 +345,16 @@ const selectedPayments = ref<ManualPaymentView[]>([]);
 const enrollments = ref<EnrollmentView[]>([]);
 const enrollmentUpdating = ref<number[]>([]);
 let pollHandle: number | undefined;
+
+const approveDialog = ref({
+  open: false,
+  payment: null as ManualPaymentView | null,
+  accessType: 'MODULES' as 'MODULES' | 'FULL_COURSE',
+  moduleIds: [] as number[],
+  notes: '',
+  loading: false
+});
+
 const decisionDialog = ref({
   open: false,
   mode: 'single' as 'single' | 'bulk',
@@ -483,6 +544,19 @@ const decision = async (paymentId: number, status: ManualPaymentStatus) => {
     openDecisionDialog({ mode: 'single', paymentId, paymentIds: [] });
     return;
   }
+  const payment = payments.value.find((p) => p.id === paymentId);
+  if (payment?.useModulePricing) {
+    approveDialog.value = {
+      open: true,
+      payment,
+      accessType: 'MODULES',
+      moduleIds: payment.assignedModules?.map((m) => m.moduleId) || [],
+      notes: '',
+      loading: false
+    };
+    return;
+  }
+
   try {
     await reviewManualPayment(paymentId, { status });
     await loadPayments();
@@ -491,6 +565,43 @@ const decision = async (paymentId: number, status: ManualPaymentStatus) => {
   } catch (error) {
     console.error(error);
     toast.error(t('teacher.paymentDecisionError'));
+  }
+};
+
+const toggleModule = (moduleId: number, checked: boolean) => {
+  if (checked) {
+    if (!approveDialog.value.moduleIds.includes(moduleId)) {
+      approveDialog.value.moduleIds.push(moduleId);
+    }
+  } else {
+    approveDialog.value.moduleIds = approveDialog.value.moduleIds.filter((id) => id !== moduleId);
+  }
+};
+
+const closeApproveDialog = () => {
+  approveDialog.value.open = false;
+  approveDialog.value.payment = null;
+};
+
+const submitApproveDialog = async () => {
+  if (approveDialog.value.loading || !approveDialog.value.payment) return;
+  approveDialog.value.loading = true;
+  try {
+    await reviewManualPayment(approveDialog.value.payment.id, {
+      status: 'APPROVED',
+      accessType: approveDialog.value.accessType,
+      moduleIds: approveDialog.value.accessType === 'MODULES' ? approveDialog.value.moduleIds : undefined,
+      notes: approveDialog.value.notes.trim()
+    });
+    await loadPayments();
+    await loadEnrollments();
+    toast.success(t('teacher.paymentApprovedToast'));
+    closeApproveDialog();
+  } catch (error) {
+    console.error(error);
+    toast.error(t('teacher.paymentDecisionError'));
+  } finally {
+    approveDialog.value.loading = false;
   }
 };
 

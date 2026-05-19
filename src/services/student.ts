@@ -62,6 +62,8 @@ export interface ManualPaymentPayload {
 
 export interface ManualPaymentDecisionPayload {
   status: ManualPaymentStatus;
+  accessType?: 'MODULES' | 'FULL_COURSE';
+  moduleIds?: number[];
   notes?: string;
 }
 
@@ -83,6 +85,14 @@ const normalizeManualPaymentStatusForApi = (
 
   return normalized as ManualPaymentStatus;
 };
+
+export interface ManualPaymentModuleView {
+  moduleId: number;
+  title: string;
+  priced: boolean;
+  price?: number;
+  priceCurrency?: string;
+}
 
 export interface ManualPaymentView {
   id: number;
@@ -107,6 +117,10 @@ export interface ManualPaymentView {
   studentId?: number | null;
   studentName?: string | null;
   studentEmail?: string | null;
+  useModulePricing?: boolean;
+  accessAssignmentRequired?: boolean;
+  assignedModules?: ManualPaymentModuleView[];
+  availableModules?: ManualPaymentModuleView[];
 }
 
 export interface ManualPaymentMethodDetails {
@@ -157,6 +171,7 @@ export interface StudentCourseSummary {
   level?: string;
   language?: string;
   active?: boolean;
+  useModulePricing?: boolean;
 }
 
 export interface EnrollmentView {
@@ -164,6 +179,7 @@ export interface EnrollmentView {
   courseId: number;
   courseTitle: string;
   status: string;
+  useModulePricing?: boolean;
   startAt?: string;
   endAt?: string;
   progress?: number;

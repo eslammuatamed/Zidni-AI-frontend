@@ -735,6 +735,12 @@
                 {{ option.title }}
               </option>
             </UiSelect>
+            <div class="course-editor__module-pricing-toggle" style="margin-bottom: var(--sakai-space-4);">
+              <UiCheckbox
+                v-model="form.useModulePricing"
+                :label="t('courses.useModulePricingLabel')"
+              />
+            </div>
             <UiSelect
               v-model="form.level"
               :label="t('courses.levelLabel')"
@@ -822,6 +828,31 @@
         <p class="course-editor__dialog-hint">
           {{ t("courses.modulePositionHelp") }}
         </p>
+        <div class="course-editor__module-pricing" style="margin-top: var(--sakai-space-4); margin-bottom: var(--sakai-space-4);">
+          <UiCheckbox
+            v-model="moduleDialog.form.priced"
+            :label="t('courses.modulePricedLabel')"
+          />
+        </div>
+        <div v-if="moduleDialog.form.priced" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sakai-space-4); margin-bottom: var(--sakai-space-4);">
+          <UiInput
+            v-model.number="moduleDialog.form.price"
+            type="number"
+            :label="t('courses.priceLabel')"
+          />
+          <UiSelect
+            v-model="moduleDialog.form.priceCurrency"
+            :label="t('courses.currencyLabel')"
+          >
+            <option
+              v-for="option in currencyOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.title }}
+            </option>
+          </UiSelect>
+        </div>
       </form>
       <template #footer>
         <UiButton variant="link" color="secondary" @click="closeModuleDialog">
@@ -883,6 +914,7 @@ import UiTag from "@/components/ui/UiTag.vue";
 import UiFileUpload from "@/components/ui/UiFileUpload.vue";
 import UiProgressBar from "@/components/ui/UiProgressBar.vue";
 import UiSwitch from "@/components/ui/UiSwitch.vue";
+import UiCheckbox from "@/components/ui/UiCheckbox.vue";
 import { useToast } from "@/composables/useToast";
 import MediaVideoPlayer from "@/components/media/MediaVideoPlayer.vue";
 import UploadVideo from "@/components/uploadVideo/UploadVideo.vue";
@@ -1022,6 +1054,7 @@ const form = reactive({
   type: "recorded",
   price: 0,
   currency: resolveCurrency(),
+  useModulePricing: false,
   level: "",
   language: "",
   thumbnailUrl: "",
@@ -1058,6 +1091,9 @@ const moduleDialog = reactive({
   form: {
     title: "",
     position: 1 as number | null,
+    priced: false,
+    price: 0 as number | null,
+    priceCurrency: resolveCurrency(),
   },
 });
 
@@ -1981,6 +2017,7 @@ watch(
         form.type = value.type;
         form.price = value.price;
         form.currency = resolveCurrency(value.currency);
+        form.useModulePricing = value.useModulePricing ?? false;
         form.level = value.level || "";
         form.language = value.language || "";
         form.thumbnailUrl = value.thumbnailUrl || "";
@@ -2032,6 +2069,9 @@ const resetModuleDialog = () => {
   moduleDialog.moduleId = null;
   moduleDialog.form.title = "";
   moduleDialog.form.position = Math.max(sortedModules.value.length + 1, 1);
+  moduleDialog.form.priced = false;
+  moduleDialog.form.price = 0;
+  moduleDialog.form.priceCurrency = resolveCurrency();
   moduleDialogAttempt.value = false;
 };
 
@@ -2063,11 +2103,17 @@ const openModuleDialog = (module?: ModulePayload) => {
     moduleDialog.moduleId = module.id;
     moduleDialog.form.title = module.title;
     moduleDialog.form.position = module.position;
+    moduleDialog.form.priced = module.priced ?? false;
+    moduleDialog.form.price = module.price ?? 0;
+    moduleDialog.form.priceCurrency = resolveCurrency(module.priceCurrency);
   } else {
     moduleDialog.mode = "create";
     moduleDialog.moduleId = null;
     moduleDialog.form.title = "";
     moduleDialog.form.position = Math.max(sortedModules.value.length + 1, 1);
+    moduleDialog.form.priced = false;
+    moduleDialog.form.price = 0;
+    moduleDialog.form.priceCurrency = resolveCurrency();
   }
   moduleDialog.open = true;
 };
@@ -2084,6 +2130,9 @@ const submitModule = async () => {
   const payload = {
     title: moduleDialog.form.title.trim(),
     position: sanitizedPosition(moduleDialog.form.position),
+    priced: moduleDialog.form.priced,
+    price: moduleDialog.form.price || 0,
+    priceCurrency: moduleDialog.form.priceCurrency,
   };
   if (moduleDialog.mode === "create") {
     await store.addModule(courseId, payload);
@@ -2511,6 +2560,7 @@ const saveInfo = async () => {
     type: form.type,
     price: form.price,
     currency: form.currency,
+    useModulePricing: form.useModulePricing,
     thumbnailUrl: thumbnail ? thumbnail : null,
     level: form.level || null,
     language: form.language || null,
@@ -2535,6 +2585,7 @@ const saveInfo = async () => {
     type: form.type,
     price: form.price,
     currency: form.currency,
+    useModulePricing: form.useModulePricing,
     thumbnailUrl: thumbnail ? thumbnail : null,
     level: form.level || null,
     language: form.language || null,

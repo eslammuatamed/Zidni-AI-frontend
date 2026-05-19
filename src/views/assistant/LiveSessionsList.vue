@@ -14,52 +14,44 @@
                 variant="outlined"
                 @click="setToday"
               >
-                {{ t('live.calendar.today') }}
+                {{ t("live.calendar.today") }}
               </v-btn>
-              <v-btn
-                size="small"
-                variant="text"
-                icon
-                @click="prev"
-              >
-                <span class="sr-only">{{ t('live.calendar.prev') }}</span>
-                <v-icon size="small"> mdi-chevron-left </v-icon>
+              <v-btn size="small" variant="text" icon @click="prev">
+                {{ t("live.calendar.prev") }}
               </v-btn>
-              <v-btn
-                size="small"
-                variant="text"
-                icon
-                @click="next"
-              >
-                <span class="sr-only">{{ t('live.calendar.next') }}</span>
-                <v-icon size="small"> mdi-chevron-right </v-icon>
+              <v-btn size="small" variant="text" icon @click="next">
+                {{ t("live.calendar.next") }}
               </v-btn>
               <v-toolbar-title v-if="calendar">
                 {{ calendar.title }}
               </v-toolbar-title>
               <v-menu location="bottom end">
                 <template v-slot:activator="{ props }">
-                  <v-btn
-                    color="primary"
-                    variant="outlined"
-                    v-bind="props"
-                  >
+                  <v-btn color="primary" variant="outlined" v-bind="props">
                     <span>{{ typeToLabel[type] }}</span>
                     <v-icon end> mdi-menu-down </v-icon>
                   </v-btn>
                 </template>
                 <v-list>
                   <v-list-item @click="type = 'day'">
-                    <v-list-item-title>{{ t('live.calendar.day') }}</v-list-item-title>
+                    <v-list-item-title>{{
+                      t("live.calendar.day")
+                    }}</v-list-item-title>
                   </v-list-item>
                   <v-list-item @click="type = 'week'">
-                    <v-list-item-title>{{ t('live.calendar.week') }}</v-list-item-title>
+                    <v-list-item-title>{{
+                      t("live.calendar.week")
+                    }}</v-list-item-title>
                   </v-list-item>
                   <v-list-item @click="type = 'month'">
-                    <v-list-item-title>{{ t('live.calendar.month') }}</v-list-item-title>
+                    <v-list-item-title>{{
+                      t("live.calendar.month")
+                    }}</v-list-item-title>
                   </v-list-item>
                   <v-list-item @click="type = '5day'">
-                    <v-list-item-title>{{ t('live.calendar.fiveDays') }}</v-list-item-title>
+                    <v-list-item-title>{{
+                      t("live.calendar.fiveDays")
+                    }}</v-list-item-title>
                   </v-list-item>
                 </v-list>
               </v-menu>
@@ -94,7 +86,9 @@
                 class="rounded-xl overflow-hidden border border-border"
               >
                 <!-- Header -->
-                <div :class="`bg-${selectedEvent.color} text-white pa-5 relative`">
+                <div
+                  :class="`bg-${selectedEvent.color} text-white pa-5 relative`"
+                >
                   <div class="relative z-10">
                     <div class="d-flex align-center justify-space-between mb-2">
                       <v-chip
@@ -108,7 +102,11 @@
                       </v-chip>
                     </div>
                     <div class="text-h6 font-weight-bold mb-1 leading-tight">
-                      <span v-if="selectedEvent.courseId" class="opacity-80 text-body-2 d-block mb-1">{{ selectedEvent.courseId }}</span>
+                      <span
+                        v-if="selectedEvent.courseId"
+                        class="opacity-80 text-body-2 d-block mb-1"
+                        >{{ selectedEvent.courseId }}</span
+                      >
                       {{ selectedEvent.name }}
                     </div>
                     <div
@@ -124,52 +122,106 @@
                 <v-card-text class="pa-5">
                   <div class="grid grid-cols-2 gap-y-5 gap-x-4">
                     <!-- Module -->
-                    <div class="flex items-start gap-3 col-span-2 sm:col-span-1" v-if="selectedEvent.moduleId">
-                      <v-avatar color="primary" variant="tonal" rounded="lg" size="40" class="shrink-0">
+                    <div
+                      class="flex items-start gap-3 col-span-2 sm:col-span-1"
+                      v-if="selectedEvent.moduleId"
+                    >
+                      <v-avatar
+                        color="primary"
+                        variant="tonal"
+                        rounded="lg"
+                        size="40"
+                        class="shrink-0"
+                      >
                         <UiIcon name="AppstoreOutlined" :size="20" />
                       </v-avatar>
                       <div class="flex flex-col overflow-hidden">
-                        <span class="text-xs text-medium-emphasis truncate">{{ t("live.details.module") }}</span>
-                        <span class="text-sm font-weight-medium text-high-emphasis truncate" :title="selectedEvent.moduleId">
+                        <span class="text-xs text-medium-emphasis truncate">{{
+                          t("live.details.module")
+                        }}</span>
+                        <span
+                          class="text-sm font-weight-medium text-high-emphasis truncate"
+                          :title="selectedEvent.moduleId"
+                        >
                           {{ selectedEvent.moduleId }}
                         </span>
                       </div>
                     </div>
 
                     <!-- Students -->
-                    <div class="flex items-start gap-3 col-span-2 sm:col-span-1" v-if="selectedEvent.studentCount !== undefined">
-                      <v-avatar color="primary" variant="tonal" rounded="lg" size="40" class="shrink-0">
+                    <div
+                      class="flex items-start gap-3 col-span-2 sm:col-span-1"
+                      v-if="selectedEvent.studentCount !== undefined"
+                    >
+                      <v-avatar
+                        color="primary"
+                        variant="tonal"
+                        rounded="lg"
+                        size="40"
+                        class="shrink-0"
+                      >
                         <UiIcon name="TeamOutlined" :size="20" />
                       </v-avatar>
                       <div class="flex flex-col overflow-hidden">
-                        <span class="text-xs text-medium-emphasis truncate">{{ t("live.details.students") }}</span>
-                        <span class="text-sm font-weight-medium text-high-emphasis truncate">
+                        <span class="text-xs text-medium-emphasis truncate">{{
+                          t("live.details.students")
+                        }}</span>
+                        <span
+                          class="text-sm font-weight-medium text-high-emphasis truncate"
+                        >
                           {{ selectedEvent.studentCount }}
                         </span>
                       </div>
                     </div>
 
                     <!-- Duration -->
-                    <div class="flex items-start gap-3 col-span-2 sm:col-span-1" v-if="selectedEvent.durationMinutes">
-                      <v-avatar color="primary" variant="tonal" rounded="lg" size="40" class="shrink-0">
+                    <div
+                      class="flex items-start gap-3 col-span-2 sm:col-span-1"
+                      v-if="selectedEvent.durationMinutes"
+                    >
+                      <v-avatar
+                        color="primary"
+                        variant="tonal"
+                        rounded="lg"
+                        size="40"
+                        class="shrink-0"
+                      >
                         <UiIcon name="ClockCircleOutlined" :size="20" />
                       </v-avatar>
                       <div class="flex flex-col overflow-hidden">
-                        <span class="text-xs text-medium-emphasis truncate">{{ t("live.details.duration") }}</span>
-                        <span class="text-sm font-weight-medium text-high-emphasis truncate">
-                          {{ selectedEvent.durationMinutes }} {{ t("live.details.durationMins") }}
+                        <span class="text-xs text-medium-emphasis truncate">{{
+                          t("live.details.duration")
+                        }}</span>
+                        <span
+                          class="text-sm font-weight-medium text-high-emphasis truncate"
+                        >
+                          {{ selectedEvent.durationMinutes }}
+                          {{ t("live.details.durationMins") }}
                         </span>
                       </div>
                     </div>
 
                     <!-- Provider -->
-                    <div class="flex items-start gap-3 col-span-2 sm:col-span-1" v-if="selectedEvent.provider">
-                      <v-avatar color="primary" variant="tonal" rounded="lg" size="40" class="shrink-0">
+                    <div
+                      class="flex items-start gap-3 col-span-2 sm:col-span-1"
+                      v-if="selectedEvent.provider"
+                    >
+                      <v-avatar
+                        color="primary"
+                        variant="tonal"
+                        rounded="lg"
+                        size="40"
+                        class="shrink-0"
+                      >
                         <UiIcon name="VideoCameraOutlined" :size="20" />
                       </v-avatar>
                       <div class="flex flex-col overflow-hidden">
-                        <span class="text-xs text-medium-emphasis truncate">{{ t("live.details.provider") }}</span>
-                        <span class="text-sm font-weight-medium text-high-emphasis text-capitalize truncate">
+                        <span class="text-xs text-medium-emphasis truncate">{{
+                          t("live.details.provider")
+                        }}</span>
+                        <span
+                          class="text-sm font-weight-medium text-high-emphasis text-capitalize truncate"
+                        >
                           {{ selectedEvent.provider }}
                         </span>
                       </div>
@@ -181,7 +233,9 @@
                     v-if="selectedEvent.joinUrl"
                     class="mt-5 p-3 rounded-lg border border-border flex flex-col gap-2"
                   >
-                    <div class="text-xs font-weight-medium text-medium-emphasis flex items-center gap-1">
+                    <div
+                      class="text-xs font-weight-medium text-medium-emphasis flex items-center gap-1"
+                    >
                       <UiIcon name="ExportOutlined" :size="14" />
                       {{ t("live.details.joinLink") }}
                     </div>
@@ -197,7 +251,9 @@
 
                 <v-divider></v-divider>
 
-                <v-card-actions class="pa-4 bg-surface-alt d-flex flex-wrap gap-2">
+                <v-card-actions
+                  class="pa-4 bg-surface-alt d-flex flex-wrap gap-2"
+                >
                   <v-spacer></v-spacer>
                   <v-btn
                     color="primary"
@@ -249,15 +305,17 @@ const loading = ref(false);
 const error = ref<string | null>(null);
 
 const typeToLabel = computed<Record<string, string>>(() => ({
-  month: t('live.calendar.month'),
-  week: t('live.calendar.week'),
-  day: t('live.calendar.day'),
-  "5day": t('live.calendar.fiveDays'),
+  month: t("live.calendar.month"),
+  week: t("live.calendar.week"),
+  day: t("live.calendar.day"),
+  "5day": t("live.calendar.fiveDays"),
 }));
 
 function getAbsoluteUrl(url: string | null | undefined): string {
   if (!url) return "#";
-  return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
+  return url.startsWith("http://") || url.startsWith("https://")
+    ? url
+    : `https://${url}`;
 }
 
 onMounted(() => {
@@ -281,7 +339,7 @@ function setToday() {
 
 function toLocalISOString(date: Date) {
   const offset = date.getTimezoneOffset() * 60000;
-  return new Date(date.getTime() - offset).toISOString().split('T')[0];
+  return new Date(date.getTime() - offset).toISOString().split("T")[0];
 }
 
 const focusDate = computed(() => {
@@ -296,7 +354,7 @@ const focusPlus4Days = computed(() => {
 });
 
 function prev() {
-  if (type.value === '5day') {
+  if (type.value === "5day") {
     const d = focus.value ? new Date(focus.value) : new Date();
     d.setDate(d.getDate() - 5);
     focus.value = toLocalISOString(d);
@@ -306,7 +364,7 @@ function prev() {
 }
 
 function next() {
-  if (type.value === '5day') {
+  if (type.value === "5day") {
     const d = focus.value ? new Date(focus.value) : new Date();
     d.setDate(d.getDate() + 5);
     focus.value = toLocalISOString(d);

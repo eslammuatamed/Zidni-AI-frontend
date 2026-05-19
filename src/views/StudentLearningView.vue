@@ -1,6 +1,5 @@
-﻿<template>
+<template>
   <ThemePage :title="t('learning.student.nav')">
-
     <template #meta>
       <div class="learning-page__meta">
         <div class="learning-page__filters">
@@ -10,9 +9,14 @@
             :label="t('learning.student.courseFilter')"
             @update:model-value="(val) => onSelectCourse(String(val || ''))"
           >
-            <option value="">{{ t('learning.student.courseFilter') }}</option>
-            <option v-for="course in courseOptions" :key="course.id" :value="course.id">
-              {{ course.title }}{{ course.accessible ? '' : ' 🔒' }}
+            <option value="">{{ t("learning.student.courseFilter") }}</option>
+            <option
+              v-for="course in courseOptions"
+              :key="course.id"
+              :value="course.id"
+            >
+              {{ course.title
+              }}{{ course.accessible || course.useModulePricing ? "" : " 🔒" }}
             </option>
           </UiSelect>
           <UiTabs
@@ -32,7 +36,7 @@
             @update:model-value="setFocusMode"
           />
           <p class="learning-page__focus-hint">
-            {{ t('learning.student.focusModeHelper') }}
+            {{ t("learning.student.focusModeHelper") }}
           </p>
         </div>
       </div>
@@ -48,12 +52,16 @@
     <section v-if="tab === 'content'" class="learning-content">
       <UiCard :title="t('learning.student.contentTitle')">
         <UiAlert v-if="!selectedCourseId" color="info">
-          {{ t('learning.student.selectCoursePrompt') }}
+          {{ t("learning.student.selectCoursePrompt") }}
         </UiAlert>
         <UiAlert v-else-if="!courseContentModules.length" color="info">
-          {{ t('learning.student.noContent') }}
+          {{ t("learning.student.noContent") }}
         </UiAlert>
-        <div v-else class="learning-content__layout" :class="{ 'learning-content__layout--focus': isFocusModeActive }">
+        <div
+          v-else
+          class="learning-content__layout"
+          :class="{ 'learning-content__layout--focus': isFocusModeActive }"
+        >
           <div
             v-if="isFocusModeActive && focusOutlineVisible"
             class="learning-content__outline-backdrop"
@@ -62,13 +70,23 @@
           <aside
             class="learning-content__outline"
             :class="{
-              'learning-content__outline--hidden': isFocusModeActive && !focusOutlineVisible,
-              'learning-content__outline--floating': isFocusModeActive && focusOutlineVisible
+              'learning-content__outline--hidden':
+                isFocusModeActive && !focusOutlineVisible,
+              'learning-content__outline--floating':
+                isFocusModeActive && focusOutlineVisible,
             }"
           >
-            <div v-if="isFocusModeActive" class="learning-content__outline-actions">
-              <UiButton variant="link" color="secondary" prepend-icon="CloseOutlined" @click="closeFocusOutline">
-                {{ t('learning.student.focusHideOutline') }}
+            <div
+              v-if="isFocusModeActive"
+              class="learning-content__outline-actions"
+            >
+              <UiButton
+                variant="link"
+                color="secondary"
+                prepend-icon="CloseOutlined"
+                @click="closeFocusOutline"
+              >
+                {{ t("learning.student.focusHideOutline") }}
               </UiButton>
             </div>
             <UiAccordion
@@ -77,24 +95,46 @@
               multiple
             >
               <template #header="{ item }">
-                <div class="learning-content__module-header">
+                <div
+                  class="learning-content__module-header"
+                  @click.capture="onModuleHeaderClick(item.module, $event)"
+                >
                   <div class="learning-content__module-info">
-                    <h3>{{ item.module.title }}</h3>
-                    <p>{{ t('courses.lessonsCount', { count: item.module.lessons.length }) }}</p>
+                    <h3>
+                      {{ item.module.title
+                      }}<span v-if="item.module.accessible === false"> 🔒</span>
+                    </h3>
+                    <p>
+                      {{
+                        t("courses.lessonsCount", {
+                          count: item.module.lessons.length,
+                        })
+                      }}
+                    </p>
                   </div>
                   <UiTag size="sm" color="secondary">
-                    {{ t('courses.modulePositionLabel', { position: item.module.position }) }}
+                    {{
+                      t("courses.modulePositionLabel", {
+                        position: item.module.position,
+                      })
+                    }}
                   </UiTag>
                 </div>
               </template>
               <template #content="{ item }">
-                <ul v-if="item.module.lessons.length" class="learning-content__lessons">
+                <ul
+                  v-if="item.module.lessons.length"
+                  class="learning-content__lessons"
+                >
                   <li
                     v-for="lesson in item.module.lessons"
                     :key="lesson.id"
                     :class="[
                       'learning-content__lesson',
-                      { 'learning-content__lesson--active': lesson.id === selectedLessonId }
+                      {
+                        'learning-content__lesson--active':
+                          lesson.id === selectedLessonId,
+                      },
                     ]"
                   >
                     <button
@@ -103,19 +143,35 @@
                       @click="onSelectLesson(lesson.id)"
                     >
                       <div class="learning-content__lesson-info">
-                        <span class="learning-content__lesson-title">{{ lesson.title }}</span>
-                        <span v-if="lesson.duration" class="learning-content__lesson-meta">
+                        <span class="learning-content__lesson-title">{{
+                          lesson.title
+                        }}</span>
+                        <span
+                          v-if="lesson.duration"
+                          class="learning-content__lesson-meta"
+                        >
                           {{ formatLessonDuration(lesson.duration) }}
                         </span>
                       </div>
-                      <UiTag size="sm" class="learning-content__lesson-status" :color="statusColors[lesson.status as LessonProgressStatus] || 'neutral'">
-                        {{ progressStatusLabels[lesson.status as LessonProgressStatus] || lesson.status }}
+                      <UiTag
+                        size="sm"
+                        class="learning-content__lesson-status"
+                        :color="
+                          statusColors[lesson.status as LessonProgressStatus] ||
+                          'neutral'
+                        "
+                      >
+                        {{
+                          progressStatusLabels[
+                            lesson.status as LessonProgressStatus
+                          ] || lesson.status
+                        }}
                       </UiTag>
                     </button>
                   </li>
                 </ul>
                 <UiAlert v-else color="info" variant="soft">
-                  {{ t('courses.noLessons') }}
+                  {{ t("courses.noLessons") }}
                 </UiAlert>
               </template>
             </UiAccordion>
@@ -124,10 +180,15 @@
             <template v-if="activeLesson">
               <header class="learning-content__viewer-header">
                 <div class="learning-content__viewer-titles">
-                  <p class="learning-content__viewer-module" v-if="activeLessonModule">
+                  <p
+                    class="learning-content__viewer-module"
+                    v-if="activeLessonModule"
+                  >
                     {{ activeLessonModule.title }}
                   </p>
-                  <h3 class="learning-content__viewer-title">{{ activeLesson.title }}</h3>
+                  <h3 class="learning-content__viewer-title">
+                    {{ activeLesson.title }}
+                  </h3>
                 </div>
                 <div class="learning-content__viewer-actions">
                   <div class="learning-content__viewer-navigation">
@@ -136,10 +197,12 @@
                       variant="outline"
                       color="secondary"
                       prepend-icon="ArrowLeftOutlined"
-                      :disabled="!activeLesson || !previousLesson || formSubmitting"
+                      :disabled="
+                        !activeLesson || !previousLesson || formSubmitting
+                      "
                       @click="goToAdjacentLesson('previous')"
                     >
-                      {{ t('learning.student.previousLesson') }}
+                      {{ t("learning.student.previousLesson") }}
                     </UiButton>
                     <UiButton
                       class="learning-content__viewer-action"
@@ -149,7 +212,7 @@
                       :disabled="!activeLesson || !nextLesson || formSubmitting"
                       @click="goToAdjacentLesson('next')"
                     >
-                      {{ t('learning.student.nextLesson') }}
+                      {{ t("learning.student.nextLesson") }}
                     </UiButton>
                   </div>
                   <UiButton
@@ -157,13 +220,17 @@
                     class="learning-content__outline-toggle"
                     variant="outline"
                     color="secondary"
-                    :prepend-icon="focusOutlineVisible ? 'MenuFoldOutlined' : 'MenuUnfoldOutlined'"
+                    :prepend-icon="
+                      focusOutlineVisible
+                        ? 'MenuFoldOutlined'
+                        : 'MenuUnfoldOutlined'
+                    "
                     @click="toggleFocusOutline"
                   >
                     {{
                       focusOutlineVisible
-                        ? t('learning.student.focusHideOutline')
-                        : t('learning.student.focusShowOutline')
+                        ? t("learning.student.focusHideOutline")
+                        : t("learning.student.focusShowOutline")
                     }}
                   </UiButton>
                   <UiTag
@@ -171,12 +238,18 @@
                     class="learning-content__viewer-status"
                     :color="statusColors[activeLesson.status]"
                   >
-                    {{ progressStatusLabels[activeLesson.status] || activeLesson.status }}
+                    {{
+                      progressStatusLabels[activeLesson.status] ||
+                      activeLesson.status
+                    }}
                   </UiTag>
                 </div>
               </header>
               <div class="learning-content__viewer-controls">
-                <div v-if="moduleProgress" class="learning-content__module-progress">
+                <div
+                  v-if="moduleProgress"
+                  class="learning-content__module-progress"
+                >
                   <UiProgressBar
                     class="learning-content__module-progress-bar"
                     :value="moduleProgress.percent"
@@ -184,12 +257,14 @@
                     :show-value="false"
                   >
                     <div class="learning-content__module-progress-text">
-                      <span>{{ t('learning.student.moduleProgressLabel') }}</span>
+                      <span>{{
+                        t("learning.student.moduleProgressLabel")
+                      }}</span>
                       <span>
                         {{
-                          t('learning.student.moduleProgressValue', {
+                          t("learning.student.moduleProgressValue", {
                             completed: moduleProgress.completed,
-                            total: moduleProgress.total
+                            total: moduleProgress.total,
                           })
                         }}
                       </span>
@@ -202,40 +277,61 @@
                     variant="outline"
                     color="primary"
                     prepend-icon="PlayCircleOutlined"
-                    :disabled="!activeLesson || progressUpdating || activeLessonProgressStatus === 'in_progress'"
+                    :disabled="
+                      !activeLesson ||
+                      progressUpdating ||
+                      activeLessonProgressStatus === 'in_progress'
+                    "
                     @click="onQuickProgressUpdate('in_progress')"
                   >
-                    {{ t('learning.student.markInProgress') }}
+                    {{ t("learning.student.markInProgress") }}
                   </UiButton>
                   <UiButton
                     class="learning-content__viewer-action"
                     color="success"
                     prepend-icon="CheckCircleOutlined"
-                    :disabled="!activeLesson || progressUpdating || activeLessonProgressStatus === 'completed'"
+                    :disabled="
+                      !activeLesson ||
+                      progressUpdating ||
+                      activeLessonProgressStatus === 'completed'
+                    "
                     @click="onQuickProgressUpdate('completed')"
                   >
-                    {{ t('learning.student.markComplete') }}
+                    {{ t("learning.student.markComplete") }}
                   </UiButton>
                   <UiButton
                     class="learning-content__viewer-action learning-content__viewer-action--reset"
                     variant="link"
                     color="secondary"
-                    :disabled="!activeLesson || progressUpdating || activeLessonProgressStatus === 'not_started'"
+                    :disabled="
+                      !activeLesson ||
+                      progressUpdating ||
+                      activeLessonProgressStatus === 'not_started'
+                    "
                     @click="onQuickProgressUpdate('not_started')"
                   >
-                    {{ t('learning.student.resetProgress') }}
+                    {{ t("learning.student.resetProgress") }}
                   </UiButton>
                 </div>
               </div>
               <div class="learning-content__viewer-body">
-                <section v-if="hasActiveLessonVideo" class="learning-content__viewer-section">
-                  <h4>{{ t('learning.student.lessonVideoTitle') }}</h4>
-                  <UiAlert v-if="effectiveStreamingBlocked" color="warning" variant="soft">
-                    {{ t('learning.student.streamingBlocked') }}
+                <section
+                  v-if="hasActiveLessonVideo"
+                  class="learning-content__viewer-section"
+                >
+                  <h4>{{ t("learning.student.lessonVideoTitle") }}</h4>
+                  <UiAlert
+                    v-if="effectiveStreamingBlocked"
+                    color="warning"
+                    variant="soft"
+                  >
+                    {{ t("learning.student.streamingBlocked") }}
                   </UiAlert>
                   <div class="learning-content__video">
                     <MediaVideoPlayer
-                      v-if="canRenderLessonVideoPlayer && activeLessonVideoStreamUrl"
+                      v-if="
+                        canRenderLessonVideoPlayer && activeLessonVideoStreamUrl
+                      "
                       ref="lessonVideoRef"
                       class="learning-content__video-player"
                       :src="lessonVideoElementSrc"
@@ -248,18 +344,30 @@
                       playsinline
                     />
                     <iframe
-                      v-else-if="canRenderLessonVideoPlayer && activeLessonVideoEmbedUrl"
+                      v-else-if="
+                        canRenderLessonVideoPlayer && activeLessonVideoEmbedUrl
+                      "
                       :src="activeLessonVideoEmbedUrl"
                       title="Lesson video"
                       loading="lazy"
                       frameborder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allow="
+                        accelerometer;
+                        autoplay;
+                        clipboard-write;
+                        encrypted-media;
+                        gyroscope;
+                        picture-in-picture;
+                      "
                       allowfullscreen
                     />
                   </div>
                 </section>
-                <section v-if="hasActiveLessonPdf" class="learning-content__viewer-section">
-                  <h4>{{ t('learning.student.lessonResourcesTitle') }}</h4>
+                <section
+                  v-if="hasActiveLessonPdf"
+                  class="learning-content__viewer-section"
+                >
+                  <h4>{{ t("learning.student.lessonResourcesTitle") }}</h4>
                   <UiButton
                     variant="link"
                     color="primary"
@@ -268,22 +376,28 @@
                     target="_blank"
                     rel="noopener"
                   >
-                    {{ t('learning.student.lessonAttachmentButton') }}
+                    {{ t("learning.student.lessonAttachmentButton") }}
                   </UiButton>
                 </section>
-                <UiAlert v-if="!hasActiveLessonVideo && !hasActiveLessonPdf" color="info" variant="soft">
-                  {{ t('learning.student.lessonContentEmpty') }}
+                <UiAlert
+                  v-if="!hasActiveLessonVideo && !hasActiveLessonPdf"
+                  color="info"
+                  variant="soft"
+                >
+                  {{ t("learning.student.lessonContentEmpty") }}
                 </UiAlert>
-                <section class="learning-content__viewer-section learning-content__notes">
+                <section
+                  class="learning-content__viewer-section learning-content__notes"
+                >
                   <div class="learning-content__notes-header">
-                    <h4>{{ t('learning.student.lessonNotesTitle') }}</h4>
+                    <h4>{{ t("learning.student.lessonNotesTitle") }}</h4>
                     <UiButton
                       variant="link"
                       color="secondary"
                       :disabled="!hasLessonNotes"
                       @click="clearActiveLessonNotes"
                     >
-                      {{ t('learning.student.lessonNotesClear') }}
+                      {{ t("learning.student.lessonNotesClear") }}
                     </UiButton>
                   </div>
                   <UiTextarea
@@ -292,7 +406,7 @@
                     :placeholder="t('learning.student.lessonNotesPlaceholder')"
                   />
                   <p class="learning-content__notes-helper">
-                    {{ t('learning.student.lessonNotesHelper') }}
+                    {{ t("learning.student.lessonNotesHelper") }}
                   </p>
                 </section>
                 <section
@@ -307,7 +421,7 @@
               </div>
             </template>
             <UiAlert v-else color="info" variant="soft">
-              {{ t('learning.student.lessonPlaceholder') }}
+              {{ t("learning.student.lessonPlaceholder") }}
             </UiAlert>
           </div>
         </div>
@@ -315,34 +429,48 @@
     </section>
 
     <section v-else-if="tab === 'progress'" class="learning-progress">
-      <UiCard class="learning-progress__summary" :title="t('learning.student.progressSummary')">
+      <UiCard
+        class="learning-progress__summary"
+        :title="t('learning.student.progressSummary')"
+      >
         <div v-if="learning.courseProgress" class="learning-progress__overview">
           <div
             class="learning-progress__circle"
-            :style="{ '--progress-value': `${Math.round(learning.courseProgress.progressPercent ?? 0)}%` }"
+            :style="{
+              '--progress-value': `${Math.round(learning.courseProgress.progressPercent ?? 0)}%`,
+            }"
           >
-            <span>{{ Math.round(learning.courseProgress.progressPercent ?? 0) }}%</span>
+            <span
+              >{{
+                Math.round(learning.courseProgress.progressPercent ?? 0)
+              }}%</span
+            >
           </div>
           <div class="learning-progress__details">
-            <h3 class="learning-progress__course">{{ learning.courseProgress.courseTitle }}</h3>
+            <h3 class="learning-progress__course">
+              {{ learning.courseProgress.courseTitle }}
+            </h3>
             <p class="learning-progress__meta">
               {{
-                t('learning.student.lessonsCompleted', {
+                t("learning.student.lessonsCompleted", {
                   completed: learning.courseProgress.completedLessons,
-                  total: learning.courseProgress.totalLessons
+                  total: learning.courseProgress.totalLessons,
                 })
               }}
             </p>
           </div>
         </div>
         <UiAlert v-else color="info">
-          {{ t('learning.student.selectCoursePrompt') }}
+          {{ t("learning.student.selectCoursePrompt") }}
         </UiAlert>
       </UiCard>
 
-      <UiCard class="learning-progress__recommendations" :title="t('learning.student.recommendationsTitle')">
+      <UiCard
+        class="learning-progress__recommendations"
+        :title="t('learning.student.recommendationsTitle')"
+      >
         <UiAlert v-if="!recommendations.length" color="info">
-          {{ t('learning.student.recommendationsEmpty') }}
+          {{ t("learning.student.recommendationsEmpty") }}
         </UiAlert>
         <ul v-else class="learning-progress__recommendations-list">
           <li
@@ -352,28 +480,52 @@
           >
             <div class="learning-progress__recommendations-header">
               <h3>{{ item.lessonTitle }}</h3>
-              <UiTag size="sm" :color="statusColors[item.status]">{{ item.statusLabel }}</UiTag>
+              <UiTag size="sm" :color="statusColors[item.status]">{{
+                item.statusLabel
+              }}</UiTag>
             </div>
-            <p v-if="item.moduleTitle" class="learning-progress__recommendations-module">
-              {{ t('learning.student.recommendationModule', { module: item.moduleTitle }) }}
+            <p
+              v-if="item.moduleTitle"
+              class="learning-progress__recommendations-module"
+            >
+              {{
+                t("learning.student.recommendationModule", {
+                  module: item.moduleTitle,
+                })
+              }}
             </p>
-            <p v-if="item.updatedAt" class="learning-progress__recommendations-meta">
-              {{ t('learning.student.recommendationUpdated', { date: formatDateTime(item.updatedAt) }) }}
+            <p
+              v-if="item.updatedAt"
+              class="learning-progress__recommendations-meta"
+            >
+              {{
+                t("learning.student.recommendationUpdated", {
+                  date: formatDateTime(item.updatedAt),
+                })
+              }}
             </p>
             <UiButton
               variant="link"
               color="primary"
               prepend-icon="PlayCircleOutlined"
-              @click="goToLessonFromRecommendation(item.lessonId, item.courseId)"
+              @click="
+                goToLessonFromRecommendation(item.lessonId, item.courseId)
+              "
             >
-              {{ t('learning.student.recommendationAction') }}
+              {{ t("learning.student.recommendationAction") }}
             </UiButton>
           </li>
         </ul>
       </UiCard>
 
-      <UiCard class="learning-progress__table-card" :title="t('learning.student.lessonProgress')">
-        <div v-if="courseProgressItems.length" class="learning-progress__filters">
+      <UiCard
+        class="learning-progress__table-card"
+        :title="t('learning.student.lessonProgress')"
+      >
+        <div
+          v-if="courseProgressItems.length"
+          class="learning-progress__filters"
+        >
           <UiInput
             v-model="progressSearch"
             class="learning-progress__search"
@@ -386,14 +538,20 @@
             class="learning-progress__status-filter"
             :label="t('learning.student.progressStatusFilterLabel')"
           >
-            <option value="all">{{ t('learning.student.progressStatusAll') }}</option>
-            <option v-for="status in progressStatuses" :key="status.value" :value="status.value">
+            <option value="all">
+              {{ t("learning.student.progressStatusAll") }}
+            </option>
+            <option
+              v-for="status in progressStatuses"
+              :key="status.value"
+              :value="status.value"
+            >
               {{ status.label }}
             </option>
           </UiSelect>
         </div>
         <UiAlert v-if="!filteredProgress.length" color="info">
-          {{ t('learning.student.noProgress') }}
+          {{ t("learning.student.noProgress") }}
         </UiAlert>
         <template v-else>
           <UiTable
@@ -407,15 +565,24 @@
                 class="learning-progress__status"
                 :model-value="progressSelections[item.lessonId]"
                 :disabled="progressUpdating"
-                @update:model-value="(value) => onProgressStatusChange(item.lessonId, value as string)"
+                @update:model-value="
+                  (value) =>
+                    onProgressStatusChange(item.lessonId, value as string)
+                "
               >
-                <option v-for="status in progressStatuses" :key="status.value" :value="status.value">
+                <option
+                  v-for="status in progressStatuses"
+                  :key="status.value"
+                  :value="status.value"
+                >
                   {{ status.label }}
                 </option>
               </UiSelect>
             </template>
             <template #item.updatedAt="{ item }">
-              <span v-if="item.updatedAt">{{ formatDateTime(item.updatedAt) }}</span>
+              <span v-if="item.updatedAt">{{
+                formatDateTime(item.updatedAt)
+              }}</span>
               <span v-else>—</span>
             </template>
           </UiTable>
@@ -428,16 +595,25 @@
             >
               <header class="learning-progress__list-header">
                 <h3>{{ item.lessonTitle }}</h3>
-                <span v-if="item.updatedAt">{{ formatDateTime(item.updatedAt) }}</span>
+                <span v-if="item.updatedAt">{{
+                  formatDateTime(item.updatedAt)
+                }}</span>
               </header>
               <div class="learning-progress__list-field">
-                <label>{{ t('learning.student.progressStatusHeader') }}</label>
+                <label>{{ t("learning.student.progressStatusHeader") }}</label>
                 <UiSelect
                   :model-value="progressSelections[item.lessonId]"
                   :disabled="progressUpdating"
-                  @update:model-value="(value) => onProgressStatusChange(item.lessonId, value as string)"
+                  @update:model-value="
+                    (value) =>
+                      onProgressStatusChange(item.lessonId, value as string)
+                  "
                 >
-                  <option v-for="status in progressStatuses" :key="status.value" :value="status.value">
+                  <option
+                    v-for="status in progressStatuses"
+                    :key="status.value"
+                    :value="status.value"
+                  >
                     {{ status.label }}
                   </option>
                 </UiSelect>
@@ -450,7 +626,10 @@
 
     <section v-else-if="tab === 'assignments'" class="learning-assignments">
       <UiCard :title="t('learning.student.assignmentList')">
-        <div v-if="courseAssignments.length" class="learning-assignments__filters">
+        <div
+          v-if="courseAssignments.length"
+          class="learning-assignments__filters"
+        >
           <UiInput
             v-model="assignmentSearch"
             class="learning-assignments__search"
@@ -463,14 +642,22 @@
             class="learning-assignments__due-filter"
             :label="t('learning.student.assignmentDueFilterLabel')"
           >
-            <option value="all">{{ t('learning.student.assignmentDueFilterAll') }}</option>
-            <option value="upcoming">{{ t('learning.student.assignmentDueFilterUpcoming') }}</option>
-            <option value="past_due">{{ t('learning.student.assignmentDueFilterPast') }}</option>
-            <option value="no_due">{{ t('learning.student.assignmentDueFilterNoDue') }}</option>
+            <option value="all">
+              {{ t("learning.student.assignmentDueFilterAll") }}
+            </option>
+            <option value="upcoming">
+              {{ t("learning.student.assignmentDueFilterUpcoming") }}
+            </option>
+            <option value="past_due">
+              {{ t("learning.student.assignmentDueFilterPast") }}
+            </option>
+            <option value="no_due">
+              {{ t("learning.student.assignmentDueFilterNoDue") }}
+            </option>
           </UiSelect>
         </div>
         <UiAlert v-if="!filteredAssignments.length" color="info">
-          {{ t('learning.student.noAssignments') }}
+          {{ t("learning.student.noAssignments") }}
         </UiAlert>
         <template v-else>
           <UiTable
@@ -501,7 +688,7 @@
                 target="_blank"
                 rel="noopener"
               >
-                {{ t('learning.student.assignmentAttachmentLink') }}
+                {{ t("learning.student.assignmentAttachmentLink") }}
               </a>
               <span v-else>—</span>
             </template>
@@ -515,7 +702,7 @@
                 prepend-icon="UploadOutlined"
                 @click="openSubmissionDialog(item)"
               >
-                {{ t('learning.student.submitWork') }}
+                {{ t("learning.student.submitWork") }}
               </UiButton>
             </template>
           </UiTable>
@@ -528,33 +715,40 @@
             >
               <header class="learning-assignments__list-header">
                 <h3>{{ assignment.title }}</h3>
-                <span v-if="assignment.dueAt">{{ formatDateTime(assignment.dueAt) }}</span>
+                <span v-if="assignment.dueAt">{{
+                  formatDateTime(assignment.dueAt)
+                }}</span>
               </header>
-              <p v-if="assignment.description" class="learning-assignments__list-description">
+              <p
+                v-if="assignment.description"
+                class="learning-assignments__list-description"
+              >
                 {{ assignment.description }}
               </p>
               <dl class="learning-assignments__details">
                 <div class="learning-assignments__detail">
-                  <dt>{{ t('learning.student.assignmentCourse') }}</dt>
+                  <dt>{{ t("learning.student.assignmentCourse") }}</dt>
                   <dd>{{ assignment.courseTitle }}</dd>
                 </div>
                 <div class="learning-assignments__detail">
-                  <dt>{{ t('learning.student.assignmentLesson') }}</dt>
+                  <dt>{{ t("learning.student.assignmentLesson") }}</dt>
                   <dd>{{ assignment.lessonTitle }}</dd>
                 </div>
                 <div class="learning-assignments__detail">
-                  <dt>{{ t('learning.student.assignmentMaxScore') }}</dt>
+                  <dt>{{ t("learning.student.assignmentMaxScore") }}</dt>
                   <dd>
-                    <span v-if="assignment.maxScore != null">{{ assignment.maxScore }}</span>
+                    <span v-if="assignment.maxScore != null">{{
+                      assignment.maxScore
+                    }}</span>
                     <span v-else>—</span>
                   </dd>
                 </div>
                 <div class="learning-assignments__detail">
-                  <dt>{{ t('learning.student.assignmentAssigned') }}</dt>
+                  <dt>{{ t("learning.student.assignmentAssigned") }}</dt>
                   <dd>{{ formatDateTime(assignment.createdAt) }}</dd>
                 </div>
                 <div class="learning-assignments__detail">
-                  <dt>{{ t('learning.student.assignmentAttachment') }}</dt>
+                  <dt>{{ t("learning.student.assignmentAttachment") }}</dt>
                   <dd>
                     <a
                       v-if="assignment.attachmentUrl"
@@ -562,7 +756,7 @@
                       target="_blank"
                       rel="noopener"
                     >
-                      {{ t('learning.student.assignmentAttachmentLink') }}
+                      {{ t("learning.student.assignmentAttachmentLink") }}
                     </a>
                     <span v-else>—</span>
                   </dd>
@@ -574,7 +768,7 @@
                 prepend-icon="UploadOutlined"
                 @click="openSubmissionDialog(assignment)"
               >
-                {{ t('learning.student.submitWork') }}
+                {{ t("learning.student.submitWork") }}
               </UiButton>
             </article>
           </div>
@@ -584,10 +778,10 @@
 
     <section v-else-if="tab === 'discussions'" class="learning-discussions">
       <UiAlert v-if="!discussionsEnabled" color="info">
-        {{ t('discussions.flags.disabled') }}
+        {{ t("discussions.flags.disabled") }}
       </UiAlert>
       <UiAlert v-else-if="!selectedCourseId" color="info">
-        {{ t('discussions.threads.pickCourse') }}
+        {{ t("discussions.threads.pickCourse") }}
       </UiAlert>
       <div v-else class="learning-discussions__grid">
         <ThreadsList
@@ -610,10 +804,10 @@
 
     <section v-else-if="tab === 'reviews'" class="learning-reviews">
       <UiAlert v-if="!reviewsEnabled" color="info">
-        {{ t('reviews.flags.disabled') }}
+        {{ t("reviews.flags.disabled") }}
       </UiAlert>
       <UiAlert v-else-if="!selectedCourseId" color="info">
-        {{ t('reviews.shared.selectCourse') }}
+        {{ t("reviews.shared.selectCourse") }}
       </UiAlert>
       <div v-else class="learning-reviews__grid">
         <CourseReviewForm
@@ -629,7 +823,6 @@
           @error="onReviewsError"
         />
       </div>
-
     </section>
 
     <section v-else class="learning-resources">
@@ -647,21 +840,33 @@
             class="learning-resources__type-filter"
             :label="t('learning.student.resourcesTypeFilterLabel')"
           >
-            <option value="all">{{ t('learning.student.resourcesTypeAll') }}</option>
-            <option v-for="type in resourceTypeOptions" :key="type" :value="type">
+            <option value="all">
+              {{ t("learning.student.resourcesTypeAll") }}
+            </option>
+            <option
+              v-for="type in resourceTypeOptions"
+              :key="type"
+              :value="type"
+            >
               {{ t(`learning.resourceType.${type}`) || type }}
             </option>
           </UiSelect>
         </div>
         <UiAlert v-if="!filteredResources.length" color="info">
-          {{ t('learning.student.noResources') }}
+          {{ t("learning.student.noResources") }}
         </UiAlert>
         <ul v-else class="learning-resources__list">
-          <li v-for="resource in filteredResources" :key="resource.id" class="learning-resources__item">
+          <li
+            v-for="resource in filteredResources"
+            :key="resource.id"
+            class="learning-resources__item"
+          >
             <div class="learning-resources__details">
               <h3>{{ resource.title }}</h3>
               <p>{{ resource.lessonTitle || resource.courseTitle }}</p>
-              <span>{{ t(`learning.resourceType.${resource.resourceType}`) }}</span>
+              <span>{{
+                t(`learning.resourceType.${resource.resourceType}`)
+              }}</span>
             </div>
             <UiButton
               v-if="resource.resourceType === 'embed'"
@@ -671,7 +876,7 @@
               button-type="button"
               @click.prevent="openEmbeddedResource(resource)"
             >
-              {{ t('learning.student.openEmbedded') }}
+              {{ t("learning.student.openEmbedded") }}
             </UiButton>
             <UiButton
               v-else
@@ -682,7 +887,7 @@
               target="_blank"
               rel="noopener"
             >
-              {{ t('common.preview') }}
+              {{ t("common.preview") }}
             </UiButton>
           </li>
         </ul>
@@ -691,12 +896,17 @@
 
     <UiDialog
       v-model="embeddedResourceDialog"
-      :title="activeEmbeddedResource?.title || t('learning.student.embeddedDialogTitle')"
+      :title="
+        activeEmbeddedResource?.title ||
+        t('learning.student.embeddedDialogTitle')
+      "
       width="960px"
       @close="closeEmbeddedResource"
     >
       <template v-if="activeEmbeddedResource">
-        <p class="learning-embed__hint">{{ t('learning.student.embeddedDialogHint') }}</p>
+        <p class="learning-embed__hint">
+          {{ t("learning.student.embeddedDialogHint") }}
+        </p>
         <div class="learning-embed__frame-wrapper">
           <iframe
             class="learning-embed__frame"
@@ -715,17 +925,34 @@
     >
       <template v-if="selectedAssignment">
         <form class="learning-dialog__form" @submit.prevent="submitAssignment">
-          <UiInput v-model="submissionForm.fileUrl" :label="t('learning.student.submissionUrl')" />
-          <UiInput v-model="submissionForm.fileKey" :label="t('learning.student.submissionKey')" />
-          <UiTextarea v-model="submissionForm.notes" :label="t('learning.student.submissionNotes')" :rows="4" />
+          <UiInput
+            v-model="submissionForm.fileUrl"
+            :label="t('learning.student.submissionUrl')"
+          />
+          <UiInput
+            v-model="submissionForm.fileKey"
+            :label="t('learning.student.submissionKey')"
+          />
+          <UiTextarea
+            v-model="submissionForm.notes"
+            :label="t('learning.student.submissionNotes')"
+            :rows="4"
+          />
           <div class="learning-dialog__actions">
-            <UiButton variant="link" color="secondary" @click.prevent="closeSubmissionDialog">
-              {{ t('common.cancel') }}
+            <UiButton
+              variant="link"
+              color="secondary"
+              @click.prevent="closeSubmissionDialog"
+            >
+              {{ t("common.cancel") }}
             </UiButton>
-            <UiButton button-type="submit" color="primary" :disabled="formSubmitting">
-              {{ t('learning.student.submitAction') }}
-             </UiButton>
- 
+            <UiButton
+              button-type="submit"
+              color="primary"
+              :disabled="formSubmitting"
+            >
+              {{ t("learning.student.submitAction") }}
+            </UiButton>
           </div>
         </form>
       </template>
@@ -735,8 +962,12 @@
       <UiCard :title="t('certificates.student.title')">
         <div class="learning-certificates__body">
           <div v-if="!certificateItems.length" class="empty-state">
-            <UiIcon name="SafetyCertificateOutlined" :size="32" class="text-content-muted" />
-            <p>{{ t('certificates.student.empty') }}</p>
+            <UiIcon
+              name="SafetyCertificateOutlined"
+              :size="32"
+              class="text-content-muted"
+            />
+            <p>{{ t("certificates.student.empty") }}</p>
           </div>
           <div v-else class="learning-certificates__list">
             <div
@@ -745,8 +976,12 @@
               class="learning-certificates__item"
             >
               <div class="learning-certificates__info">
-                <span class="learning-certificates__title">{{ certificate.courseTitle }}</span>
-                <small class="learning-certificates__date">{{ formatCertificateDate(certificate.issuedAt) }}</small>
+                <span class="learning-certificates__title">{{
+                  certificate.courseTitle
+                }}</span>
+                <small class="learning-certificates__date">{{
+                  formatCertificateDate(certificate.issuedAt)
+                }}</small>
               </div>
               <UiButton
                 size="xs"
@@ -756,7 +991,7 @@
                 target="_blank"
                 rel="noopener"
               >
-                {{ t('certificates.student.download') }}
+                {{ t("certificates.student.download") }}
               </UiButton>
             </div>
             <UiButton
@@ -766,69 +1001,79 @@
               class="learning-certificates__view"
               @click="router.push({ name: 'student-achievements' })"
             >
-              {{ t('certificates.student.viewAll') }}
+              {{ t("certificates.student.viewAll") }}
             </UiButton>
           </div>
         </div>
       </UiCard>
     </section>
- 
   </ThemePage>
 </template>
 
 <script setup lang="ts">
-import { FEATURE } from '@/constants/featureCatalog';
-import { computed, nextTick, onBeforeUnmount, onMounted, onActivated, reactive, ref, toRaw, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
-import api from '@/services/api';
-import { useLearningStore } from '@/stores/learning';
-import { useStudentStore } from '@/stores/student';
-import { useAchievementsStore } from '@/stores/achievements';
-import { useTenantStore } from '@/stores/tenant';
-import { useFeaturesStore } from '@/stores/features';
-import { useAuthStore } from '@/stores/auth';
-import { getStoredTenantSlug } from '@/utils/tenantStorage';
-import { buildAuthenticatedMediaUrl } from '@/utils/media';
-import { getHttpStatus } from '@/utils/httpError';
-import { useVisibilityRefresh } from '@/composables/useVisibilityRefresh';
-import { withCacheBusting } from '@/utils/cacheBusting';
+import { FEATURE } from "@/constants/featureCatalog";
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  onActivated,
+  reactive,
+  ref,
+  toRaw,
+  watch,
+} from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import api from "@/services/api";
+import { useLearningStore } from "@/stores/learning";
+import { useStudentStore } from "@/stores/student";
+import { useAchievementsStore } from "@/stores/achievements";
+import { useTenantStore } from "@/stores/tenant";
+import { useFeaturesStore } from "@/stores/features";
+import { useAuthStore } from "@/stores/auth";
+import { getStoredTenantSlug } from "@/utils/tenantStorage";
+import { buildAuthenticatedMediaUrl } from "@/utils/media";
+import { getHttpStatus } from "@/utils/httpError";
+import { useVisibilityRefresh } from "@/composables/useVisibilityRefresh";
+import { withCacheBusting } from "@/utils/cacheBusting";
 import type {
   Assignment,
   CourseContentLesson,
   CourseContentModule,
   CourseResource,
   LessonProgress,
-  LessonProgressStatus
-} from '@/services/learning';
-import { reportLessonStreaming } from '@/services/learning';
-import type { ManualPaymentStatus } from '@/services/student';
-import type { DiscussionThread } from '@/api/discussions';
-import UiDialog from '@/components/ui/UiDialog.vue';
-import UiSelect from '@/components/ui/UiSelect.vue';
-import UiInput from '@/components/ui/UiInput.vue';
-import UiTabs from '@/components/ui/UiTabs.vue';
-import UiToast from '@/components/ui/UiToast.vue';
-import UiTextarea from '@/components/ui/UiTextarea.vue';
-import UiButton from '@/components/ui/UiButton.vue';
-import UiProgressBar from '@/components/ui/UiProgressBar.vue';
-import UiAccordion, { type UiAccordionItem } from '@/components/ui/UiAccordion.vue';
-import UiTag from '@/components/ui/UiTag.vue';
-import UiSwitch from '@/components/ui/UiSwitch.vue';
-import UiIcon from '@/components/ui/UiIcon.vue';
-import StudentLessonAiPanel from '@/components/ai/StudentLessonAiPanel.vue';
-import MediaVideoPlayer from '@/components/media/MediaVideoPlayer.vue';
-import ThreadsList from '@/views/shared/discussions/ThreadsList.vue';
-import ThreadView from '@/views/shared/discussions/ThreadView.vue';
-import CourseReviewForm from '@/views/student/reviews/CourseReviewForm.vue';
-import CourseReviewsList from '@/views/shared/reviews/CourseReviewsList.vue';
+  LessonProgressStatus,
+} from "@/services/learning";
+import { reportLessonStreaming } from "@/services/learning";
+import type { ManualPaymentStatus } from "@/services/student";
+import type { DiscussionThread } from "@/api/discussions";
+import UiDialog from "@/components/ui/UiDialog.vue";
+import UiSelect from "@/components/ui/UiSelect.vue";
+import UiInput from "@/components/ui/UiInput.vue";
+import UiTabs from "@/components/ui/UiTabs.vue";
+import UiToast from "@/components/ui/UiToast.vue";
+import UiTextarea from "@/components/ui/UiTextarea.vue";
+import UiButton from "@/components/ui/UiButton.vue";
+import UiProgressBar from "@/components/ui/UiProgressBar.vue";
+import UiAccordion, {
+  type UiAccordionItem,
+} from "@/components/ui/UiAccordion.vue";
+import UiTag from "@/components/ui/UiTag.vue";
+import UiSwitch from "@/components/ui/UiSwitch.vue";
+import UiIcon from "@/components/ui/UiIcon.vue";
+import StudentLessonAiPanel from "@/components/ai/StudentLessonAiPanel.vue";
+import MediaVideoPlayer from "@/components/media/MediaVideoPlayer.vue";
+import ThreadsList from "@/views/shared/discussions/ThreadsList.vue";
+import ThreadView from "@/views/shared/discussions/ThreadView.vue";
+import CourseReviewForm from "@/views/student/reviews/CourseReviewForm.vue";
+import CourseReviewsList from "@/views/shared/reviews/CourseReviewsList.vue";
 
+type ToastInput = "success" | "error" | "warning" | "info";
+type ToastTone = "success" | "danger" | "warning" | "info";
 
-type ToastInput = 'success' | 'error' | 'warning' | 'info';
-type ToastTone = 'success' | 'danger' | 'warning' | 'info';
-
-const FOCUS_MODE_STORAGE_KEY = 'student-learning-focus-mode';
-const LESSON_NOTES_STORAGE_KEY = 'student-learning-lesson-notes';
+const FOCUS_MODE_STORAGE_KEY = "student-learning-focus-mode";
+const LESSON_NOTES_STORAGE_KEY = "student-learning-lesson-notes";
 
 const { t } = useI18n();
 const learning = useLearningStore();
@@ -840,15 +1085,30 @@ const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 
-const aiStudentEnabled = computed(() => featuresStore.hasFeature(FEATURE.aiStudent));
+const aiStudentEnabled = computed(() =>
+  featuresStore.hasFeature(FEATURE.aiStudent),
+);
 
-const snackbar = reactive({ show: false, tone: 'success' as ToastTone, message: '' });
-const tab = ref<'content' | 'progress' | 'assignments' | 'discussions' | 'reviews' | 'resources'>('content');
+const snackbar = reactive({
+  show: false,
+  tone: "success" as ToastTone,
+  message: "",
+});
+const tab = ref<
+  | "content"
+  | "progress"
+  | "assignments"
+  | "discussions"
+  | "reviews"
+  | "resources"
+>("content");
 const selectedCourseId = ref<number | null>(null);
 const selectedLessonId = ref<number | null>(null);
 const pendingLessonId = ref<number | null>(null);
 const pendingCourseFromRoute = ref<number | null>(null);
-const teacherCourses = ref<Array<{ id: number; title: string }>>([]);
+const teacherCourses = ref<
+  Array<{ id: number; title: string; useModulePricing?: boolean }>
+>([]);
 const submissionDialog = ref(false);
 const selectedAssignment = ref<Assignment | null>(null);
 const selectedThreadId = ref<number | null>(null);
@@ -860,10 +1120,13 @@ const reviewsRefreshKey = ref(0);
 const focusMode = ref(false);
 const focusOutlineVisible = ref(false);
 const lessonNotes = reactive<Partial<Record<number, string>>>({});
-const lessonNotesDraft = ref('');
+const lessonNotesDraft = ref("");
 const learningRefreshInFlight = ref(false);
+const isInitialLoadComplete = ref(false);
 const lessonVideoRef = ref<InstanceType<typeof MediaVideoPlayer> | null>(null);
-const lessonVideoElement = computed(() => lessonVideoRef.value?.getVideoElement() ?? null);
+const lessonVideoElement = computed(
+  () => lessonVideoRef.value?.getVideoElement() ?? null,
+);
 const hlsInstance = ref<HlsInstance | null>(null);
 
 let notesSaveTimeout: number | undefined;
@@ -879,92 +1142,104 @@ type HlsConstructor = {
   isSupported(): boolean;
 };
 
-const isStudentLoggedIn = computed(() => authStore.isAuthenticated && authStore.isStudent);
-
+const isStudentLoggedIn = computed(
+  () => authStore.isAuthenticated && authStore.isStudent,
+);
 
 const submissionForm = reactive({
-  fileUrl: '',
-  fileKey: '',
-  notes: ''
+  fileUrl: "",
+  fileKey: "",
+  notes: "",
 });
 
 const progressSelections = reactive<Record<number, string>>({});
 
 const progressStatuses = [
-  { value: 'not_started', label: t('learning.progressStatus.not_started') },
-  { value: 'in_progress', label: t('learning.progressStatus.in_progress') },
-  { value: 'completed', label: t('learning.progressStatus.completed') }
+  { value: "not_started", label: t("learning.progressStatus.not_started") },
+  { value: "in_progress", label: t("learning.progressStatus.in_progress") },
+  { value: "completed", label: t("learning.progressStatus.completed") },
 ];
 
-const progressSearch = ref('');
-const progressStatusFilter = ref<'all' | LessonProgressStatus>('all');
+const progressSearch = ref("");
+const progressStatusFilter = ref<"all" | LessonProgressStatus>("all");
 
 const progressHeaders = [
-  { title: t('learning.student.lessonTitle'), key: 'lessonTitle' },
-  { title: t('learning.student.progressStatusHeader'), key: 'status' },
-  { title: t('learning.student.progressUpdated'), key: 'updatedAt' }
+  { title: t("learning.student.lessonTitle"), key: "lessonTitle" },
+  { title: t("learning.student.progressStatusHeader"), key: "status" },
+  { title: t("learning.student.progressUpdated"), key: "updatedAt" },
 ];
 
 const assignmentHeaders = [
-  { title: t('learning.student.assignmentTitle'), key: 'title' },
-  { title: t('learning.student.assignmentCourse'), key: 'courseTitle' },
-  { title: t('learning.student.assignmentLesson'), key: 'lessonTitle' },
-  { title: t('learning.student.assignmentDue'), key: 'dueAt' },
-  { title: t('learning.student.assignmentMaxScore'), key: 'maxScore' },
-  { title: t('learning.student.assignmentAttachment'), key: 'attachmentUrl', sortable: false },
-  { title: t('learning.student.assignmentAssigned'), key: 'createdAt' },
-  { title: t('common.actions'), key: 'actions', sortable: false }
+  { title: t("learning.student.assignmentTitle"), key: "title" },
+  { title: t("learning.student.assignmentCourse"), key: "courseTitle" },
+  { title: t("learning.student.assignmentLesson"), key: "lessonTitle" },
+  { title: t("learning.student.assignmentDue"), key: "dueAt" },
+  { title: t("learning.student.assignmentMaxScore"), key: "maxScore" },
+  {
+    title: t("learning.student.assignmentAttachment"),
+    key: "attachmentUrl",
+    sortable: false,
+  },
+  { title: t("learning.student.assignmentAssigned"), key: "createdAt" },
+  { title: t("common.actions"), key: "actions", sortable: false },
 ];
 
-const assignmentSearch = ref('');
-const assignmentDueFilter = ref<'all' | 'upcoming' | 'past_due' | 'no_due'>('all');
+const assignmentSearch = ref("");
+const assignmentDueFilter = ref<"all" | "upcoming" | "past_due" | "no_due">(
+  "all",
+);
 
-const discussionsEnabled = computed(() => featuresStore.hasFeature(FEATURE.discussions));
-const reviewsEnabled = computed(() => featuresStore.hasFeature(FEATURE.reviews));
-
+const discussionsEnabled = computed(() =>
+  featuresStore.hasFeature(FEATURE.discussions),
+);
+const reviewsEnabled = computed(() =>
+  featuresStore.hasFeature(FEATURE.reviews),
+);
 
 const tabItems = computed(() => {
   const items: { value: typeof tab.value; label: string }[] = [
-    { value: 'content', label: t('learning.student.contentTab') },
-    { value: 'progress', label: t('learning.student.progressTab') },
-    { value: 'assignments', label: t('learning.student.assignmentsTab') }
+    { value: "content", label: t("learning.student.contentTab") },
+    { value: "progress", label: t("learning.student.progressTab") },
+    { value: "assignments", label: t("learning.student.assignmentsTab") },
   ];
   if (discussionsEnabled.value) {
-    items.push({ value: 'discussions', label: t('learning.student.discussionsTab') });
+    items.push({
+      value: "discussions",
+      label: t("learning.student.discussionsTab"),
+    });
   }
   if (reviewsEnabled.value) {
-    items.push({ value: 'reviews', label: t('learning.student.reviewsTab') });
+    items.push({ value: "reviews", label: t("learning.student.reviewsTab") });
   }
 
-  items.push({ value: 'resources', label: t('learning.student.resourcesTab') });
+  items.push({ value: "resources", label: t("learning.student.resourcesTab") });
   return items;
 });
 
 watch(
   discussionsEnabled,
   (enabled) => {
-    if (!enabled && tab.value === 'discussions') {
-      tab.value = 'content';
+    if (!enabled && tab.value === "discussions") {
+      tab.value = "content";
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
   reviewsEnabled,
   (enabled) => {
-    if (!enabled && tab.value === 'reviews') {
-      tab.value = 'content';
+    if (!enabled && tab.value === "reviews") {
+      tab.value = "content";
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
-
 
 const accessibleCourseIds = computed(() => {
   const ids = new Set<number>();
   studentStore.enrollments.forEach((enrollment) => {
-    if (enrollment.status === 'active' || enrollment.status === 'trial') {
+    if (enrollment.status === "active" || enrollment.status === "trial") {
       ids.add(enrollment.courseId);
     }
   });
@@ -972,8 +1247,8 @@ const accessibleCourseIds = computed(() => {
 });
 
 const isManualPaymentPending = (status: ManualPaymentStatus) => {
-  const value = String(status ?? '').toUpperCase();
-  return value === 'PENDING_REVIEW' || value === 'PENDING';
+  const value = String(status ?? "").toUpperCase();
+  return value === "PENDING_REVIEW" || value === "PENDING";
 };
 
 const pendingPaymentCourseIds = computed(() => {
@@ -988,9 +1263,19 @@ const pendingPaymentCourseIds = computed(() => {
 
 const courseOptions = computed(() => {
   const seen = new Set<number>();
-  const options: Array<{ id: number; title: string; accessible: boolean; pendingPayment: boolean }> = [];
+  const options: Array<{
+    id: number;
+    title: string;
+    accessible: boolean;
+    pendingPayment: boolean;
+    useModulePricing?: boolean;
+  }> = [];
 
-  const appendOption = (course: { id: number; title: string }) => {
+  const appendOption = (course: {
+    id: number;
+    title: string;
+    useModulePricing?: boolean;
+  }) => {
     if (course.id == null || seen.has(course.id)) {
       return;
     }
@@ -999,13 +1284,18 @@ const courseOptions = computed(() => {
       id: course.id,
       title: course.title,
       accessible: accessibleCourseIds.value.has(course.id),
-      pendingPayment: pendingPaymentCourseIds.value.has(course.id)
+      pendingPayment: pendingPaymentCourseIds.value.has(course.id),
+      useModulePricing: course.useModulePricing,
     });
   };
 
   teacherCourses.value.forEach(appendOption);
   studentStore.enrollments.forEach((enrollment) =>
-    appendOption({ id: enrollment.courseId, title: enrollment.courseTitle })
+    appendOption({
+      id: enrollment.courseId,
+      title: enrollment.courseTitle,
+      useModulePricing: enrollment.useModulePricing,
+    }),
   );
 
   return options.sort((a, b) => {
@@ -1018,18 +1308,20 @@ const courseOptions = computed(() => {
 
 const courseProgressItems = computed(() => {
   if (!selectedCourseId.value) return learning.studentProgress;
-  return learning.studentProgress.filter((progress) => progress.courseId === selectedCourseId.value);
+  return learning.studentProgress.filter(
+    (progress) => progress.courseId === selectedCourseId.value,
+  );
 });
 
 const filteredProgress = computed(() => {
   const searchTerm = progressSearch.value.trim().toLowerCase();
   const statusFilter = progressStatusFilter.value;
   return courseProgressItems.value.filter((progress) => {
-    if (statusFilter !== 'all' && progress.status !== statusFilter) {
+    if (statusFilter !== "all" && progress.status !== statusFilter) {
       return false;
     }
     if (searchTerm) {
-      const title = progress.lessonTitle?.toLowerCase() ?? '';
+      const title = progress.lessonTitle?.toLowerCase() ?? "";
       return title.includes(searchTerm);
     }
     return true;
@@ -1038,7 +1330,9 @@ const filteredProgress = computed(() => {
 
 const courseAssignments = computed(() => {
   if (!selectedCourseId.value) return learning.studentAssignments;
-  return learning.studentAssignments.filter((assignment) => assignment.courseId === selectedCourseId.value);
+  return learning.studentAssignments.filter(
+    (assignment) => assignment.courseId === selectedCourseId.value,
+  );
 });
 
 const filteredAssignments = computed(() => {
@@ -1046,32 +1340,37 @@ const filteredAssignments = computed(() => {
   const dueFilter = assignmentDueFilter.value;
   const now = Date.now();
   return courseAssignments.value.filter((assignment) => {
-    const dueAt = assignment.dueAt ? new Date(assignment.dueAt).getTime() : null;
-    if (dueFilter === 'upcoming' && !(dueAt != null && dueAt >= now)) {
+    const dueAt = assignment.dueAt
+      ? new Date(assignment.dueAt).getTime()
+      : null;
+    if (dueFilter === "upcoming" && !(dueAt != null && dueAt >= now)) {
       return false;
     }
-    if (dueFilter === 'past_due' && !(dueAt != null && dueAt < now)) {
+    if (dueFilter === "past_due" && !(dueAt != null && dueAt < now)) {
       return false;
     }
-    if (dueFilter === 'no_due' && dueAt != null) {
+    if (dueFilter === "no_due" && dueAt != null) {
       return false;
     }
     if (searchTerm) {
-      const haystack = `${assignment.title} ${assignment.description ?? ''}`.toLowerCase();
+      const haystack =
+        `${assignment.title} ${assignment.description ?? ""}`.toLowerCase();
       return haystack.includes(searchTerm);
     }
     return true;
   });
 });
 
-const resourceSearch = ref('');
-const resourceTypeFilter = ref<'all' | string>('all');
+const resourceSearch = ref("");
+const resourceTypeFilter = ref<"all" | string>("all");
 const embeddedResourceDialog = ref(false);
 const activeEmbeddedResource = ref<CourseResource | null>(null);
 
 const courseResources = computed(() => {
   if (!selectedCourseId.value) return learning.courseResources;
-  return learning.courseResources.filter((resource) => resource.courseId === selectedCourseId.value);
+  return learning.courseResources.filter(
+    (resource) => resource.courseId === selectedCourseId.value,
+  );
 });
 
 const resourceTypeOptions = computed(() => {
@@ -1088,11 +1387,12 @@ const filteredResources = computed(() => {
   const searchTerm = resourceSearch.value.trim().toLowerCase();
   const typeFilter = resourceTypeFilter.value;
   return courseResources.value.filter((resource) => {
-    if (typeFilter !== 'all' && resource.resourceType !== typeFilter) {
+    if (typeFilter !== "all" && resource.resourceType !== typeFilter) {
       return false;
     }
     if (searchTerm) {
-      const haystack = `${resource.title} ${resource.lessonTitle ?? ''} ${resource.courseTitle ?? ''}`.toLowerCase();
+      const haystack =
+        `${resource.title} ${resource.lessonTitle ?? ""} ${resource.courseTitle ?? ""}`.toLowerCase();
       return haystack.includes(searchTerm);
     }
     return true;
@@ -1110,20 +1410,25 @@ const closeEmbeddedResource = () => {
 };
 
 const lessonOptions = computed(() =>
-  courseProgressItems.value.map((progress) => ({ value: progress.lessonId, label: progress.lessonTitle }))
+  courseProgressItems.value.map((progress) => ({
+    value: progress.lessonId,
+    label: progress.lessonTitle,
+  })),
 );
 
-const courseContentModules = computed(() => learning.courseContent?.modules ?? []);
+const courseContentModules = computed(
+  () => learning.courseContent?.modules ?? [],
+);
 
 const focusControlsVisible = computed(
-  () => tab.value === 'content' && courseContentModules.value.length > 0
+  () => tab.value === "content" && courseContentModules.value.length > 0,
 );
 const isFocusModeActive = computed(
-  () => focusMode.value && focusControlsVisible.value
+  () => focusMode.value && focusControlsVisible.value,
 );
 
 const findLessonInModules = (
-  lessonId: number
+  lessonId: number,
 ): { lesson: CourseContentLesson; module: CourseContentModule } | null => {
   for (const module of courseContentModules.value) {
     const lesson = module.lessons.find((item) => item.id === lessonId);
@@ -1138,22 +1443,23 @@ const recommendations = computed(() => {
   const priority: Record<LessonProgressStatus, number> = {
     not_started: 0,
     in_progress: 1,
-    completed: 2
+    completed: 2,
   };
 
   const items = courseProgressItems.value
-    .filter((item) => item.status !== 'completed')
+    .filter((item) => item.status !== "completed")
     .map((item) => {
       const match = findLessonInModules(item.lessonId);
       return {
         lessonId: item.lessonId,
         courseId: item.courseId,
         lessonTitle: item.lessonTitle,
-        moduleTitle: match?.module.title ?? '',
+        moduleTitle: match?.module.title ?? "",
         status: item.status as LessonProgressStatus,
         statusLabel:
-          progressStatusLabels.value[item.status as LessonProgressStatus] || item.status,
-        updatedAt: item.updatedAt ?? null
+          progressStatusLabels.value[item.status as LessonProgressStatus] ||
+          item.status,
+        updatedAt: item.updatedAt ?? null,
       };
     });
 
@@ -1195,19 +1501,22 @@ const closeFocusOutline = () => {
 const hasLessonNotes = computed(() => Boolean(lessonNotesDraft.value.trim()));
 
 const persistLessonNotes = () => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
   try {
     const rawNotes = toRaw(lessonNotes);
-    window.localStorage.setItem(LESSON_NOTES_STORAGE_KEY, JSON.stringify(rawNotes));
+    window.localStorage.setItem(
+      LESSON_NOTES_STORAGE_KEY,
+      JSON.stringify(rawNotes),
+    );
   } catch (error) {
-    console.error('Failed to persist lesson notes', error);
+    console.error("Failed to persist lesson notes", error);
   }
 };
 
 const scheduleNotesPersist = () => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
   if (notesSaveTimeout) {
@@ -1220,7 +1529,7 @@ const scheduleNotesPersist = () => {
 };
 
 const loadLessonNotes = () => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
   try {
@@ -1229,17 +1538,19 @@ const loadLessonNotes = () => {
       return;
     }
     const parsed = JSON.parse(stored);
-    if (parsed && typeof parsed === 'object') {
-      Object.entries(parsed as Record<string, unknown>).forEach(([key, value]) => {
-        const lessonId = Number(key);
-        if (!Number.isFinite(lessonId) || typeof value !== 'string') {
-          return;
-        }
-        lessonNotes[lessonId] = value;
-      });
+    if (parsed && typeof parsed === "object") {
+      Object.entries(parsed as Record<string, unknown>).forEach(
+        ([key, value]) => {
+          const lessonId = Number(key);
+          if (!Number.isFinite(lessonId) || typeof value !== "string") {
+            return;
+          }
+          lessonNotes[lessonId] = value;
+        },
+      );
     }
   } catch (error) {
-    console.error('Failed to load lesson notes', error);
+    console.error("Failed to load lesson notes", error);
   }
 };
 
@@ -1247,8 +1558,8 @@ const clearActiveLessonNotes = () => {
   if (!activeLesson.value) {
     return;
   }
-  lessonNotesDraft.value = '';
-  showToast(t('learning.student.lessonNotesCleared'), 'info');
+  lessonNotesDraft.value = "";
+  showToast(t("learning.student.lessonNotesCleared"), "info");
 };
 
 const shouldIgnoreShortcut = (event: KeyboardEvent) => {
@@ -1259,9 +1570,9 @@ const shouldIgnoreShortcut = (event: KeyboardEvent) => {
   const tagName = target.tagName;
   return (
     target.isContentEditable ||
-    tagName === 'INPUT' ||
-    tagName === 'TEXTAREA' ||
-    tagName === 'SELECT'
+    tagName === "INPUT" ||
+    tagName === "TEXTAREA" ||
+    tagName === "SELECT"
   );
 };
 
@@ -1269,7 +1580,7 @@ const handleKeydown = (event: KeyboardEvent) => {
   if (shouldIgnoreShortcut(event)) {
     return;
   }
-  if ((event.key === 'f' || event.key === 'F') && event.shiftKey) {
+  if ((event.key === "f" || event.key === "F") && event.shiftKey) {
     if (!focusControlsVisible.value) {
       return;
     }
@@ -1277,7 +1588,7 @@ const handleKeydown = (event: KeyboardEvent) => {
     setFocusMode(!focusMode.value);
     return;
   }
-  if (event.key === 'Escape' && isFocusModeActive.value) {
+  if (event.key === "Escape" && isFocusModeActive.value) {
     event.preventDefault();
     if (focusOutlineVisible.value) {
       focusOutlineVisible.value = false;
@@ -1311,15 +1622,17 @@ const lessonProgressMap = computed<Record<number, LessonProgress>>(() => {
 
 const activeLessonProgressStatus = computed<LessonProgressStatus>(() => {
   if (!activeLesson.value) {
-    return 'not_started';
+    return "not_started";
   }
-  return lessonProgressMap.value[activeLesson.value.id]?.status ?? 'not_started';
+  return (
+    lessonProgressMap.value[activeLesson.value.id]?.status ?? "not_started"
+  );
 });
 
 const lessonEntries = computed(() =>
   courseContentModules.value.flatMap((module) =>
-    module.lessons.map((lesson) => ({ lesson, module }))
-  )
+    module.lessons.map((lesson) => ({ lesson, module })),
+  ),
 );
 
 const previousLesson = computed(() => {
@@ -1327,7 +1640,9 @@ const previousLesson = computed(() => {
     return null;
   }
   const entries = lessonEntries.value;
-  const currentIndex = entries.findIndex((entry) => entry.lesson.id === selectedLessonId.value);
+  const currentIndex = entries.findIndex(
+    (entry) => entry.lesson.id === selectedLessonId.value,
+  );
   if (currentIndex <= 0) {
     return null;
   }
@@ -1339,7 +1654,9 @@ const nextLesson = computed(() => {
     return null;
   }
   const entries = lessonEntries.value;
-  const currentIndex = entries.findIndex((entry) => entry.lesson.id === selectedLessonId.value);
+  const currentIndex = entries.findIndex(
+    (entry) => entry.lesson.id === selectedLessonId.value,
+  );
   if (currentIndex === -1 || currentIndex >= entries.length - 1) {
     return null;
   }
@@ -1352,7 +1669,7 @@ const moduleProgress = computed(() => {
     return null;
   }
   const completed = module.lessons.filter(
-    (lesson) => lessonProgressMap.value[lesson.id]?.status === 'completed'
+    (lesson) => lessonProgressMap.value[lesson.id]?.status === "completed",
   ).length;
   const total = module.lessons.length;
   const percent = Math.round((completed / total) * 100);
@@ -1381,7 +1698,7 @@ const buildYoutubeEmbedUrl = (value?: string | null) => {
   const patterns = [
     /youtu\.be\/([\w-]{11})/i,
     /youtube\.com\/(?:watch\?v=|embed\/|shorts\/)([\w-]{11})/i,
-    /youtube-nocookie\.com\/embed\/([\w-]{11})/i
+    /youtube-nocookie\.com\/embed\/([\w-]{11})/i,
   ];
 
   for (const pattern of patterns) {
@@ -1394,28 +1711,40 @@ const buildYoutubeEmbedUrl = (value?: string | null) => {
   return null;
 };
 
-const rawLessonVideoUrl = computed(() => normalizeUrl(activeLesson.value?.videoUrl));
-const activeLessonVideoStreamUrl = computed(() => buildAuthenticatedMediaUrl(rawLessonVideoUrl.value));
-const activeLessonVideoEmbedUrl = computed(() =>
-  buildYoutubeEmbedUrl(activeLesson.value?.ytId ?? activeLesson.value?.videoUrl)
+const rawLessonVideoUrl = computed(() =>
+  normalizeUrl(activeLesson.value?.videoUrl),
 );
-const isLessonVideoHls = computed(() => /\.m3u8(?=$|\?)/i.test(activeLessonVideoStreamUrl.value ?? ''));
+const activeLessonVideoStreamUrl = computed(() =>
+  buildAuthenticatedMediaUrl(rawLessonVideoUrl.value),
+);
+const activeLessonVideoEmbedUrl = computed(() =>
+  buildYoutubeEmbedUrl(
+    activeLesson.value?.ytId ?? activeLesson.value?.videoUrl,
+  ),
+);
+const isLessonVideoHls = computed(() =>
+  /\.m3u8(?=$|\?)/i.test(activeLessonVideoStreamUrl.value ?? ""),
+);
 const lessonVideoElementSrc = computed(() =>
-  isLessonVideoHls.value ? undefined : activeLessonVideoStreamUrl.value ?? undefined
+  isLessonVideoHls.value
+    ? undefined
+    : (activeLessonVideoStreamUrl.value ?? undefined),
 );
 const streamingBlocked = ref(false);
-const hasActiveLessonVideoSource = computed(
-  () => Boolean(activeLessonVideoEmbedUrl.value || activeLessonVideoStreamUrl.value)
+const hasActiveLessonVideoSource = computed(() =>
+  Boolean(activeLessonVideoEmbedUrl.value || activeLessonVideoStreamUrl.value),
 );
-const serverStreamingBlocked = computed(() => Boolean(activeLesson.value?.streamingBlocked));
+const serverStreamingBlocked = computed(() =>
+  Boolean(activeLesson.value?.streamingBlocked),
+);
 const effectiveStreamingBlocked = computed(
-  () => streamingBlocked.value || serverStreamingBlocked.value
+  () => streamingBlocked.value || serverStreamingBlocked.value,
 );
 const canRenderLessonVideoPlayer = computed(
-  () => hasActiveLessonVideoSource.value && !effectiveStreamingBlocked.value
+  () => hasActiveLessonVideoSource.value && !effectiveStreamingBlocked.value,
 );
 const hasActiveLessonVideo = computed(
-  () => hasActiveLessonVideoSource.value || effectiveStreamingBlocked.value
+  () => hasActiveLessonVideoSource.value || effectiveStreamingBlocked.value,
 );
 const streamingBufferSeconds = ref(0);
 const streamingTimerId = ref<number | null>(null);
@@ -1442,8 +1771,9 @@ const flushStreamingBuffer = async (force = false) => {
     const status = getHttpStatus(error);
     if (status === 429) {
       streamingBlocked.value = true;
-      snackbar.message = 'Streaming limit reached for this teacher plan. Please try again later.';
-      snackbar.tone = 'warning';
+      snackbar.message =
+        "Streaming limit reached for this teacher plan. Please try again later.";
+      snackbar.tone = "warning";
       snackbar.show = true;
       const element = lessonVideoElement.value;
       if (element && !element.paused) {
@@ -1458,7 +1788,7 @@ const flushStreamingBuffer = async (force = false) => {
 };
 
 const startStreamingTimer = () => {
-  if (streamingTimerId.value || typeof window === 'undefined') {
+  if (streamingTimerId.value || typeof window === "undefined") {
     return;
   }
   if (!streamingLessonId.value) {
@@ -1466,7 +1796,12 @@ const startStreamingTimer = () => {
   }
   streamingTimerId.value = window.setInterval(() => {
     const element = lessonVideoElement.value;
-    if (!element || element.paused || element.ended || effectiveStreamingBlocked.value) {
+    if (
+      !element ||
+      element.paused ||
+      element.ended ||
+      effectiveStreamingBlocked.value
+    ) {
       return;
     }
     streamingBufferSeconds.value += STREAMING_PING_INTERVAL_MS / 1000;
@@ -1477,7 +1812,7 @@ const startStreamingTimer = () => {
 };
 
 const stopStreamingTimer = async (flush = false) => {
-  if (streamingTimerId.value && typeof window !== 'undefined') {
+  if (streamingTimerId.value && typeof window !== "undefined") {
     window.clearInterval(streamingTimerId.value);
   }
   streamingTimerId.value = null;
@@ -1491,12 +1826,16 @@ const stopStreamingTimer = async (flush = false) => {
   }
 };
 
-const rawLessonPdfUrl = computed(() => normalizeUrl(activeLesson.value?.pdfUrl));
-const activeLessonPdfUrl = computed(() => buildAuthenticatedMediaUrl(rawLessonPdfUrl.value));
+const rawLessonPdfUrl = computed(() =>
+  normalizeUrl(activeLesson.value?.pdfUrl),
+);
+const activeLessonPdfUrl = computed(() =>
+  buildAuthenticatedMediaUrl(rawLessonPdfUrl.value),
+);
 const hasActiveLessonPdf = computed(() => Boolean(activeLessonPdfUrl.value));
 
 const loadHlsLibrary = async (): Promise<HlsConstructor | null> => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return null;
   }
 
@@ -1507,14 +1846,15 @@ const loadHlsLibrary = async (): Promise<HlsConstructor | null> => {
 
   try {
     const module = await import(
-      /* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/hls.js@1.5.14/dist/hls.min.mjs'
+      /* @vite-ignore */ "https://cdn.jsdelivr.net/npm/hls.js@1.5.14/dist/hls.min.mjs"
     );
-    const resolved = (module as { default?: HlsConstructor; Hls?: HlsConstructor }).default ??
+    const resolved =
+      (module as { default?: HlsConstructor; Hls?: HlsConstructor }).default ??
       (module as { Hls?: HlsConstructor }).Hls ??
       null;
     return resolved ?? null;
   } catch (error) {
-    console.warn('[learning] unable to load HLS playback library', error);
+    console.warn("[learning] unable to load HLS playback library", error);
     return null;
   }
 };
@@ -1527,7 +1867,7 @@ const resetLessonVideoElement = () => {
   } catch {
     /* ignore */
   }
-  element.removeAttribute('src');
+  element.removeAttribute("src");
   try {
     element.load();
   } catch {
@@ -1548,7 +1888,7 @@ const detachHls = () => {
 const videoSetupState = reactive({
   running: false,
   pending: false,
-  waitForTick: false
+  waitForTick: false,
 });
 
 const setupLessonVideo = async () => {
@@ -1562,7 +1902,7 @@ const setupLessonVideo = async () => {
   }
 
   if (isLessonVideoHls.value) {
-    if (element.canPlayType('application/vnd.apple.mpegurl')) {
+    if (element.canPlayType("application/vnd.apple.mpegurl")) {
       element.src = url;
       return;
     }
@@ -1575,7 +1915,7 @@ const setupLessonVideo = async () => {
         // which fails when credentials are included.
         xhrSetup: (xhr: XMLHttpRequest) => {
           xhr.withCredentials = false;
-        }
+        },
       });
       instance.loadSource(url);
       instance.attachMedia(element);
@@ -1636,14 +1976,14 @@ const attachStreamingListeners = (element: HTMLVideoElement | null) => {
     void stopStreamingTimer(true);
   };
 
-  element.addEventListener('play', onPlay);
-  element.addEventListener('pause', onPause);
-  element.addEventListener('ended', onEnded);
+  element.addEventListener("play", onPlay);
+  element.addEventListener("pause", onPause);
+  element.addEventListener("ended", onEnded);
 
   streamingListenersCleanup.value = () => {
-    element.removeEventListener('play', onPlay);
-    element.removeEventListener('pause', onPause);
-    element.removeEventListener('ended', onEnded);
+    element.removeEventListener("play", onPlay);
+    element.removeEventListener("pause", onPause);
+    element.removeEventListener("ended", onEnded);
   };
 };
 
@@ -1652,21 +1992,30 @@ interface ContentAccordionItem extends UiAccordionItem {
 }
 
 const contentAccordionItems = computed<ContentAccordionItem[]>(() =>
-  courseContentModules.value.map((module) => ({ value: module.id, title: module.title, module }))
+  courseContentModules.value.map((module) => ({
+    value: module.id,
+    title: module.title,
+    module,
+  })),
 );
 
-const progressStatusLabels = computed<Record<LessonProgressStatus, string>>(() => {
-  const labels = {} as Record<LessonProgressStatus, string>;
-  progressStatuses.forEach((status) => {
-    labels[status.value as LessonProgressStatus] = status.label;
-  });
-  return labels;
-});
+const progressStatusLabels = computed<Record<LessonProgressStatus, string>>(
+  () => {
+    const labels = {} as Record<LessonProgressStatus, string>;
+    progressStatuses.forEach((status) => {
+      labels[status.value as LessonProgressStatus] = status.label;
+    });
+    return labels;
+  },
+);
 
-const statusColors: Record<LessonProgressStatus, 'neutral' | 'info' | 'success'> = {
-  not_started: 'neutral',
-  in_progress: 'info',
-  completed: 'success'
+const statusColors: Record<
+  LessonProgressStatus,
+  "neutral" | "info" | "success"
+> = {
+  not_started: "neutral",
+  in_progress: "info",
+  completed: "success",
 };
 
 watch(
@@ -1675,7 +2024,7 @@ watch(
     void requestLessonVideoSetup();
     attachStreamingListeners(lessonVideoElement.value);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -1687,7 +2036,7 @@ watch(
     void stopStreamingTimer(true);
     streamingLessonId.value = null;
   },
-  { immediate: false }
+  { immediate: false },
 );
 
 watch(effectiveStreamingBlocked, (blocked) => {
@@ -1708,7 +2057,7 @@ watch(
     }
     if (pendingLessonId.value != null) {
       const pendingExists = modules.some((module) =>
-        module.lessons.some((lesson) => lesson.id === pendingLessonId.value)
+        module.lessons.some((lesson) => lesson.id === pendingLessonId.value),
       );
       if (pendingExists) {
         selectedLessonId.value = pendingLessonId.value;
@@ -1718,7 +2067,7 @@ watch(
     }
     if (selectedLessonId.value != null) {
       const stillExists = modules.some((module) =>
-        module.lessons.some((lesson) => lesson.id === selectedLessonId.value)
+        module.lessons.some((lesson) => lesson.id === selectedLessonId.value),
       );
       if (stillExists) {
         return;
@@ -1727,7 +2076,7 @@ watch(
     const firstModule = modules.find((module) => module.lessons.length > 0);
     selectedLessonId.value = firstModule ? firstModule.lessons[0].id : null;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 onBeforeUnmount(() => {
@@ -1740,8 +2089,8 @@ onBeforeUnmount(() => {
 });
 
 watch(focusMode, (value) => {
-  if (typeof window !== 'undefined') {
-    window.localStorage.setItem(FOCUS_MODE_STORAGE_KEY, value ? '1' : '0');
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(FOCUS_MODE_STORAGE_KEY, value ? "1" : "0");
   }
   if (!value) {
     focusOutlineVisible.value = false;
@@ -1758,12 +2107,12 @@ watch(
   selectedLessonId,
   (lessonId) => {
     if (lessonId == null) {
-      lessonNotesDraft.value = '';
+      lessonNotesDraft.value = "";
       return;
     }
-    lessonNotesDraft.value = lessonNotes[lessonId] ?? '';
+    lessonNotesDraft.value = lessonNotes[lessonId] ?? "";
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(lessonNotesDraft, (value) => {
@@ -1793,17 +2142,17 @@ watch(
       focusMode.value = false;
       focusOutlineVisible.value = false;
     }
-  }
+  },
 );
 
 let toastTimeout: number | undefined;
 
-const showToast = (message: string, tone: ToastInput = 'success') => {
+const showToast = (message: string, tone: ToastInput = "success") => {
   const toneMap: Record<ToastInput, ToastTone> = {
-    success: 'success',
-    error: 'danger',
-    warning: 'warning',
-    info: 'info'
+    success: "success",
+    error: "danger",
+    warning: "warning",
+    info: "info",
   };
   if (toastTimeout) {
     window.clearTimeout(toastTimeout);
@@ -1826,45 +2175,58 @@ const loadStudentLearningData = async () => {
     return;
   }
   try {
-    await Promise.all([studentStore.fetchEnrollments(), studentStore.fetchPayments()]);
-    await Promise.all([learning.loadStudentProgress(), learning.loadStudentAssignments()]);
+    await Promise.all([
+      studentStore.fetchEnrollments(),
+      studentStore.fetchPayments(),
+    ]);
+    await Promise.all([
+      learning.loadStudentProgress(),
+      learning.loadStudentAssignments(),
+    ]);
     syncProgressSelections();
   } catch (error) {
-    console.error('Failed to load student learning data', error);
-    showToast(t('learning.student.courseLoadFailed'), 'error');
+    console.error("Failed to load student learning data", error);
+    showToast(t("learning.student.courseLoadFailed"), "error");
   }
 };
 
 const formatDateTime = (value: string) =>
-  new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
+  new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
 
 const certificateItems = computed(() =>
-  (achievementsStore.data?.certificates ?? []).slice(0, 3).map((certificate) => ({
-    ...certificate,
-    downloadUrl: withCacheBusting(certificate.pdfUrl)
-  }))
+  (achievementsStore.data?.certificates ?? [])
+    .slice(0, 3)
+    .map((certificate) => ({
+      ...certificate,
+      downloadUrl: withCacheBusting(certificate.pdfUrl),
+    })),
 );
 
 const formatCertificateDate = (value?: string | null) => {
-  if (!value) return 'â€”';
+  if (!value) return "â€”";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date);
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(
+    date,
+  );
 };
 
 const formatLessonDuration = (duration?: number | null) => {
   if (!duration || duration <= 0) {
-    return t('courses.durationNotSet');
+    return t("courses.durationNotSet");
   }
   const minutes = Math.floor(duration / 60);
   const seconds = duration % 60;
   if (minutes > 0 && seconds > 0) {
-    return t('courses.durationMinutesSeconds', { minutes, seconds });
+    return t("courses.durationMinutesSeconds", { minutes, seconds });
   }
   if (minutes > 0) {
-    return t('courses.durationMinutes', { minutes });
+    return t("courses.durationMinutes", { minutes });
   }
-  return t('courses.durationSeconds', { seconds: duration });
+  return t("courses.durationSeconds", { seconds: duration });
 };
 
 const onSelectLesson = (lessonId: number) => {
@@ -1878,8 +2240,9 @@ const onSelectLesson = (lessonId: number) => {
   }
 };
 
-const goToAdjacentLesson = (direction: 'previous' | 'next') => {
-  const target = direction === 'previous' ? previousLesson.value : nextLesson.value;
+const goToAdjacentLesson = (direction: "previous" | "next") => {
+  const target =
+    direction === "previous" ? previousLesson.value : nextLesson.value;
   if (!target) {
     return;
   }
@@ -1901,12 +2264,15 @@ const onTabChange = (value: string | number) => {
 };
 
 const redirectToPaymentPage = (courseId: number) => {
-  router.push({ name: 'student-checkout', query: { courseId: courseId.toString() } });
+  router.push({
+    name: "student-checkout",
+    query: { courseId: courseId.toString() },
+  });
 };
 
 const onSelectCourse = (value: string | number | null) => {
   const previous = selectedCourseId.value;
-  if (value === null || value === '') {
+  if (value === null || value === "") {
     selectedCourseId.value = null;
     return;
   }
@@ -1914,11 +2280,16 @@ const onSelectCourse = (value: string | number | null) => {
   if (Number.isNaN(courseId)) {
     return;
   }
-  if (!accessibleCourseIds.value.has(courseId)) {
+
+  const courseOption = courseOptions.value.find((c) => c.id === courseId);
+  if (
+    !accessibleCourseIds.value.has(courseId) &&
+    !courseOption?.useModulePricing
+  ) {
     if (pendingPaymentCourseIds.value.has(courseId)) {
-      showToast(t('learning.student.paymentPendingRedirect'), 'info');
+      showToast(t("learning.student.paymentPendingRedirect"), "info");
     } else {
-      showToast(t('learning.student.paymentRequired'), 'warning');
+      showToast(t("learning.student.paymentRequired"), "warning");
     }
     redirectToPaymentPage(courseId);
     if (previous !== undefined) {
@@ -1929,14 +2300,27 @@ const onSelectCourse = (value: string | number | null) => {
   selectedCourseId.value = courseId;
 };
 
-const goToLessonFromRecommendation = async (lessonId: number, courseId: number) => {
+const onModuleHeaderClick = (module: CourseContentModule, event: Event) => {
+  if (module.accessible === false) {
+    event.stopPropagation();
+    event.preventDefault();
+    if (selectedCourseId.value) {
+      redirectToPaymentPage(selectedCourseId.value);
+    }
+  }
+};
+
+const goToLessonFromRecommendation = async (
+  lessonId: number,
+  courseId: number,
+) => {
   if (selectedCourseId.value !== courseId) {
     pendingLessonId.value = lessonId;
     onSelectCourse(courseId);
   } else {
     onSelectLesson(lessonId);
   }
-  tab.value = 'content';
+  tab.value = "content";
   await nextTick();
   if (isFocusModeActive.value) {
     focusOutlineVisible.value = false;
@@ -1945,7 +2329,7 @@ const goToLessonFromRecommendation = async (lessonId: number, courseId: number) 
 
 const parseCourseIdQuery = (value: unknown): number | null => {
   const raw = Array.isArray(value) ? value[0] : value;
-  if (raw == null || raw === '') {
+  if (raw == null || raw === "") {
     return null;
   }
   const courseId = Number(raw);
@@ -1960,29 +2344,32 @@ watch(
       pendingCourseFromRoute.value = null;
       return;
     }
-    if (!studentStore.enrollments.length && !teacherCourses.value.length) {
+    if (!isInitialLoadComplete.value) {
       pendingCourseFromRoute.value = courseId;
       return;
     }
     pendingCourseFromRoute.value = null;
     onSelectCourse(courseId);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
-  () => [studentStore.enrollments.length, teacherCourses.value.length],
-  () => {
-    if (pendingCourseFromRoute.value != null) {
+  () => isInitialLoadComplete.value,
+  (completed) => {
+    if (completed && pendingCourseFromRoute.value != null) {
       const courseId = pendingCourseFromRoute.value;
       pendingCourseFromRoute.value = null;
       onSelectCourse(courseId);
     }
-  }
+  },
 );
 
-const onProgressStatusChange = (lessonId: number, value: string | number | null) => {
-  const normalized = value === null ? '' : String(value);
+const onProgressStatusChange = (
+  lessonId: number,
+  value: string | number | null,
+) => {
+  const normalized = value === null ? "" : String(value);
   if (!normalized) {
     return;
   }
@@ -1995,13 +2382,13 @@ const updateProgress = async (lessonId: number, status: string) => {
   formSubmitting.value = true;
   try {
     await learning.setLessonProgress({ lessonId, status: status as any });
-    showToast(t('learning.student.progressUpdatedMessage'));
+    showToast(t("learning.student.progressUpdatedMessage"));
     if (selectedCourseId.value) {
       await learning.loadCourseProgress(selectedCourseId.value);
     }
   } catch (error) {
     console.error(error);
-    showToast(t('learning.student.progressUpdateFailed'), 'error');
+    showToast(t("learning.student.progressUpdateFailed"), "error");
   } finally {
     progressUpdating.value = false;
     formSubmitting.value = false;
@@ -2010,9 +2397,9 @@ const updateProgress = async (lessonId: number, status: string) => {
 
 const openSubmissionDialog = (assignment: Assignment) => {
   selectedAssignment.value = assignment;
-  submissionForm.fileUrl = '';
-  submissionForm.fileKey = '';
-  submissionForm.notes = '';
+  submissionForm.fileUrl = "";
+  submissionForm.fileKey = "";
+  submissionForm.notes = "";
   submissionDialog.value = true;
 };
 
@@ -2028,13 +2415,13 @@ const submitAssignment = async () => {
     await learning.submitStudentAssignment(selectedAssignment.value.id, {
       fileUrl: submissionForm.fileUrl || undefined,
       fileKey: submissionForm.fileKey || undefined,
-      notes: submissionForm.notes || undefined
+      notes: submissionForm.notes || undefined,
     });
-    showToast(t('learning.student.assignmentSubmitted'));
+    showToast(t("learning.student.assignmentSubmitted"));
     submissionDialog.value = false;
   } catch (error) {
     console.error(error);
-    showToast(t('learning.student.assignmentFailed'), 'error');
+    showToast(t("learning.student.assignmentFailed"), "error");
   } finally {
     formSubmitting.value = false;
   }
@@ -2046,26 +2433,25 @@ const onSelectDiscussionThread = (thread: DiscussionThread | null) => {
 
 const onThreadCreated = (thread: DiscussionThread) => {
   activeDiscussionThread.value = thread;
-  showToast(t('discussions.form.created'));
+  showToast(t("discussions.form.created"));
 };
 
 const onMessageSent = () => {
-  showToast(t('discussions.view.messageSent'));
+  showToast(t("discussions.view.messageSent"));
   threadsListRef.value?.refresh();
 };
 
 const onReviewSubmitted = () => {
-  showToast(t('reviews.student.submitSuccess'));
+  showToast(t("reviews.student.submitSuccess"));
   reviewsRefreshKey.value += 1;
 };
 
 const onReviewError = (message: string) => {
-  showToast(message, 'error');
+  showToast(message, "error");
 };
 
 const onReviewsError = (message: string) => {
-  showToast(message, 'error');
-
+  showToast(message, "error");
 };
 
 const syncProgressSelections = () => {
@@ -2086,7 +2472,7 @@ watch(
   () => {
     syncProgressSelections();
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(submissionDialog, (open) => {
@@ -2121,15 +2507,15 @@ watch(selectedCourseId, async (courseId) => {
       learning.loadStudentProgress(courseId),
       learning.loadCourseProgress(courseId),
       learning.loadStudentAssignments(courseId),
-      learning.loadResources(courseId, 'student'),
-      learning.loadCourseContent(courseId)
+      learning.loadResources(courseId, "student"),
+      learning.loadCourseContent(courseId),
     ]);
     selectedThreadId.value = null;
     activeDiscussionThread.value = null;
     syncProgressSelections();
   } catch (error) {
     console.error(error);
-    showToast(t('learning.student.courseLoadFailed'), 'error');
+    showToast(t("learning.student.courseLoadFailed"), "error");
   } finally {
     formSubmitting.value = false;
   }
@@ -2151,28 +2537,33 @@ watch(
       delete nextQuery.courseId;
     }
     router.replace({ query: nextQuery }).catch((error) => {
-      console.error('Failed to sync courseId query', error);
+      console.error("Failed to sync courseId query", error);
     });
   },
-  { flush: 'post' }
+  { flush: "post" },
 );
 
 const loadTeacherCourses = async () => {
   try {
-    const slug = tenantStore.branding?.slug || getStoredTenantSlug().raw || 'demo';
+    const slug =
+      tenantStore.branding?.slug || getStoredTenantSlug().raw || "demo";
     const { data } = await api.get(`/public/tenants/${slug}/courses`, {
-      params: { page: 0, size: 100 }
+      params: { page: 0, size: 100 },
     });
     const items = data?.items || [];
-    teacherCourses.value = items.map((course: any) => ({ id: course.id, title: course.title }));
+    teacherCourses.value = items.map((course: any) => ({
+      id: course.id,
+      title: course.title,
+      useModulePricing: course.useModulePricing,
+    }));
   } catch (error) {
     const status = (error as any)?.response?.status;
     if (status === 404) {
       teacherCourses.value = [];
       return;
     }
-    console.error('Failed to load teacher courses', error);
-    showToast(t('learning.student.courseListFailed'), 'error');
+    console.error("Failed to load teacher courses", error);
+    showToast(t("learning.student.courseListFailed"), "error");
   }
 };
 
@@ -2182,28 +2573,38 @@ const refreshLearningData = async (reason: string) => {
   }
   learningRefreshInFlight.value = true;
   try {
-    console.info('[StudentLearningView] refreshing learning data after %s', reason);
+    console.info(
+      "[StudentLearningView] refreshing learning data after %s",
+      reason,
+    );
     if (!tenantStore.branding) {
       await tenantStore.fetchBranding();
     }
     await loadTeacherCourses();
     await loadStudentLearningData();
   } catch (error) {
-    console.error('[StudentLearningView] failed to refresh learning surface', error);
+    console.error(
+      "[StudentLearningView] failed to refresh learning surface",
+      error,
+    );
   } finally {
     learningRefreshInFlight.value = false;
+    isInitialLoadComplete.value = true;
   }
 };
 
 useVisibilityRefresh(
   (reason) => {
-    console.debug('[StudentLearningView] visibility refresh triggered by %s', reason);
+    console.debug(
+      "[StudentLearningView] visibility refresh triggered by %s",
+      reason,
+    );
     void refreshLearningData(reason);
   },
   {
     includeActivated: true,
-    throttleMs: 500
-  }
+    throttleMs: 500,
+  },
 );
 
 watch(
@@ -2211,7 +2612,9 @@ watch(
   (options) => {
     const routeCourseId = parseCourseIdQuery(route.query.courseId);
     if (routeCourseId != null) {
-      const hasRouteCourse = options.some((option) => option.id === routeCourseId);
+      const hasRouteCourse = options.some(
+        (option) => option.id === routeCourseId,
+      );
       if (hasRouteCourse) {
         return;
       }
@@ -2223,7 +2626,7 @@ watch(
     const nextId = next ? next.id : null;
     if (selectedCourseId.value !== null) {
       const stillAccessible = options.some(
-        (option) => option.id === selectedCourseId.value && option.accessible
+        (option) => option.id === selectedCourseId.value && option.accessible,
       );
       if (stillAccessible) {
         return;
@@ -2233,31 +2636,28 @@ watch(
       selectedCourseId.value = nextId;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
-watch(
-  isStudentLoggedIn,
-  async (loggedIn) => {
-    if (!loggedIn) {
-      learning.clear();
-      studentStore.clear();
-      selectedCourseId.value = null;
-      return;
-    }
-    await loadStudentLearningData();
+watch(isStudentLoggedIn, async (loggedIn) => {
+  if (!loggedIn) {
+    learning.clear();
+    studentStore.clear();
+    selectedCourseId.value = null;
+    return;
   }
-);
+  await loadStudentLearningData();
+});
 
 onMounted(async () => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     const storedFocus = window.localStorage.getItem(FOCUS_MODE_STORAGE_KEY);
-    focusMode.value = storedFocus === '1';
+    focusMode.value = storedFocus === "1";
     loadLessonNotes();
-    window.addEventListener('keydown', handleKeydown);
+    window.addEventListener("keydown", handleKeydown);
   }
-  achievementsStore.load('alltime', 3).catch(() => {});
-  await refreshLearningData('mounted');
+  achievementsStore.load("alltime", 3).catch(() => {});
+  await refreshLearningData("mounted");
 });
 
 onBeforeUnmount(() => {
@@ -2269,18 +2669,18 @@ onBeforeUnmount(() => {
     notesSaveTimeout = undefined;
     persistLessonNotes();
   }
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('keydown', handleKeydown);
+  if (typeof window !== "undefined") {
+    window.removeEventListener("keydown", handleKeydown);
   }
 });
 
 onActivated(() => {
-  void refreshLearningData('activated');
+  void refreshLearningData("activated");
 });
 </script>
 
 <style lang="scss" scoped>
-@use '@/theme/sakai/mixins' as *;
+@use "@/theme/sakai/mixins" as *;
 
 .learning-page__meta {
   display: flex;
@@ -2355,7 +2755,8 @@ onActivated(() => {
   gap: var(--sakai-space-2);
   padding: var(--sakai-space-3);
   border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 65%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 65%, transparent);
   background: color-mix(in srgb, var(--sakai-surface-card) 96%, transparent);
 }
 
@@ -2503,7 +2904,8 @@ onActivated(() => {
   gap: var(--sakai-space-4);
   padding: var(--sakai-space-4);
   border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
   background: var(--sakai-surface);
 }
 
@@ -2598,7 +3000,8 @@ onActivated(() => {
 }
 
 .learning-content__notes {
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 65%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 65%, transparent);
   border-radius: var(--sakai-border-radius-lg);
   padding: var(--sakai-space-4);
   background: color-mix(in srgb, var(--sakai-surface-card) 97%, transparent);
@@ -2655,7 +3058,8 @@ onActivated(() => {
 .learning-content__materials iframe {
   width: 100%;
   height: 20rem;
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
   border-radius: var(--sakai-border-radius-lg);
   background: var(--sakai-surface-stronger);
 }
@@ -2677,7 +3081,9 @@ onActivated(() => {
   color: inherit;
   text-align: left;
   cursor: pointer;
-  transition: background 160ms ease, border-color 160ms ease;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease;
 }
 
 .learning-content__lesson-button:hover,
@@ -2792,7 +3198,8 @@ onActivated(() => {
   border-radius: 50%;
   background: conic-gradient(
     var(--sakai-primary) var(--progress-value),
-    color-mix(in srgb, var(--sakai-border-color) 35%, transparent) var(--progress-value)
+    color-mix(in srgb, var(--sakai-border-color) 35%, transparent)
+      var(--progress-value)
   );
   display: grid;
   place-items: center;
@@ -2802,7 +3209,7 @@ onActivated(() => {
 }
 
 .learning-progress__circle::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: var(--sakai-space-4);
   background: var(--sakai-surface-card);
@@ -2883,7 +3290,8 @@ onActivated(() => {
   gap: var(--sakai-space-3);
   padding: var(--sakai-space-4);
   border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 65%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 65%, transparent);
   background: color-mix(in srgb, var(--sakai-surface-card) 95%, transparent);
 }
 
@@ -2928,7 +3336,8 @@ onActivated(() => {
   gap: var(--sakai-space-3);
   padding: var(--sakai-space-4);
   border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
   background: color-mix(in srgb, var(--sakai-surface-card) 96%, transparent);
 }
 
@@ -3038,7 +3447,8 @@ onActivated(() => {
   gap: var(--sakai-space-3);
   padding: var(--sakai-space-4);
   border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
   background: color-mix(in srgb, var(--sakai-surface-card) 96%, transparent);
 }
 
@@ -3102,7 +3512,6 @@ onActivated(() => {
 .learning-reviews__form,
 .learning-reviews__list {
   width: 100%;
-
 }
 
 @media (min-width: 1024px) {
@@ -3206,7 +3615,6 @@ onActivated(() => {
 
   .learning-reviews__grid {
     grid-template-columns: 1fr;
-
   }
 }
 
@@ -3250,7 +3658,8 @@ onActivated(() => {
   gap: var(--sakai-space-3);
   padding: var(--sakai-space-4);
   border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
   background: var(--sakai-surface);
 }
 
@@ -3295,7 +3704,8 @@ onActivated(() => {
   border-radius: var(--sakai-border-radius-lg);
   overflow: hidden;
   background: var(--sakai-surface-muted);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
 }
 
 .learning-embed__frame {

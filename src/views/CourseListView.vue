@@ -202,6 +202,26 @@ const confirmDeleteCourse = async (course: CourseSummary) => {
 };
 
 const formatPrice = (course: CourseSummary) => {
+  if (course.useModulePricing && course.startingFromPrice != null) {
+    const amount = course.startingFromPrice;
+    const currency = (
+      course.startingFromCurrency ||
+      course.currency ||
+      "EGP"
+    ).toUpperCase();
+    let formattedPrice = `${currency} ${amount}`;
+    try {
+      formattedPrice = new Intl.NumberFormat(
+        locale.value === "ar" ? "ar-EG" : "en-US",
+        {
+          style: "currency",
+          currency,
+        },
+      ).format(amount);
+    } catch {}
+    return `${formattedPrice} ${t("courses.perLevel")}`;
+  }
+
   const amount = course.price || 0;
   const currency = (course.currency || "EGP").toUpperCase();
   try {

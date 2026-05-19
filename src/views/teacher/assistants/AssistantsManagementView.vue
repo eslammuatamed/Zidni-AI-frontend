@@ -805,6 +805,15 @@
                   size="sm"
                   variant="link"
                   color="primary"
+                  prepend-icon="EyeOutlined"
+                  @click="openAssistantDialog(item.id, true)"
+                >
+                  {{ t("common.view") }}
+                </UiButton>
+                <UiButton
+                  size="sm"
+                  variant="link"
+                  color="primary"
                   prepend-icon="EditOutlined"
                   @click="openAssistantDialog(item.id)"
                 >
@@ -853,6 +862,15 @@
                 <span>{{ item.role }}</span>
               </div>
               <div class="assistants-management__list-actions">
+                <UiButton
+                  size="sm"
+                  variant="link"
+                  color="primary"
+                  prepend-icon="EyeOutlined"
+                  @click="openAssistantDialog(item.id, true)"
+                >
+                  {{ t("common.view") }}
+                </UiButton>
                 <UiButton
                   size="sm"
                   variant="link"
@@ -969,7 +987,59 @@
       :title="assistantDialogTitle"
       width="520px"
     >
+      <div v-if="assistantDialog.readonly" class="assistants-management__profile">
+        <div class="flex flex-col items-center mb-6">
+          <img
+            v-if="assistantDialog.form.avatar"
+            :src="assistantDialog.form.avatar"
+            alt="Avatar"
+            class="w-24 h-24 rounded-full object-cover shadow-sm mb-3 border-2 border-surface-100"
+          />
+          <div
+            v-else
+            class="w-24 h-24 rounded-full bg-surface-100 flex items-center justify-center text-surface-500 text-4xl mb-3"
+          >
+            <i class="icon-UserOutlined"></i>
+          </div>
+          <h3 class="text-xl font-bold text-surface-900">{{ assistantDialog.form.name }}</h3>
+          <p class="text-surface-500 text-sm mt-1">
+            {{ store.roles.find(r => r.id === assistantDialog.form.roleId)?.name || '' }}
+          </p>
+        </div>
+
+        <div class="space-y-4 px-2">
+          <div class="flex flex-col border-b border-surface-100 pb-3">
+            <span class="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-1">{{ t('teacher.assistants.team.form.email') }}</span>
+            <span class="text-surface-900">{{ assistantDialog.form.email }}</span>
+          </div>
+          <div class="flex flex-col border-b border-surface-100 pb-3">
+            <span class="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-1">{{ t('teacher.assistants.team.form.username') }}</span>
+            <span class="text-surface-900">{{ assistantDialog.form.username }}</span>
+          </div>
+          <div v-if="assistantDialog.form.phone" class="flex flex-col border-b border-surface-100 pb-3">
+            <span class="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-1">{{ t('teacher.assistants.team.form.phone') }}</span>
+            <span class="text-surface-900" dir="ltr">{{ assistantDialog.form.phone }}</span>
+          </div>
+          <div v-if="assistantDialog.form.bio" class="flex flex-col border-b border-surface-100 pb-3">
+            <span class="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-1">{{ t('teacher.assistants.team.form.bio') }}</span>
+            <p class="text-surface-900 whitespace-pre-wrap text-sm leading-relaxed">{{ assistantDialog.form.bio }}</p>
+          </div>
+        </div>
+
+        <div class="assistants-management__dialog-actions mt-8">
+          <UiButton
+            type="button"
+            variant="ghost"
+            color="neutral"
+            @click="closeAssistantDialog"
+          >
+            {{ t("common.close") }}
+          </UiButton>
+        </div>
+      </div>
+
       <form
+        v-else
         class="assistants-management__form"
         @submit.prevent="submitAssistantDialog"
       >
@@ -1003,16 +1073,33 @@
             @change="onPhotoFilesChange"
             @remove="onPhotoFilesRemoved"
           >
-            <strong>{{ t('teacher.assistants.team.form.avatar') }}</strong>
+            <strong>{{ t("teacher.assistants.team.form.avatar") }}</strong>
           </UiFileUpload>
-          <div v-if="assistantDialog.form.avatar" class="mt-3 flex items-center gap-3">
-            <img :src="assistantDialog.form.avatar" alt="Photo Preview" class="w-16 h-16 rounded-full object-cover" />
-            <UiButton type="button" variant="ghost" size="sm" @click="clearPhoto" :disabled="photoUploading">
+          <div
+            v-if="assistantDialog.form.avatar"
+            class="mt-3 flex items-center gap-3"
+          >
+            <img
+              :src="assistantDialog.form.avatar"
+              alt="Photo Preview"
+              class="w-16 h-16 rounded-full object-cover"
+            />
+            <UiButton
+              type="button"
+              variant="ghost"
+              size="sm"
+              @click="clearPhoto"
+              :disabled="photoUploading"
+            >
               Remove
             </UiButton>
           </div>
-          <p v-if="photoUploading" class="text-sm text-surface-500 mt-2">Uploading...</p>
-          <p v-else-if="photoUploadError" class="text-sm text-red-500 mt-2">{{ photoUploadError }}</p>
+          <p v-if="photoUploading" class="text-sm text-surface-500 mt-2">
+            Uploading...
+          </p>
+          <p v-else-if="photoUploadError" class="text-sm text-red-500 mt-2">
+            {{ photoUploadError }}
+          </p>
         </div>
         <UiTextarea
           v-model="assistantDialog.form.bio"
@@ -1050,6 +1137,7 @@
             {{ t("common.cancel") }}
           </UiButton>
           <UiButton
+            v-if="!assistantDialog.readonly"
             type="submit"
             color="primary"
             :disabled="assistantDialog.submitting"
@@ -1397,37 +1485,37 @@ const personaFilterOptions = computed(() => {
 });
 
 const roleHeaders = computed<UiTableHeader[]>(() => [
-  { key: "name", label: t("teacher.assistants.roles.table.name") },
-  { key: "persona", label: t("teacher.assistants.roles.table.persona") },
+  { key: "name", title: t("teacher.assistants.roles.table.name") },
+  { key: "persona", title: t("teacher.assistants.roles.table.persona") },
   {
     key: "permissions",
-    label: t("teacher.assistants.roles.table.permissions"),
+    title: t("teacher.assistants.roles.table.permissions"),
   },
-  { key: "appShell", label: t("teacher.assistants.roles.table.appShell") },
+  { key: "appShell", title: t("teacher.assistants.roles.table.appShell") },
   {
     key: "assistants",
-    label: t("teacher.assistants.roles.table.members"),
+    title: t("teacher.assistants.roles.table.members"),
     align: "center",
   },
   {
     key: "actions",
-    label: t("teacher.assistants.roles.table.actions"),
+    title: t("teacher.assistants.roles.table.actions"),
     align: "right",
   },
 ]);
 
 const assistantHeaders = computed<UiTableHeader[]>(() => [
-  { key: "name", label: t("teacher.assistants.team.table.name") },
-  { key: "email", label: t("teacher.assistants.team.table.email") },
-  { key: "role", label: t("teacher.assistants.team.table.role") },
+  { key: "name", title: t("teacher.assistants.team.table.name") },
+  { key: "email", title: t("teacher.assistants.team.table.email") },
+  { key: "role", title: t("teacher.assistants.team.table.role") },
   {
     key: "status",
-    label: t("teacher.assistants.team.table.status"),
+    title: t("teacher.assistants.team.table.status"),
     align: "center",
   },
   {
     key: "actions",
-    label: t("teacher.assistants.team.table.actions"),
+    title: t("teacher.assistants.team.table.actions"),
     align: "right",
   },
 ]);
@@ -1886,6 +1974,7 @@ const assistantRows = computed(() =>
     return {
       id: assistant.id,
       name: assistant.name,
+      avatarUrl: assistant.avatarUrl,
       email: assistant.email,
       role: role?.name || t("teacher.assistants.team.roleUnassigned"),
       statusLabel,
@@ -1955,6 +2044,7 @@ const onPersonaChange = (value: string | number | boolean) => {
 
 const assistantDialog = reactive({
   open: false,
+  readonly: false,
   submitting: false,
   editingId: null as number | null,
   error: "",
@@ -2030,6 +2120,7 @@ const resetAssistantDialog = () => {
   assistantDialog.error = "";
   assistantDialog.submitting = false;
   assistantDialog.editingId = null;
+  assistantDialog.readonly = false;
   photoFiles.value = [];
   photoUploadError.value = "";
 };
@@ -2040,11 +2131,12 @@ const roleDialogTitle = computed(() =>
     : t("teacher.assistants.roles.dialog.createTitle"),
 );
 
-const assistantDialogTitle = computed(() =>
-  assistantDialog.editingId
+const assistantDialogTitle = computed(() => {
+  if (assistantDialog.readonly) return t("common.view");
+  return assistantDialog.editingId
     ? t("teacher.assistants.team.dialog.editTitle")
-    : t("teacher.assistants.team.dialog.createTitle"),
-);
+    : t("teacher.assistants.team.dialog.createTitle");
+});
 
 const openRoleDialog = (roleId?: number) => {
   resetRoleDialog();
@@ -2113,7 +2205,7 @@ const submitRoleDialog = async () => {
   }
 };
 
-const openAssistantDialog = (assistantId?: number) => {
+const openAssistantDialog = (assistantId?: number, isReadonly = false) => {
   resetAssistantDialog();
   if (assistantId != null) {
     const assistant = store.assistants.find((item) => item.id === assistantId);
@@ -2128,6 +2220,7 @@ const openAssistantDialog = (assistantId?: number) => {
       assistantDialog.editingId = assistant.id;
     }
   }
+  assistantDialog.readonly = isReadonly;
   assistantDialog.open = true;
 };
 
@@ -2207,7 +2300,7 @@ const submitAssistantDialog = async () => {
     const savedAssistant = isEditing
       ? await store.updateAssistant(assistantDialog.editingId!, payload)
       : await store.createAssistant(payload);
-      
+
     if (photoFiles.value.length > 0) {
       try {
         await uploadAssistantAvatar(savedAssistant.id, photoFiles.value[0]);
@@ -2215,7 +2308,9 @@ const submitAssistantDialog = async () => {
         const updated = await store.refreshAll();
       } catch (uploadError) {
         console.error("[assistants] failed to upload avatar", uploadError);
-        showErrorToast({ detail: "Assistant saved, but avatar upload failed." });
+        showErrorToast({
+          detail: "Assistant saved, but avatar upload failed.",
+        });
       }
     }
 

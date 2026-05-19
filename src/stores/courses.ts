@@ -33,7 +33,11 @@ export interface CourseSummary {
   previewVideoStatus?: LessonVideoStatus | null;
   targetAudience?: string;
   whatYouWillLearn?: [];
-
+  useModulePricing?: boolean;
+  priceDisplayMode?: string;
+  startingFromPrice?: number | null;
+  startingFromCurrency?: string | null;
+  studentPayableLabel?: string | null;
 }
 
 export type LessonVideoStatus = 'UPLOADING' | 'PROCESSING' | 'READY' | 'FAILED';
@@ -62,6 +66,9 @@ export interface ModulePayload {
   id: number;
   title: string;
   position: number;
+  priced?: boolean;
+  price?: number;
+  priceCurrency?: string;
   lessons: LessonPayload[];
 }
 
@@ -100,6 +107,7 @@ const normalizeLesson = (lesson: LessonPayload): LessonPayload => ({
 
 const normalizeModule = (module: ModulePayload): ModulePayload => ({
   ...module,
+  priceCurrency: module.priceCurrency ? normalizeCurrencyValue(module.priceCurrency) : undefined,
   lessons: sortLessons((module.lessons || []).map((lesson) => normalizeLesson(lesson)))
 });
 
@@ -116,6 +124,7 @@ const normalizeCourseDetail = (course: CourseDetail): CourseDetail => ({
 const normalizeCourseSummary = (course: CourseSummary): CourseSummary => ({
   ...course,
   currency: normalizeCurrencyValue(course.currency),
+  startingFromCurrency: course.startingFromCurrency ? normalizeCurrencyValue(course.startingFromCurrency) : null,
   previewVideoBunnyId: course.previewVideoBunnyId ?? null,
   previewVideoStatus: course.previewVideoStatus ?? null
 });
@@ -154,6 +163,7 @@ interface CourseWritePayload {
   type: string;
   price: number;
   currency?: string | null;
+  useModulePricing?: boolean;
   description?: string;
   thumbnailUrl?: string | null;
   level?: string | null;
@@ -233,6 +243,11 @@ export const useCoursesStore = defineStore('courses', {
         thumbnailUrl: normalized.thumbnailUrl,
         level: normalized.level,
         language: normalized.language,
+        useModulePricing: normalized.useModulePricing,
+        priceDisplayMode: normalized.priceDisplayMode,
+        startingFromPrice: normalized.startingFromPrice,
+        startingFromCurrency: normalized.startingFromCurrency,
+        studentPayableLabel: normalized.studentPayableLabel,
         previewVideo: normalized?.previewVideo,
         previewVideoBunnyId: normalized?.previewVideoBunnyId ?? null,
         previewVideoStatus: normalized?.previewVideoStatus ?? null
@@ -241,7 +256,7 @@ export const useCoursesStore = defineStore('courses', {
       this.current = normalized;
       return normalized.id;
     },
-    async addModule(courseId: number, payload: { title: string; position?: number }) {
+    async addModule(courseId: number, payload: { title: string; position?: number; priced?: boolean; price?: number; priceCurrency?: string }) {
       const { data } = await api.post<ModulePayload>(
         `/v1/teacher/courses/${courseId}/modules`,
         payload
@@ -271,6 +286,11 @@ export const useCoursesStore = defineStore('courses', {
         summary.level = data.level;
         summary.language = data.language;
         summary.active = data.active;
+        summary.useModulePricing = data.useModulePricing;
+        summary.priceDisplayMode = data.priceDisplayMode;
+        summary.startingFromPrice = data.startingFromPrice;
+        summary.startingFromCurrency = data.startingFromCurrency;
+        summary.studentPayableLabel = data.studentPayableLabel;
         summary.previewVideo = data.previewVideo;
         summary.previewVideoBunnyId = data.previewVideoBunnyId ?? null;
         summary.previewVideoStatus = data.previewVideoStatus ?? null;
@@ -316,7 +336,7 @@ export const useCoursesStore = defineStore('courses', {
       }
       return data.id;
     },
-    async updateModule(courseId: number, moduleId: number, payload: { title: string; position?: number }) {
+    async updateModule(courseId: number, moduleId: number, payload: { title: string; position?: number; priced?: boolean; price?: number; priceCurrency?: string }) {
       const { data } = await api.put<ModulePayload>(
         `/v1/teacher/courses/${courseId}/modules/${moduleId}`,
         payload
