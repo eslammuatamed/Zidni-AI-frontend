@@ -1,3 +1,13 @@
+/*
+ * UNUSED THEME — not registered in src/plugins/vuetify.ts as of the
+ * `redesign` branch. This file exports a Vuetify theme variant with an
+ * Indigo + Slate palette that is intentionally different from the active
+ * `mathGuru` / `mathGuruDark` themes (deep blue brand).
+ *
+ * If a future task activates this theme, migrate its colors to the
+ * --sakai-* design tokens in src/theme/sakai/tokens.scss before
+ * registering it. Do not consume this file's raw hex values directly.
+ */
 import type { ThemeDefinition } from 'vuetify'
 
 export const modernTheme: ThemeDefinition = {

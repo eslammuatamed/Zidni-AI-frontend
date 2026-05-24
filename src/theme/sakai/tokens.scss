@@ -1,8 +1,17 @@
+/*
+ * Sakai design tokens — single source of truth for app brand + theme colors.
+ *
+ * NOTE: The public landing pages (LandingHome.vue, the teacherLanding
+ * templates, and src/styles/landing/variables.css with its --nabta-* tokens)
+ * are intentionally on a SEPARATE redesign track and are not consumers of
+ * this token system's brand updates. Do not migrate them here — they will
+ * be redesigned in their own dedicated phase with their own design spec.
+ */
 :root {
   --sakai-scale-factor: 0.92;
 
   /* Typography */
-  --sakai-font-family-base: 'IBM Plex Sans Arabic', sans-serif;
+  --sakai-font-family-base: 'Plus Jakarta Sans', 'Noto Sans Arabic', sans-serif;
   --sakai-font-size-root: calc(16px * var(--sakai-scale-factor));
   --sakai-font-size-sm: 0.875rem;
   --sakai-font-size-md: 1rem;
@@ -16,20 +25,20 @@
   --sakai-line-height-md: 1.6;
   --sakai-line-height-lg: 1.8;
 
-  /* Palette — primary: cyan #06B6D4, secondary: navy #1E3A8A */
-  --sakai-primary-50: #ecfeff;
-  --sakai-primary-100: #cffafe;
-  --sakai-primary-200: #a5f3fc;
-  --sakai-primary-300: #67e8f9;
-  --sakai-primary-400: #22d3ee;
-  --sakai-primary-500: #06b6d4;
-  --sakai-primary-600: #0891b2;
-  --sakai-primary-700: #0e7490;
-  --sakai-primary-800: #155e75;
-  --sakai-primary-900: #164e63;
+  /* Palette — primary: deep blue #1B2FAC, secondary: navy #1E3A8A (legacy) */
+  --sakai-primary-50:  #eef0fc;
+  --sakai-primary-100: #d7dcf7;
+  --sakai-primary-200: #aeb8ef;
+  --sakai-primary-300: #7d8ce4;
+  --sakai-primary-400: #4a5dd6;
+  --sakai-primary-500: #1b2fac;
+  --sakai-primary-600: #162a69;
+  --sakai-primary-700: #122382;
+  --sakai-primary-800: #0e1c69;
+  --sakai-primary-900: #0a1655;
   --sakai-primary: var(--sakai-primary-500);
-  --sakai-primary-rgb: 6 182 212;
-  --sakai-primary-contrast: #031016;
+  --sakai-primary-rgb: 27 47 172;
+  --sakai-primary-contrast: #ffffff;
 
   --sakai-secondary-50: #eff6ff;
   --sakai-secondary-100: #dbeafe;
@@ -45,20 +54,31 @@
   --sakai-secondary-rgb: 30 58 138;
   --sakai-secondary-contrast: #ffffff;
 
-  --sakai-success: #22c55e;
-  --sakai-success-rgb: 34 197 94;
+  --sakai-success: #0fb271;
+  --sakai-success-rgb: 15 178 113;
   --sakai-info: #3b82f6;
   --sakai-info-rgb: 59 130 246;
   --sakai-warning: #f59e0b;
   --sakai-warning-rgb: 245 158 11;
-  --sakai-danger: #ef4444;
-  --sakai-danger-rgb: 239 68 68;
+  --sakai-danger: #ec003f;
+  --sakai-danger-rgb: 236 0 63;
   --sakai-muted: #94a3b8;
+
+  /* Accent (purple) — used sparingly for emphasis chips */
+  --sakai-accent: #673de7;
+  --sakai-accent-rgb: 103 61 231;
+  --sakai-accent-contrast: #ffffff;
+
+  /* Brand-deep gradient stops (used in upgrade card, brand mark, banners) */
+  --sakai-brand-deep:    var(--sakai-primary-600);   /* #162a69 */
+  --sakai-brand-deepest: #2e1c68;                    /* deep purple-navy */
 
   /* Surfaces */
   --sakai-surface: #ffffff;
   --sakai-surface-rgb: 255 255 255;
+  --sakai-surface-page: #f7f9fc;    /* app canvas behind shell */
   --sakai-surface-alt: #f8fafc;
+  --sakai-surface-muted: #f1f5f9;   /* progress tracks, subtle row bg */
   --sakai-surface-strong: #e2e8f0;
   --sakai-surface-overlay: rgba(15, 23, 42, 0.55);
   --sakai-surface-card: var(--sakai-surface);
@@ -70,8 +90,9 @@
   /* Text */
   --sakai-text-color: #1f2937;
   --sakai-text-color-rgb: 31 41 55;
-  --sakai-text-color-secondary: #4b5563;
-  --sakai-text-color-tertiary: #6b7280;
+  --sakai-text-color-strong: #0f172b;       /* for large numerals / H2 */
+  --sakai-text-color-secondary: #314158;    /* refined to new system slate */
+  --sakai-text-color-tertiary: #62748e;     /* refined to new system slate */
   --sakai-text-color-muted: #94a3b8;
   --sakai-text-color-inverse: #ffffff;
 
@@ -90,7 +111,7 @@
   --sakai-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.10);
   --sakai-shadow-md: 0 10px 30px rgba(15, 23, 42, 0.12);
   --sakai-shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.16);
-  --sakai-shadow-focus: 0 0 0 3px rgba(6, 182, 212, 0.25);
+  --sakai-shadow-focus: 0 0 0 3px rgba(27, 47, 172, 0.25);
   --sakai-focus-ring-color: color-mix(in srgb, var(--sakai-primary) 65%, transparent);
 
   /* Gradients */
@@ -114,6 +135,23 @@
   --sakai-white-alpha-25: color-mix(in srgb, var(--sakai-text-color-inverse) 25%, transparent);
   --sakai-overlay-strong: color-mix(in srgb, var(--sakai-text-color) 45%, transparent);
   --sakai-shadow-hero: 0 40px 80px -45px color-mix(in srgb, var(--sakai-primary) 55%, rgba(15, 23, 42, 0.55));
+
+  /* Soft status backgrounds (flat, Figma-derived) */
+  --sakai-info-soft:    #eff6ff;
+  --sakai-success-soft: #ecfdf5;
+  --sakai-warning-soft: #fff7ed;
+  --sakai-danger-soft:  #fff1f2;
+  --sakai-accent-soft:  #eef2ff;
+
+  /* Brand gradient + deep-fade gradient (used in upgrade card, banners) */
+  --sakai-gradient-brand:      linear-gradient(135deg, var(--sakai-primary) 0%, var(--sakai-brand-deepest) 100%);
+  --sakai-gradient-brand-soft: linear-gradient(180deg, var(--sakai-brand-deep) 0%, rgba(81, 162, 255, 0.20) 100%);
+
+  /* KPI delta + decorative dots (notification bell) */
+  --sakai-delta-up:   var(--sakai-success);
+  --sakai-delta-down: var(--sakai-danger);
+  --sakai-dot-red:    #ff2056;                  /* distinct from danger hue */
+  --sakai-dot-blue:   var(--sakai-info);        /* close enough — reuse */
 
   /* Spacing scale */
   --sakai-space-0: 0;
@@ -144,11 +182,11 @@
      Primary  : #1E3A8A  (dark navy  — used for active states, sidebar accent)
      Accent   : #06B6D4  (cyan       — used for highlights, brand mark, icons)
   ─────────────────────────────────────────────────────────────────────────── */
-  --brand-primary:        #1E3A8A;
-  --brand-primary-light:  #2550c0;
-  --brand-accent:         #06B6D4;
-  --brand-accent-dark:    #0891B2;
-  --brand-accent-light:   #22D3EE;
+  --brand-primary:        #1b2fac;
+  --brand-primary-light:  #4a5dd6;
+  --brand-accent:         #1b2fac;
+  --brand-accent-dark:    #162a69;
+  --brand-accent-light:   #4a5dd6;
 
   /* Sidebar */
   --brand-sidebar-bg:          #ffffff;
@@ -160,13 +198,13 @@
   /* Nav items */
   --brand-nav-active-bg:       var(--brand-primary);
   --brand-nav-active-text:     #ffffff;
-  --brand-nav-active-shadow:   rgba(30, 58, 138, 0.30);
-  --brand-nav-hover-bg:        rgba(30, 58, 138, 0.07);
+  --brand-nav-active-shadow:   rgba(27, 47, 172, 0.30);
+  --brand-nav-hover-bg:        rgba(27, 47, 172, 0.07);
   --brand-nav-hover-text:      var(--brand-primary);
 
   /* Brand mark */
-  --brand-mark-gradient:       linear-gradient(135deg, var(--brand-accent) 0%, var(--brand-primary) 100%);
-  --brand-mark-shadow:         rgba(6, 182, 212, 0.35);
+  --brand-mark-gradient:       linear-gradient(135deg, var(--brand-primary) 0%, var(--sakai-brand-deepest) 100%);
+  --brand-mark-shadow:         rgba(27, 47, 172, 0.35);
   --sakai-container-max: 1200px;
 
   color-scheme: light;
@@ -211,6 +249,42 @@
   --sakai-info-surface: color-mix(in srgb, var(--sakai-info) 24%, transparent);
   --sakai-warning-surface: color-mix(in srgb, var(--sakai-warning) 28%, transparent);
   --sakai-danger-surface: color-mix(in srgb, var(--sakai-danger) 26%, transparent);
+
+  /* Brand-shift dark-mode primary override (lifted from #1b2fac to indigo-400-ish for AA contrast on slate-900) */
+  --sakai-primary-500: #4a5dd6;
+  --sakai-primary-rgb: 74 93 214;
+  --sakai-primary:     var(--sakai-primary-500);
+  --sakai-primary-contrast: #f8fafc;
+
+  /* Status colors lifted for dark contrast */
+  --sakai-success:     #15ce82;
+  --sakai-success-rgb: 21 206 130;
+  --sakai-info:        #60a5fa;
+  --sakai-info-rgb:    96 165 250;
+  --sakai-danger:      #ff4d6f;
+  --sakai-danger-rgb:  255 77 111;
+
+  /* Text overrides for dark */
+  --sakai-text-color-strong: #f8fafc;
+
+  /* New token dark variants */
+  --sakai-accent:        #8b6df5;
+  --sakai-accent-rgb:    139 109 245;
+  --sakai-brand-deep:    #1b2553;
+  --sakai-brand-deepest: #251745;
+  --sakai-surface-page:  #0b1220;   /* darker than card, behind shell */
+  --sakai-surface-muted: #172033;   /* between surface and surface-alt */
+
+  --sakai-info-soft:    color-mix(in srgb, var(--sakai-info)    18%, transparent);
+  --sakai-success-soft: color-mix(in srgb, var(--sakai-success) 18%, transparent);
+  --sakai-warning-soft: color-mix(in srgb, var(--sakai-warning) 22%, transparent);
+  --sakai-danger-soft:  color-mix(in srgb, var(--sakai-danger)  18%, transparent);
+  --sakai-accent-soft:  color-mix(in srgb, var(--sakai-accent)  18%, transparent);
+
+  --sakai-gradient-brand:      linear-gradient(135deg, var(--sakai-primary) 0%, var(--sakai-brand-deepest) 100%);
+  --sakai-gradient-brand-soft: linear-gradient(180deg, var(--sakai-brand-deep) 0%, rgba(74, 93, 214, 0.18) 100%);
+
+  --sakai-dot-red: #ff7a96;
 
   /* Brand Colors for Dark Mode */
   --brand-primary:        var(--sakai-primary-400);

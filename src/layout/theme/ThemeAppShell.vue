@@ -162,24 +162,11 @@
         v-if="auth.isTeacher && teacherPlanUpgradeEnabled"
         class="theme-app-shell__sidebar-upgrade"
       >
-        <RouterLink
-          :to="{ name: 'teacher-plan-upgrade' }"
-          class="theme-app-shell__upgrade-button"
-          :class="{ 'is-collapsed': collapsed && !isMobile }"
-          :title="t('nav.teacherUpgradePlan')"
-          :aria-label="t('nav.teacherUpgradePlan')"
+        <SidebarUpgradeCard
+          :collapsed="collapsed && !isMobile"
+          :plan-label="t('nav.teacherCurrentPlan', { plan: teacherPlanDisplay })"
           @click="handleNavigate"
-        >
-          <span class="theme-app-shell__nav-icon">
-            <UiIcon name="ArrowUpOutlined" :size="18" />
-          </span>
-          <span v-if="!collapsed || isMobile">{{
-            t("nav.teacherUpgradePlan")
-          }}</span>
-        </RouterLink>
-        <p v-if="!collapsed || isMobile" class="theme-app-shell__plan-label">
-          {{ t("nav.teacherCurrentPlan", { plan: teacherPlanDisplay }) }}
-        </p>
+        />
       </div>
     </aside>
 
@@ -189,7 +176,7 @@
           <button
             v-if="isMobile"
             ref="drawerToggle"
-            class="theme-icon-button"
+            class="theme-icon-button theme-icon-button--square"
             type="button"
             :aria-label="t('nav.toggleSidebar')"
             aria-haspopup="true"
@@ -201,7 +188,7 @@
           </button>
           <button
             v-else
-            class="theme-icon-button"
+            class="theme-icon-button theme-icon-button--square"
             type="button"
             :aria-label="t('nav.toggleSidebar')"
             :title="sidebarToggleTitle"
@@ -226,7 +213,7 @@
                 <span>{{ crumb.title }}</span>
                 <UiIcon
                   v-if="index < breadcrumbs.length - 1"
-                  name="RightOutlined"
+                  :name="breadcrumbSeparatorIcon"
                   :size="14"
                 />
               </RouterLink>
@@ -236,7 +223,6 @@
         </div>
 
         <div class="theme-topbar__search" role="search">
-          <UiIcon name="SearchOutlined" :size="18" />
           <input
             v-model="searchQuery"
             class="theme-topbar__search-input"
@@ -244,6 +230,7 @@
             :placeholder="t('nav.searchPlaceholder')"
             :aria-label="t('nav.searchPlaceholder')"
           />
+          <UiIcon name="SearchOutlined" :size="18" />
         </div>
 
         <div class="theme-topbar__actions">
@@ -258,11 +245,11 @@
             :title="languageToggleTitle"
             @click="toggleLanguage"
           >
-            <UiIcon name="GlobalOutlined" />
             <span>{{ languageLabel }}</span>
+            <UiIcon name="GlobalOutlined" />
           </button>
           <button
-            class="theme-icon-button"
+            class="theme-icon-button theme-icon-button--square"
             type="button"
             :aria-label="themeToggleTitle"
             :title="themeToggleTitle"
@@ -270,34 +257,44 @@
             @click="themeStore.toggleTheme()"
           >
             <UiIcon :name="themeToggleIcon" />
-            <span>{{ themeToggleNextLabel }}</span>
           </button>
           <RouterLink
             v-if="
               notificationsUnifiedEnabled && (auth.isTeacher || auth.isStudent)
             "
-            class="theme-icon-button theme-icon-button--notification"
+            class="theme-icon-button theme-icon-button--square"
             :to="
               auth.isTeacher
                 ? '/teacher/notifications'
                 : '/student/notifications'
             "
-            :aria-label="t('notifications.historyTitle')"
+            :aria-label="notificationsAriaLabel"
+            :title="notificationsAriaLabel"
           >
+            <UiIcon name="BellOutlined" />
             <span
               v-if="showNotificationsBadge"
-              class="theme-icon-badge"
-              role="status"
-              aria-live="polite"
-              aria-atomic="true"
-            >
-              {{ notificationsBadgeLabel }}
-            </span>
-            <UiIcon name="BellOutlined" />
+              class="theme-icon-dot theme-icon-dot--red"
+              aria-hidden="true"
+            ></span>
+          </RouterLink>
+          <RouterLink
+            v-if="auth.isTeacher"
+            class="theme-icon-button theme-icon-button--square"
+            to="/teacher/landing/messages"
+            :aria-label="landingInquiriesAriaLabel"
+            :title="landingInquiriesAriaLabel"
+          >
+            <UiIcon name="MailOutlined" />
+            <span
+              v-if="showLandingInquiriesBadge"
+              class="theme-icon-dot theme-icon-dot--blue"
+              aria-hidden="true"
+            ></span>
           </RouterLink>
           <button
             v-if="canAccessTeacherLandingContent"
-            class="theme-icon-button"
+            class="theme-icon-button theme-icon-button--square"
             type="button"
             :aria-label="t('nav.settings')"
             :title="t('nav.settings')"
@@ -316,22 +313,17 @@
               @click="toggleUserMenu"
               @keydown.escape.stop.prevent="closeUserMenu"
             >
-              <div class="theme-topbar__avatar">{{ brandInitials }}</div>
-              <div class="theme-topbar__user-meta">
-                <span class="theme-topbar__user-name">{{
-                  headerUserName
-                }}</span>
-                <span class="theme-topbar__user-role">{{ authRoleLabel }}</span>
-              </div>
+              <span class="theme-topbar__avatar">{{ brandInitials }}</span>
+              <span class="theme-topbar__user-name">{{ headerUserName }}</span>
+              <UiIcon
+                name="DownOutlined"
+                :size="12"
+                class="theme-topbar__user-caret"
+              />
             </button>
             <div v-else class="theme-topbar__user-display">
-              <div class="theme-topbar__avatar">{{ brandInitials }}</div>
-              <div class="theme-topbar__user-meta">
-                <span class="theme-topbar__user-name">{{
-                  headerUserName
-                }}</span>
-                <span class="theme-topbar__user-role">{{ authRoleLabel }}</span>
-              </div>
+              <span class="theme-topbar__avatar">{{ brandInitials }}</span>
+              <span class="theme-topbar__user-name">{{ headerUserName }}</span>
             </div>
             <transition name="theme-topbar__user-menu">
               <div
@@ -339,6 +331,14 @@
                 class="theme-topbar__user-menu"
                 role="menu"
               >
+                <div class="theme-topbar__user-menu-header" role="presentation">
+                  <span class="theme-topbar__user-menu-name">{{
+                    headerUserName
+                  }}</span>
+                  <span class="theme-topbar__user-menu-role">{{
+                    authRoleLabel
+                  }}</span>
+                </div>
                 <ul class="theme-topbar__user-menu-list">
                   <li v-for="item in userMenuItems" :key="item.id">
                     <RouterLink
@@ -485,6 +485,7 @@ import {
   type TeacherNavSuppressedItem,
 } from "./buildTeacherNavItems";
 import AdminAlertOverlay from "@/components/admin/AdminAlertOverlay.vue";
+import SidebarUpgradeCard from "@/components/dashboard/SidebarUpgradeCard.vue";
 
 const SUPPORTED_LOCALES: SupportedLocale[] = ["ar", "en"];
 
@@ -511,7 +512,7 @@ const teacherProfileStore = useTeacherProfileStore();
 const studentStore = useStudentStore();
 const route = useRoute();
 const router = useRouter();
-const { t, tm, locale } = useI18n();
+const { t, te, tm, locale } = useI18n();
 const featuresStore = useFeaturesStore();
 const featureSync = useFeatureSyncStore();
 const subscriptionStore = useSubscriptionStore();
@@ -1326,6 +1327,24 @@ const landingInquiryBadgeLabel = computed(() => {
   return count > 99 ? "99+" : String(count);
 });
 
+const notificationsAriaLabel = computed(() => {
+  const base = t("notifications.historyTitle");
+  return showNotificationsBadge.value
+    ? `${base} (${notificationsBadgeLabel.value})`
+    : base;
+});
+
+const showLandingInquiriesBadge = computed(() =>
+  Boolean(landingInquiryBadgeLabel.value),
+);
+
+const landingInquiriesAriaLabel = computed(() => {
+  const base = t("nav.teacherLandingMessages");
+  return showLandingInquiriesBadge.value
+    ? `${base} (${landingInquiryBadgeLabel.value})`
+    : base;
+});
+
 watch(
   () => [notificationsUnifiedEnabled.value, auth.isAuthenticated],
   ([enabled, authenticated]) => {
@@ -2136,21 +2155,42 @@ const breadcrumbs = computed(() => {
     crumbs.push({ title: homeItem.label, to: homeItem.to });
   }
   const activeNav = navItems.value.find((item) => isNavActive(item.to));
-  const fallbackTitle =
-    (route.meta?.title as string | undefined) ||
-    (typeof route.name === "string"
-      ? route.name.replace(/[-_]/g, " ")
-      : undefined);
-  if (
-    activeNav &&
-    (!crumbs.length || crumbs[crumbs.length - 1].title !== activeNav.label)
-  ) {
+
+  // When activeNav is the home item itself, the home crumb is already in place;
+  // do NOT fall through to the raw-route-name fallback (that was rendering
+  // "teacher dashboard" untranslated on /teacher/home).
+  if (activeNav && activeNav !== homeItem) {
     crumbs.push({ title: activeNav.label, to: activeNav.to });
-  } else if (fallbackTitle) {
-    crumbs.push({ title: fallbackTitle, to: route.fullPath });
+    return crumbs;
+  }
+  if (activeNav === homeItem) {
+    return crumbs;
+  }
+
+  // No nav match — try to translate before showing raw English. Prefer
+  // route.meta.title if set, else derive a `nav.X` key from the route name.
+  // If neither resolves, skip the second crumb entirely (better than English).
+  const metaTitle =
+    typeof route.meta?.title === "string" ? route.meta.title : null;
+  if (metaTitle && te(metaTitle)) {
+    crumbs.push({ title: t(metaTitle), to: route.fullPath });
+    return crumbs;
+  }
+  if (typeof route.name === "string") {
+    const camelKey =
+      "nav." + route.name.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+    if (te(camelKey)) {
+      crumbs.push({ title: t(camelKey), to: route.fullPath });
+    }
   }
   return crumbs;
 });
+
+// Breadcrumb separator icon: visual direction follows the reading direction
+// (Right chevron in LTR; Left chevron in RTL).
+const breadcrumbSeparatorIcon = computed(() =>
+  locale.value === "ar" ? "LeftOutlined" : "RightOutlined",
+);
 
 /**
  * Resolves the page title to display in the top bar using breadcrumb context
@@ -2189,7 +2229,11 @@ const toggleLanguage = async () => {
   locale.value = nextLocale;
 };
 
-const languageLabel = computed(() => (locale.value === "ar" ? "EN" : "AR"));
+// Shows the CURRENT language's native name (not the toggle target) — clicking
+// still switches; the label tells the user which language they're reading in.
+const languageLabel = computed(() =>
+  locale.value === "ar" ? "العربية" : "English",
+);
 
 watch(
   locale,
@@ -2572,23 +2616,42 @@ const handleNavigate = () => {
   display: flex;
   align-items: center;
   gap: var(--sakai-space-2);
-  background: var(--sakai-surface);
-  border-radius: var(--sakai-border-radius-pill);
-  border: 1px solid var(--sakai-border-color);
-  padding: 0.4rem 1rem;
-  box-shadow: var(--sakai-shadow-sm);
-  flex: 1;
-  max-width: 28rem;
+  /* Use background-color (not the shorthand) so any global `background-image`
+     rule on inputs doesn't override the wrapper fill. */
+  background-color: var(--sakai-surface-muted);
+  border-radius: var(--sakai-border-radius-md);
+  padding: 0.5rem 1rem;
+  flex: 0 1 17.5rem; /* Figma fixed-ish 280px, allows shrink on narrow viewports */
   min-width: 0; /* Help Safari flex */
   margin-inline: var(--sakai-space-2);
+  color: var(--sakai-text-color-tertiary);
 }
 
 .theme-topbar__search-input {
+  /* `appearance: none` strips WebKit's built-in search-input chrome
+     (rounded background + inset shadow) which would otherwise paint
+     over the wrapper's muted fill. Project disables Tailwind preflight,
+     so this reset has to live here. */
+  -webkit-appearance: none;
+  appearance: none;
   border: none;
   outline: none;
   flex: 1;
-  font-size: 0.95rem;
-  background: transparent;
+  font-size: 0.8125rem;
+  background-color: transparent;
+  color: var(--sakai-text-color);
+}
+
+.theme-topbar__search-input::-webkit-search-decoration,
+.theme-topbar__search-input::-webkit-search-cancel-button,
+.theme-topbar__search-input::-webkit-search-results-button,
+.theme-topbar__search-input::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.theme-topbar__search-input::placeholder {
+  color: var(--sakai-text-color-tertiary);
 }
 
 .theme-topbar__actions {
@@ -2631,25 +2694,41 @@ const handleNavigate = () => {
   box-shadow: none;
 }
 
-.theme-icon-button--notification {
-  padding-right: 1.75rem;
+/* Square icon-only variant (32x32 with 12px radius) — used for drawer toggle,
+   theme toggle, notifications, landing-inquiries, settings. The base
+   .theme-icon-button stays as the pill-with-text style for the language pill. */
+.theme-icon-button--square {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: var(--sakai-border-radius-md);
+  gap: 0;
+  justify-content: center;
 }
 
-.theme-icon-badge {
+/* Notification dot (6x6) anchored to the visual top-right of a square icon
+   button. Notification badges are a VISUAL convention (always top-right, like
+   iOS/Android/Figma) — not a reading-direction convention — so we use
+   physical `right` instead of `inset-inline-end` so RTL doesn't flip it.
+   Pixel values (not rem) keep the dot at exactly 6px even if the root font
+   size gets rescaled. */
+.theme-icon-dot {
   position: absolute;
-  top: 0.2rem;
-  right: 0.45rem;
-  min-width: 1.25rem;
-  height: 1.25rem;
+  top: 6px;
+  right: 6px;
+  width: 6px;
+  height: 6px;
   border-radius: 999px;
-  background: var(--sakai-danger);
-  color: var(--sakai-primary-contrast);
-  font-size: 0.75rem;
-  font-weight: var(--sakai-font-weight-semibold);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 0.35rem;
+  border: 1px solid var(--sakai-surface-card);
+  pointer-events: none;
+}
+
+.theme-icon-dot--red {
+  background: var(--sakai-dot-red);
+}
+
+.theme-icon-dot--blue {
+  background: var(--sakai-dot-blue);
 }
 
 .theme-icon-button:hover {
@@ -2674,7 +2753,8 @@ const handleNavigate = () => {
   display: inline-flex;
   align-items: center;
   gap: var(--sakai-space-2);
-  padding: 0.35rem 0.65rem;
+  padding: 0.25rem;
+  padding-inline-end: 0.625rem;
   border-radius: var(--sakai-border-radius-pill);
   border: 1px solid var(--sakai-border-color); /* Fallback */
   border: 1px solid
@@ -2792,19 +2872,40 @@ const handleNavigate = () => {
   font-weight: var(--sakai-font-weight-semibold);
 }
 
-.theme-topbar__user-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  font-size: 0.75rem;
+.theme-topbar__user-name {
+  font-size: 0.8125rem;
+  font-weight: var(--sakai-font-weight-semibold);
+  color: var(--sakai-text-color);
+  white-space: nowrap;
+  max-width: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.theme-topbar__user-name {
+.theme-topbar__user-caret {
+  color: var(--sakai-text-color-tertiary);
+  flex-shrink: 0;
+}
+
+/* Header inside the user dropdown — the role label moved here from the pill. */
+.theme-topbar__user-menu-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.5rem 1rem 0.75rem;
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--sakai-border-color) 60%, transparent);
+  margin-bottom: 0.25rem;
+}
+
+.theme-topbar__user-menu-name {
+  font-size: 0.875rem;
   font-weight: var(--sakai-font-weight-semibold);
   color: var(--sakai-text-color);
 }
 
-.theme-topbar__user-role {
+.theme-topbar__user-menu-role {
+  font-size: 0.75rem;
   color: var(--sakai-text-color-tertiary);
 }
 

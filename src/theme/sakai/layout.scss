@@ -186,13 +186,11 @@
     background: var(--brand-nav-active-bg);
     color: var(--brand-nav-active-text);
     font-weight: 600;
-    box-shadow: 0 2px 8px var(--brand-nav-active-shadow);
   }
 
   &:hover:not(.is-active) {
     background: var(--brand-nav-hover-bg);
     color: var(--brand-nav-hover-text);
-    transform: translateX(var(--theme-nav-hover-translate));
   }
 }
 
@@ -237,16 +235,15 @@
   position: sticky;
   top: 0;
   z-index: 994;
-  height: var(--sakai-topbar-height);
+  height: 4.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   /* Fix for Safari item distribution */
   gap: var(--sakai-space-3);
-  padding: 0 var(--sakai-space-5);
+  padding: var(--sakai-space-4) var(--sakai-space-8);
   background: var(--sakai-surface-card);
   border-bottom: 0.0625rem solid var(--sakai-border-color);
-  box-shadow: 0 0.0625rem 0 rgba(15, 23, 42, 0.04);
   box-sizing: border-box;
 }
 

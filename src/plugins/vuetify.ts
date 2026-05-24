@@ -23,11 +23,13 @@ const museTheme = {
   }
 };
 
+// Vuetify needs static hex values at boot — these mirror the brand tokens in
+// src/theme/sakai/tokens.scss. Keep in sync when the brand changes.
 const mathGuruTheme = {
   dark: false,
   colors: {
-    primary: '#06b6d4',
-    secondary: '#1e3a8a',
+    primary: '#1b2fac',   // --sakai-primary-500
+    secondary: '#162a69', // --sakai-brand-deep (= primary-600)
     surface: LIGHT_SURFACE,
     background: '#ffffff',
     onMedia: '#ffffff',
@@ -40,12 +42,12 @@ const mathGuruDarkTheme = {
   colors: {
     background: '#0f172a',
     surface: '#111c34',
-    primary: '#06b6d4',
-    secondary: '#1e3a8a',
-    info: '#38bdf8',
-    success: '#4ade80',
-    warning: '#facc15',
-    danger: '#fb7185',
+    primary: '#4a5dd6',   // dark --sakai-primary-500 (lifted indigo-400-ish)
+    secondary: '#1b2553', // dark --sakai-brand-deep
+    info: '#60a5fa',      // dark --sakai-info (lifted blue-400)
+    success: '#15ce82',   // dark --sakai-success
+    warning: '#f59e0b',   // --sakai-warning (no dark override)
+    danger: '#ff4d6f',    // dark --sakai-danger
     'on-background': '#e2e8f0',
     'on-surface': '#e2e8f0'
   }

@@ -20,11 +20,16 @@ module.exports = {
         // Use: text-sakai-primary, bg-sakai-primary, text-sakai-primary/50, etc.
         'sakai-primary': {
           DEFAULT: 'rgb(var(--sakai-primary-rgb) / <alpha-value>)',
-          300: '#67e8f9',
-          400: '#22d3ee',
+          50:  'var(--sakai-primary-50)',
+          100: 'var(--sakai-primary-100)',
+          200: 'var(--sakai-primary-200)',
+          300: 'var(--sakai-primary-300)',
+          400: 'var(--sakai-primary-400)',
           500: 'rgb(var(--sakai-primary-rgb) / <alpha-value>)',
-          600: '#0891b2',
-          700: '#0e7490',
+          600: 'var(--sakai-primary-600)',
+          700: 'var(--sakai-primary-700)',
+          800: 'var(--sakai-primary-800)',
+          900: 'var(--sakai-primary-900)',
           contrast: 'var(--sakai-primary-contrast)'
         },
         'sakai-secondary': {
@@ -34,25 +39,47 @@ module.exports = {
           600: '#2563eb',
           700: '#1d4ed8'
         },
+        // Accent (purple) — used sparingly for emphasis chips
+        'sakai-accent': {
+          DEFAULT: 'rgb(var(--sakai-accent-rgb) / <alpha-value>)',
+          contrast: 'var(--sakai-accent-contrast)',
+          soft: 'var(--sakai-accent-soft)'
+        },
+        // Brand gradient stops — used in upgrade card / brand mark / banners
+        'sakai-brand-deep':    'var(--sakai-brand-deep)',
+        'sakai-brand-deepest': 'var(--sakai-brand-deepest)',
         success: 'rgb(var(--sakai-success-rgb) / <alpha-value>)',
         info: 'rgb(var(--sakai-info-rgb) / <alpha-value>)',
         warning: 'rgb(var(--sakai-warning-rgb) / <alpha-value>)',
         danger: 'rgb(var(--sakai-danger-rgb) / <alpha-value>)',
+        // Soft state surfaces (flat, Figma-derived; distinct from color-mix *-surface tokens)
+        'success-soft': 'var(--sakai-success-soft)',
+        'info-soft':    'var(--sakai-info-soft)',
+        'warning-soft': 'var(--sakai-warning-soft)',
+        'danger-soft':  'var(--sakai-danger-soft)',
         // Surface tokens — used as bg-surface, bg-surface-card etc.
         surface: {
           DEFAULT: 'var(--sakai-surface)',
-          alt: 'var(--sakai-surface-alt)',
-          card: 'var(--sakai-surface-card)',
-          section: 'var(--sakai-surface-section)'
+          page:    'var(--sakai-surface-page)',
+          alt:     'var(--sakai-surface-alt)',
+          card:    'var(--sakai-surface-card)',
+          section: 'var(--sakai-surface-section)',
+          muted:   'var(--sakai-surface-muted)'
         },
         // Foreground/text tokens
         content: {
-          DEFAULT: 'rgb(var(--sakai-text-color-rgb) / <alpha-value>)',
+          DEFAULT:   'rgb(var(--sakai-text-color-rgb) / <alpha-value>)',
+          strong:    'var(--sakai-text-color-strong)',
           secondary: 'var(--sakai-text-color-secondary)',
-          tertiary: 'var(--sakai-text-color-tertiary)',
-          muted: 'var(--sakai-text-color-muted)',
-          inverse: 'var(--sakai-text-color-inverse)'
+          tertiary:  'var(--sakai-text-color-tertiary)',
+          muted:     'var(--sakai-text-color-muted)',
+          inverse:   'var(--sakai-text-color-inverse)'
         },
+        // KPI delta semantics + decorative dots
+        'delta-up':   'var(--sakai-delta-up)',
+        'delta-down': 'var(--sakai-delta-down)',
+        'dot-red':    'var(--sakai-dot-red)',
+        'dot-blue':   'var(--sakai-dot-blue)',
         // Border token
         border: 'var(--sakai-border-color)'
       },
@@ -79,6 +106,8 @@ module.exports = {
         'gradient-info': 'var(--sakai-gradient-info)',
         'gradient-warning': 'var(--sakai-gradient-warning)',
         'gradient-danger': 'var(--sakai-gradient-danger)',
+        'gradient-brand':      'var(--sakai-gradient-brand)',
+        'gradient-brand-soft': 'var(--sakai-gradient-brand-soft)',
         'surface-hero': 'var(--sakai-surface-hero)'
       }
     }

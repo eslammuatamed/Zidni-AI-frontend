@@ -28,26 +28,17 @@
         </div>
 
         <div class="admin-analytics__charts">
-          <UiCard
+          <AnalyticsChartCard
             v-for="chart in chartConfigs"
             :key="chart.key"
             class="admin-analytics__chart-card"
-            hover
-          >
-            <template #title>{{ chart.title }}</template>
-            <template #subtitle>{{ chart.subtitle }}</template>
-            <div class="admin-analytics__chart">
-              <UiSkeleton v-if="chart.loading" height="200" animation="wave" />
-              <UiChart
-                v-else-if="chart.values.length"
-                :values="chart.values"
-                :labels="chart.labels"
-                :height="200"
-                :stroke="chart.stroke"
-              />
-              <p v-else class="admin-analytics__empty">{{ emptyStateLabel }}</p>
-            </div>
-          </UiCard>
+            :title="chart.title"
+            :subtitle="chart.subtitle"
+            :values="chart.values"
+            :labels="chart.labels"
+            :loading="chart.loading"
+            :empty-label="emptyStateLabel"
+          />
         </div>
       </div>
     </section>
@@ -60,9 +51,7 @@ import { useI18n } from 'vue-i18n';
 import ThemePage from '@/layout/theme/ThemePage.vue';
 import UiStatCard from '@/components/ui/UiStatCard.vue';
 import UiAlert from '@/components/ui/UiAlert.vue';
-import UiCard from '@/components/ui/UiCard.vue';
-import UiChart from '@/components/ui/UiChart.vue';
-import UiSkeleton from '@/components/ui/UiSkeleton.vue';
+import AnalyticsChartCard from '@/components/charts/AnalyticsChartCard.vue';
 import UiButton from '@/components/ui/UiButton.vue';
 import { useVisibilityRefresh } from '@/composables/useVisibilityRefresh';
 import { useFeaturesStore } from '@/stores/features';

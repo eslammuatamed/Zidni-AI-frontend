@@ -61,41 +61,25 @@
       </UiAlert>
 
       <div class="student-reports__grid">
-        <UiCard class="student-reports__card" hover>
-          <template #title>{{ t('studentReports.progress.title') }}</template>
-          <template #subtitle>{{ t('studentReports.progress.subtitle') }}</template>
-          <div class="student-reports__chart">
-            <UiSkeleton v-if="loading.progress" height="200" animation="wave" />
-            <UiChart
-              v-else-if="progressValues.length"
-              :values="progressValues"
-              :labels="progressLabels"
-              :height="200"
-              stroke="var(--sakai-primary)"
-            />
-            <p v-else class="student-reports__empty">
-              {{ t('studentReports.empty') }}
-            </p>
-          </div>
-        </UiCard>
+        <AnalyticsChartCard
+          class="student-reports__card"
+          :title="t('studentReports.progress.title')"
+          :subtitle="t('studentReports.progress.subtitle')"
+          :values="progressValues"
+          :labels="progressLabels"
+          :loading="loading.progress"
+          :empty-label="t('studentReports.empty')"
+        />
 
-        <UiCard class="student-reports__card" hover>
-          <template #title>{{ t('studentReports.engagement.title') }}</template>
-          <template #subtitle>{{ engagementSubtitle }}</template>
-          <div class="student-reports__chart">
-            <UiSkeleton v-if="loading.engagement" height="200" animation="wave" />
-            <UiChart
-              v-else-if="engagementValues.length"
-              :values="engagementValues"
-              :labels="engagementLabels"
-              :height="200"
-              stroke="var(--sakai-success)"
-            />
-            <p v-else class="student-reports__empty">
-              {{ t('studentReports.empty') }}
-            </p>
-          </div>
-        </UiCard>
+        <AnalyticsChartCard
+          class="student-reports__card"
+          :title="t('studentReports.engagement.title')"
+          :subtitle="engagementSubtitle"
+          :values="engagementValues"
+          :labels="engagementLabels"
+          :loading="loading.engagement"
+          :empty-label="t('studentReports.empty')"
+        />
       </div>
     </section>
   </ThemePage>
@@ -110,8 +94,7 @@ import UiInput from '@/components/ui/UiInput.vue';
 import UiSelect from '@/components/ui/UiSelect.vue';
 import UiButton from '@/components/ui/UiButton.vue';
 import UiAlert from '@/components/ui/UiAlert.vue';
-import UiChart from '@/components/ui/UiChart.vue';
-import UiSkeleton from '@/components/ui/UiSkeleton.vue';
+import AnalyticsChartCard from '@/components/charts/AnalyticsChartCard.vue';
 import {
   getEngagementSeries,
   getProgressSeries,
