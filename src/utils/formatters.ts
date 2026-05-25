@@ -10,14 +10,18 @@ function toDate(value: DateLike): Date | null {
 
 export function formatDateTime(
   value: DateLike,
-  options: Intl.DateTimeFormatOptions = { dateStyle: 'medium', timeStyle: 'short' }
+  options: Intl.DateTimeFormatOptions = { dateStyle: 'medium', timeStyle: 'short' },
+  locale?: string
 ): string {
   const date = toDate(value);
   if (!date) {
     return '';
   }
 
-  const formatter = new Intl.DateTimeFormat(undefined, options);
+  // `locale` defaults to undefined, which preserves the prior runtime-default
+  // behaviour for every existing caller. Pass an explicit BCP-47 tag (e.g.
+  // 'ar-u-nu-latn') to render in a specific locale with a chosen numbering system.
+  const formatter = new Intl.DateTimeFormat(locale, options);
   return formatter.format(date);
 }
 

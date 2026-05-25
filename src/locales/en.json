@@ -16,6 +16,9 @@
     "confirm": "Confirm",
     "previous": "Previous",
     "next": "Next",
+    "more": "More",
+    "noOptions": "No options",
+    "remove": "Remove",
     "all": "All",
     "actions": "Actions",
     "preview": "Preview",
@@ -135,6 +138,21 @@
     "testimonials": {
       "title": "What learners are saying",
       "empty": "Testimonials will appear here once they are published."
+    }
+  },
+  "pagination": {
+    "showing": "Showing {from} to {to} of {total} {entity}"
+  },
+  "liveSession": {
+    "editor": {
+      "title": "Live session details",
+      "subtitle": "Set the live session details, scheduling, and broadcast settings.",
+      "basicInfoSection": "Basic information",
+      "schedulingSection": "Scheduling & Recurrence",
+      "broadcastSection": "Broadcast settings",
+      "instructorSection": "Instructor & permissions",
+      "scheduleSession": "Schedule session",
+      "updateSession": "Update session"
     }
   },
   "publicLandingTabs": {
@@ -1901,6 +1919,7 @@
   "offers": {
     "title": "Marketing offers",
     "subtitle": "Create promotional discounts and bundles for your courses.",
+    "offersEntity": "offers",
     "new": "New Offer",
     "createTitle": "Create offer",
     "editTitle": "Edit offer",
@@ -4396,6 +4415,8 @@
     },
     "title": "Assessments",
     "subtitle": "Build quizzes and exams from your banked questions.",
+    "assessmentsEntity": "assessments",
+    "searchPlaceholder": "Search assessments...",
     "createAssessment": "Create assessment",
     "tableName": "Name",
     "tableCourse": "Course",
@@ -6120,6 +6141,13 @@
       "emptyState": "No live sessions yet. Schedule one to get started.",
       "loadError": "Unable to load live sessions. Please try again later.",
       "newSession": "Schedule session",
+      "searchPlaceholder": "Search for a session...",
+      "filterStatus": "Session status",
+      "allStatuses": "All statuses",
+      "duplicateCopyTooltip": "Duplicated copy",
+      "repeatSourceTooltip": "Source session with duplicates",
+      "studentsPlaceholder": "Select students",
+      "sessionsEntity": "sessions",
       "createTitle": "Schedule live session",
       "editTitle": "Edit live session",
       "courseLabel": "Course",

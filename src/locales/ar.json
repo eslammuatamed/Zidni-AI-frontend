@@ -17,6 +17,9 @@
     "confirm": "تأكيد",
     "previous": "السابق",
     "next": "التالي",
+    "more": "المزيد",
+    "noOptions": "لا توجد خيارات",
+    "remove": "إزالة",
     "all": "الكل",
     "actions": "إجراءات",
     "preview": "معاينة",
@@ -132,6 +135,21 @@
     "testimonials": {
       "title": "آراء المتعلمين",
       "empty": "ستظهر الشهادات هنا عند نشرها."
+    }
+  },
+  "pagination": {
+    "showing": "عرض {from} إلى {to} من {total} {entity}"
+  },
+  "liveSession": {
+    "editor": {
+      "title": "إعداد تفاصيل الجلسة المباشرة",
+      "subtitle": "حدّد تفاصيل الجلسة المباشرة وجدولتها وإعدادات البث.",
+      "basicInfoSection": "المعلومات الأساسية",
+      "schedulingSection": "الجدولة والتكرار",
+      "broadcastSection": "إعدادات البث",
+      "instructorSection": "المدرب والصلاحيات",
+      "scheduleSession": "جدولة الجلسة",
+      "updateSession": "تحديث الجلسة"
     }
   },
   "publicLandingTabs": {
@@ -1910,6 +1928,7 @@
   "offers": {
     "title": "عروض التسويق",
     "subtitle": "أنشئ خصومات وباقات ترويجية لدوراتك.",
+    "offersEntity": "عرض ترويجي",
     "new": "عرض جديد",
     "createTitle": "إنشاء عرض",
     "editTitle": "تعديل العرض",
@@ -4361,6 +4380,8 @@
     },
     "title": "الاختبارات",
     "subtitle": "أنشئ اختبارات واختبارات نهائية من بنوك الأسئلة لديك.",
+    "assessmentsEntity": "اختبار",
+    "searchPlaceholder": "ابحث عن اختبار...",
     "createAssessment": "إنشاء اختبار",
     "tableName": "الاسم",
     "tableCourse": "الدورة",
@@ -6030,6 +6051,13 @@
       "emptyState": "لا توجد جلسات مباشرة بعد. قم بجدولة جلسة للبدء.",
       "loadError": "تعذر تحميل الجلسات المباشرة، حاول لاحقاً.",
       "newSession": "جدولة جلسة",
+      "searchPlaceholder": "ابحث عن جلسة...",
+      "filterStatus": "حالة الجلسة",
+      "allStatuses": "جميع الحالات",
+      "duplicateCopyTooltip": "نسخة مكررة",
+      "repeatSourceTooltip": "جلسة أصلية لها نسخ",
+      "studentsPlaceholder": "اختر الطلاب",
+      "sessionsEntity": "جلسة",
       "createTitle": "جدولة جلسة مباشرة",
       "editTitle": "تعديل جلسة مباشرة",
       "courseLabel": "الدورة",
