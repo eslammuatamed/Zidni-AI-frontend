@@ -4,7 +4,7 @@
     :subtitle="t('live.teacher.subtitle')"
   >
     <template #actions>
-      <div class="live-actions">
+      <div class="flex flex-wrap gap-3">
         <UiButton
           variant="outline"
           color="secondary"
@@ -16,20 +16,31 @@
         <UiButton
           color="primary"
           prepend-icon="VideoCameraAddOutlined"
-          @click="openCreate"
+          @click="goToCreate"
         >
           {{ t("live.teacher.newSession") }}
         </UiButton>
       </div>
     </template>
 
-    <section class="live-content">
-      <UiCard class="live-card" hover>
-        <div class="live-filters">
+    <section class="mt-4">
+      <UiCard hover>
+        <!-- Filter bar: search + course + status (stacks on mobile, row on ≥720px) -->
+        <div class="flex flex-col gap-3 min-[720px]:flex-row min-[720px]:items-end">
+          <div class="min-[720px]:flex-1">
+            <UiInput
+              v-model="filters.search"
+              appearance="search"
+              :placeholder="t('live.teacher.searchPlaceholder')"
+              :aria-label="t('live.teacher.searchPlaceholder')"
+              clearable
+            />
+          </div>
           <UiSelect
             v-model="filters.courseId"
             :label="t('live.teacher.filterCourse')"
             clearable
+            class="min-[720px]:w-56"
           >
             <option value="">{{ t("live.teacher.allCourses") }}</option>
             <option
@@ -40,174 +51,309 @@
               {{ course.title }}
             </option>
           </UiSelect>
+          <UiSelect
+            v-model="filters.status"
+            :label="t('live.teacher.filterStatus')"
+            clearable
+            class="min-[720px]:w-56"
+          >
+            <option value="">{{ t("live.teacher.allStatuses") }}</option>
+            <option v-for="s in statusFilterValues" :key="s" :value="s">
+              {{ statusLabel(s) }}
+            </option>
+          </UiSelect>
         </div>
 
-        <UiTable
-          :items="sessions"
-          :headers="headers"
-          :loading="loading"
-          density="comfortable"
+        <!-- Desktop table (≥1025px). Hidden when empty so the single localized
+             empty-state alert below covers both viewports (no double empty). -->
+        <div
+          v-if="loading || filteredSessions.length > 0"
+          class="hidden min-[1025px]:block"
         >
-          <template #item.scheduledAt="{ item }">
-            {{
-              item.scheduledAt
-                ? formatDateTime(item.scheduledAt)
-                : t("live.teacher.unscheduled")
-            }}
-          </template>
-          <template #item.assignedInstructorName="{ item }">
-            {{ item.assignedInstructorName }}
-          </template>
-          <template #item.status="{ item }">
-            <div class="flex items-center gap-2">
-              <UiTag size="sm" :color="statusColor(item.status)">
-                {{ statusLabel(item.status) }}
-              </UiTag>
-              <UiTag v-if="item.repeatSource" size="sm" color="secondary">
-                {{ t("live.teacher.repeatSource") }}
-              </UiTag>
-              <UiTag v-if="item.repeatedCopy" size="sm" color="neutral">
-                {{ t("live.teacher.repeatedCopy") }}
-              </UiTag>
-            </div>
-          </template>
-          <template #item.actions="{ item }">
-            <div class="live-row-actions">
-              <UiButton
-                size="sm"
-                variant="link"
-                color="primary"
-                @click="openRegistrations(item)"
-              >
-                {{ t("live.teacher.viewRegistrations") }}
-              </UiButton>
-              <UiButton
-                size="sm"
-                variant="link"
-                color="secondary"
-                @click="openEdit(item)"
-              >
-                {{ t("common.edit") }}
-              </UiButton>
-              <UiButton
-                size="sm"
-                variant="link"
-                color="danger"
-                @click="confirmDelete(item)"
-              >
-                {{ t("common.delete") }}
-              </UiButton>
-              <UiButton
-                size="sm"
-                variant="link"
-                color="primary"
-                @click="summarize(item)"
-              >
-                {{ t("live.teacher.summarizeAttendance") }}
-              </UiButton>
-              <UiButton
-                v-if="liveSessionsChatEnabled"
-                size="sm"
-                variant="link"
-                color="secondary"
-                prepend-icon="MessageOutlined"
-                @click="openModeration(item)"
-              >
-                {{ t("live.teacher.openModeration") }}
-              </UiButton>
-            </div>
-          </template>
-        </UiTable>
-
-        <div class="live-list" role="list">
-          <article
-            v-for="item in sessions"
-            :key="item.id"
-            class="live-list__item"
-            role="listitem"
-          >
-            <header class="live-list__header">
-              <h3>{{ item.title }}</h3>
-              <div class="flex items-center gap-2 mt-2">
-                <UiTag size="sm" :color="statusColor(item.status)">
+          <UiTable :items="pagedSessions" :headers="headers" :loading="loading">
+            <template #item.sessionInfo="{ item }">
+              <div class="flex items-center gap-3">
+                <span
+                  class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-sakai-primary/10 text-sakai-primary"
+                >
+                  <UiIcon name="VideoCameraOutlined" :size="18" />
+                </span>
+                <div class="flex flex-col">
+                  <span class="flex items-center gap-1.5">
+                    <span class="font-semibold text-content-strong">{{ item.title }}</span>
+                    <span
+                      v-if="item.repeatedCopy"
+                      class="inline-flex text-content-tertiary"
+                      role="img"
+                      :title="t('live.teacher.duplicateCopyTooltip')"
+                      :aria-label="t('live.teacher.duplicateCopyTooltip')"
+                    >
+                      <UiIcon name="CopyOutlined" :size="14" />
+                    </span>
+                    <span
+                      v-if="item.repeatSource"
+                      class="inline-flex text-content-tertiary"
+                      role="img"
+                      :title="t('live.teacher.repeatSourceTooltip')"
+                      :aria-label="t('live.teacher.repeatSourceTooltip')"
+                    >
+                      <UiIcon name="ShareAltOutlined" :size="14" />
+                    </span>
+                  </span>
+                  <span v-if="item.courseTitle" class="text-sm text-content-tertiary">
+                    {{ item.courseTitle }}
+                  </span>
+                </div>
+              </div>
+            </template>
+            <template #item.assignedInstructorName="{ item }">
+              <div class="flex items-center gap-2">
+                <span
+                  class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sakai-primary/10 text-xs font-semibold text-sakai-primary"
+                >
+                  <template v-if="initials(item.assignedInstructorName)">
+                    {{ initials(item.assignedInstructorName) }}
+                  </template>
+                  <UiIcon v-else name="UserOutlined" :size="16" />
+                </span>
+                <span>{{ item.assignedInstructorName }}</span>
+              </div>
+            </template>
+            <template #item.scheduledAt="{ item }">
+              <div v-if="item.scheduledAt" class="flex flex-col gap-1">
+                <span class="flex items-center gap-1.5">
+                  <UiIcon name="CalendarOutlined" :size="14" class="text-content-tertiary" />
+                  {{ formatDateTime(item.scheduledAt, { dateStyle: "medium" }, dateLocale) }}
+                </span>
+                <span class="flex items-center gap-1.5 text-sm text-content-tertiary">
+                  <UiIcon name="ClockCircleOutlined" :size="14" />
+                  {{ formatDateTime(item.scheduledAt, { timeStyle: "short" }, dateLocale) }}
+                </span>
+              </div>
+              <span v-else class="text-content-tertiary">{{ t("live.teacher.unscheduled") }}</span>
+            </template>
+            <template #item.assignedStudentCount="{ item }">
+              <span class="flex items-center gap-1.5">
+                <UiIcon name="TeamOutlined" :size="16" class="text-content-tertiary" />
+                {{ item.assignedStudentCount }}
+              </span>
+            </template>
+            <template #item.status="{ item }">
+              <div class="flex flex-wrap items-center gap-2">
+                <UiTag size="sm" variant="soft" dot :color="statusColor(item.status)">
                   {{ statusLabel(item.status) }}
                 </UiTag>
-                <UiTag v-if="item.repeatSource" size="sm" color="secondary">
-                  {{ t("live.teacher.repeatSource") }}
-                </UiTag>
-                <UiTag v-if="item.repeatedCopy" size="sm" color="neutral">
-                  {{ t("live.teacher.repeatedCopy") }}
+              </div>
+            </template>
+            <template #item.actions="{ item }">
+              <div class="flex flex-wrap items-center gap-1">
+                <UiButton
+                  size="sm"
+                  variant="link"
+                  color="secondary"
+                  prepend-icon="EditOutlined"
+                  :aria-label="t('common.edit')"
+                  :title="t('common.edit')"
+                  @click="goToEdit(item)"
+                />
+                <UiButton
+                  size="sm"
+                  variant="link"
+                  color="danger"
+                  prepend-icon="DeleteOutlined"
+                  :aria-label="t('common.delete')"
+                  :title="t('common.delete')"
+                  @click="confirmDelete(item)"
+                />
+                <UiDropdownMenu :trigger-aria-label="t('common.more')">
+                  <template #default="{ close }">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      @click="
+                        openRegistrations(item);
+                        close();
+                      "
+                    >
+                      <UiIcon name="TeamOutlined" :size="16" />
+                      <span>{{ t("live.teacher.viewRegistrations") }}</span>
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      @click="
+                        summarize(item);
+                        close();
+                      "
+                    >
+                      <UiIcon name="AlignLeftOutlined" :size="16" />
+                      <span>{{ t("live.teacher.summarizeAttendance") }}</span>
+                    </button>
+                    <button
+                      v-if="liveSessionsChatEnabled"
+                      type="button"
+                      role="menuitem"
+                      @click="
+                        openModeration(item);
+                        close();
+                      "
+                    >
+                      <UiIcon name="MessageOutlined" :size="16" />
+                      <span>{{ t("live.teacher.openModeration") }}</span>
+                    </button>
+                  </template>
+                </UiDropdownMenu>
+              </div>
+            </template>
+          </UiTable>
+        </div>
+
+        <!-- Mobile list (<1025px) -->
+        <div class="grid gap-3 min-[1025px]:hidden" role="list">
+          <article
+            v-for="item in pagedSessions"
+            :key="item.id"
+            class="grid gap-3 rounded-sakai-lg p-4 bg-surface-card [border:1px_solid_color-mix(in_srgb,var(--sakai-border-color)_70%,transparent)]"
+            role="listitem"
+          >
+            <header class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-3">
+                <span
+                  class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-sakai-primary/10 text-sakai-primary"
+                >
+                  <UiIcon name="VideoCameraOutlined" :size="18" />
+                </span>
+                <h3 class="m-0 flex items-center gap-1.5 text-base font-semibold text-content-strong">
+                  {{ item.title }}
+                  <span
+                    v-if="item.repeatedCopy"
+                    class="inline-flex text-content-tertiary"
+                    role="img"
+                    :title="t('live.teacher.duplicateCopyTooltip')"
+                    :aria-label="t('live.teacher.duplicateCopyTooltip')"
+                  >
+                    <UiIcon name="CopyOutlined" :size="14" />
+                  </span>
+                  <span
+                    v-if="item.repeatSource"
+                    class="inline-flex text-content-tertiary"
+                    role="img"
+                    :title="t('live.teacher.repeatSourceTooltip')"
+                    :aria-label="t('live.teacher.repeatSourceTooltip')"
+                  >
+                    <UiIcon name="ShareAltOutlined" :size="14" />
+                  </span>
+                </h3>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <UiTag size="sm" variant="soft" dot :color="statusColor(item.status)">
+                  {{ statusLabel(item.status) }}
                 </UiTag>
               </div>
             </header>
-            <div class="live-list__field">
-              <label>{{ t("live.teacher.course") }}</label>
+            <div class="grid gap-2">
+              <span class="text-xs uppercase tracking-wider text-content-tertiary">{{ t("live.teacher.course") }}</span>
               <span>{{ item.courseTitle }}</span>
             </div>
-            <div class="live-list__field">
-              <label>{{ t("live.teacher.scheduledAt") }}</label>
+            <div class="grid gap-2">
+              <span class="text-xs uppercase tracking-wider text-content-tertiary">{{ t("live.teacher.scheduledAt") }}</span>
               <span>{{
                 item.scheduledAt
-                  ? formatDateTime(item.scheduledAt)
+                  ? formatDateTime(item.scheduledAt, undefined, dateLocale)
                   : t("live.teacher.unscheduled")
               }}</span>
             </div>
-            <div class="live-list__field">
-              <label>{{ t("live.teacher.assignedStudents") }}</label>
+            <div class="grid gap-2">
+              <span class="text-xs uppercase tracking-wider text-content-tertiary">{{ t("live.teacher.assignedStudents") }}</span>
               <span>{{ item.assignedStudentCount }}</span>
             </div>
-            <div class="live-list__actions">
-              <UiButton
-                size="sm"
-                variant="link"
-                color="primary"
-                @click="openRegistrations(item)"
-              >
-                {{ t("live.teacher.viewRegistrations") }}
-              </UiButton>
+            <div class="flex flex-wrap items-center gap-1">
               <UiButton
                 size="sm"
                 variant="link"
                 color="secondary"
-                @click="openEdit(item)"
-              >
-                {{ t("common.edit") }}
-              </UiButton>
+                prepend-icon="EditOutlined"
+                :aria-label="t('common.edit')"
+                :title="t('common.edit')"
+                @click="goToEdit(item)"
+              />
               <UiButton
                 size="sm"
                 variant="link"
                 color="danger"
+                prepend-icon="DeleteOutlined"
+                :aria-label="t('common.delete')"
+                :title="t('common.delete')"
                 @click="confirmDelete(item)"
-              >
-                {{ t("common.delete") }}
-              </UiButton>
-              <UiButton
-                size="sm"
-                variant="link"
-                color="primary"
-                @click="summarize(item)"
-              >
-                {{ t("live.teacher.summarizeAttendance") }}
-              </UiButton>
-              <UiButton
-                v-if="liveSessionsChatEnabled"
-                size="sm"
-                variant="link"
-                color="secondary"
-                prepend-icon="MessageOutlined"
-                @click="openModeration(item)"
-              >
-                {{ t("live.teacher.openModeration") }}
-              </UiButton>
+              />
+              <UiDropdownMenu :trigger-aria-label="t('common.more')">
+                <template #default="{ close }">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    @click="
+                      openRegistrations(item);
+                      close();
+                    "
+                  >
+                    <UiIcon name="TeamOutlined" :size="16" />
+                    <span>{{ t("live.teacher.viewRegistrations") }}</span>
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    @click="
+                      summarize(item);
+                      close();
+                    "
+                  >
+                    <UiIcon name="AlignLeftOutlined" :size="16" />
+                    <span>{{ t("live.teacher.summarizeAttendance") }}</span>
+                  </button>
+                  <button
+                    v-if="liveSessionsChatEnabled"
+                    type="button"
+                    role="menuitem"
+                    @click="
+                      openModeration(item);
+                      close();
+                    "
+                  >
+                    <UiIcon name="MessageOutlined" :size="16" />
+                    <span>{{ t("live.teacher.openModeration") }}</span>
+                  </button>
+                </template>
+              </UiDropdownMenu>
             </div>
           </article>
         </div>
+
+        <UiPagination
+          v-if="!loading && filteredSessions.length"
+          :current-page="currentPage"
+          :total-items="filteredSessions.length"
+          :page-size="pageSize"
+          :prev-label="t('common.previous')"
+          :next-label="t('common.next')"
+          @update:current-page="currentPage = $event"
+        >
+          <template #info="{ from, to, total }">
+            {{
+              t("pagination.showing", {
+                from,
+                to,
+                total,
+                entity: t("live.teacher.sessionsEntity"),
+              })
+            }}
+          </template>
+        </UiPagination>
 
         <UiAlert v-if="error" color="danger" variant="soft">{{
           error
         }}</UiAlert>
         <UiAlert
-          v-else-if="!loading && !sessions.length"
+          v-else-if="!loading && !filteredSessions.length"
           color="neutral"
           variant="soft"
         >
@@ -215,15 +361,6 @@
         </UiAlert>
       </UiCard>
     </section>
-
-    <LiveSessionForm
-      :open="showForm"
-      :mode="formMode"
-      :session="activeSession"
-      @close="closeForm"
-      @create="handleCreate"
-      @update="handleUpdate"
-    />
 
     <LiveRegistrations
       :open="showRegistrations"
@@ -242,10 +379,13 @@ import UiButton from "@/components/ui/UiButton.vue";
 import UiCard from "@/components/ui/UiCard.vue";
 import UiTable, { type UiTableHeader } from "@/components/ui/UiTable.vue";
 import UiSelect from "@/components/ui/UiSelect.vue";
+import UiInput from "@/components/ui/UiInput.vue";
 import UiAlert from "@/components/ui/UiAlert.vue";
 import UiTag from "@/components/ui/UiTag.vue";
+import UiIcon from "@/components/ui/UiIcon.vue";
+import UiPagination from "@/components/ui/UiPagination.vue";
+import UiDropdownMenu from "@/components/ui/UiDropdownMenu.vue";
 import { useCoursesStore } from "@/stores/courses";
-import { useTenantStore } from "@/stores/tenant";
 import { useFeaturesStore } from "@/stores/features";
 import { FEATURE } from "@/constants/featureCatalog";
 import { useRouter } from "vue-router";
@@ -253,25 +393,18 @@ import { useRouter } from "vue-router";
 import { useToast } from "@/composables/useToast";
 import {
   listTeacherSessions,
-  createTeacherSession,
-  updateTeacherSession,
   deleteTeacherSession,
-  listTeacherRegistrations,
   summarizeAttendance,
   type TeacherLiveSession,
-  type TeacherLiveSessionCreatePayload,
-  type TeacherLiveSessionUpdatePayload,
   type TeacherLiveSessionsPage,
   type LiveSessionStatus,
 } from "@/api/live";
-import LiveSessionForm from "./LiveSessionForm.vue";
 import LiveRegistrations from "./LiveRegistrations.vue";
 import { formatDateTime } from "@/utils/formatters";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const toast = useToast();
 const coursesStore = useCoursesStore();
-const tenantStore = useTenantStore();
 const featuresStore = useFeaturesStore();
 const router = useRouter();
 
@@ -279,23 +412,26 @@ const sessions = ref<TeacherLiveSession[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
-const showForm = ref(false);
-const formMode = ref<"create" | "edit">("create");
 const activeSession = ref<TeacherLiveSession | null>(null);
 const showRegistrations = ref(false);
 
-const filters = reactive({ courseId: "" });
+const filters = reactive({ courseId: "", search: "", status: "" });
+
+// Status values offered in the filter (cancelled is shown under "all" only).
+const statusFilterValues: LiveSessionStatus[] = ["live", "scheduled", "ended"];
+
+const currentPage = ref(1);
+const pageSize = ref(10);
 
 const headers = computed<UiTableHeader[]>(() => [
-  { key: "title", title: t("live.teacher.sessionTitle") },
-  { key: "courseTitle", title: t("live.teacher.course") },
+  { key: "sessionInfo", title: t("live.teacher.sessionTitle") },
   {
     key: "assignedInstructorName",
     title: t("live.teacher.assignedInstructor"),
   },
   { key: "scheduledAt", title: t("live.teacher.scheduledAt") },
-  { key: "status", title: t("live.teacher.status") },
   { key: "assignedStudentCount", title: t("live.teacher.assignedStudents") },
+  { key: "status", title: t("live.teacher.status") },
   { key: "actions", title: t("common.actions"), sortable: false },
 ]);
 
@@ -303,6 +439,31 @@ const courses = computed(() => coursesStore.list);
 const liveSessionsChatEnabled = computed(() =>
   featuresStore.hasFeature(FEATURE.liveSessionsChat),
 );
+
+// Render dates in the active UI locale; force Latin digits for Arabic
+// (project-wide digits policy) via the `-u-nu-latn` Unicode extension.
+const dateLocale = computed(() =>
+  locale.value === "ar" ? "ar-u-nu-latn" : String(locale.value),
+);
+
+// Client-side search + status filter over the loaded (course-filtered) sessions.
+const filteredSessions = computed(() => {
+  const q = filters.search.trim().toLowerCase();
+  return sessions.value.filter((session) => {
+    const matchesSearch = !q || (session.title?.toLowerCase().includes(q) ?? false);
+    const matchesStatus = !filters.status || session.status === filters.status;
+    return matchesSearch && matchesStatus;
+  });
+});
+
+const pagedSessions = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  return filteredSessions.value.slice(start, start + pageSize.value);
+});
+
+watch([() => filters.search, () => filters.status], () => {
+  currentPage.value = 1;
+});
 
 watch(
   () => filters.courseId,
@@ -333,6 +494,7 @@ async function loadSessions() {
     }
     const data: TeacherLiveSessionsPage = await listTeacherSessions(query);
     sessions.value = data.items;
+    currentPage.value = 1;
   } catch (err: unknown) {
     error.value = t("live.teacher.loadError");
   } finally {
@@ -340,54 +502,15 @@ async function loadSessions() {
   }
 }
 
-function openCreate() {
-  formMode.value = "create";
-  activeSession.value = null;
-  showForm.value = true;
+function goToCreate() {
+  router.push({ name: "teacher-session-create" });
 }
 
-async function openEdit(session: TeacherLiveSession) {
-  try {
-    loading.value = true;
-    const regs = await listTeacherRegistrations(session.id);
-    const studentIds = regs.map((r) => r.studentId);
-    activeSession.value = { ...session, studentIds };
-    formMode.value = "edit";
-    showForm.value = true;
-  } catch (err: unknown) {
-    toast.error(t("live.teacher.loadError"));
-  } finally {
-    loading.value = false;
-  }
-}
-
-function closeForm() {
-  showForm.value = false;
-}
-
-async function handleCreate(payload: TeacherLiveSessionCreatePayload) {
-  try {
-    await createTeacherSession(payload);
-    toast.success(t("live.teacher.createSuccess"));
-    showForm.value = false;
-    await loadSessions();
-  } catch (err: unknown) {
-    toast.error(t("live.teacher.createError"));
-  }
-}
-
-async function handleUpdate(payload: TeacherLiveSessionUpdatePayload) {
-  if (!activeSession.value) {
-    return;
-  }
-  try {
-    await updateTeacherSession(activeSession.value.id, payload);
-    toast.success(t("live.teacher.updateSuccess"));
-    showForm.value = false;
-    await loadSessions();
-  } catch (err: unknown) {
-    toast.error(t("live.teacher.updateError"));
-  }
+function goToEdit(session: TeacherLiveSession) {
+  router.push({
+    name: "teacher-session-edit",
+    params: { sessionId: session.id },
+  });
 }
 
 function openRegistrations(session: TeacherLiveSession) {
@@ -430,16 +553,27 @@ function openModeration(session: TeacherLiveSession) {
   });
 }
 
+function initials(name?: string) {
+  if (!name) return "";
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "";
+  const first = parts[0][0] ?? "";
+  const last = parts.length > 1 ? (parts[parts.length - 1][0] ?? "") : "";
+  return (first + last).toUpperCase();
+}
+
 function statusColor(status: LiveSessionStatus) {
   switch (status) {
     case "live":
-      return "success";
+      return "danger";
+    case "scheduled":
+      return "info";
     case "ended":
       return "neutral";
     case "cancelled":
-      return "danger";
+      return "neutral";
     default:
-      return "primary";
+      return "info";
   }
 }
 
@@ -447,88 +581,3 @@ function statusLabel(status: LiveSessionStatus) {
   return t(`live.teacher.statusLabel.${status}`);
 }
 </script>
-
-<style scoped>
-.live-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.live-content {
-  margin-top: 16px;
-}
-
-.live-card {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.live-filters {
-  display: flex;
-  gap: 16px;
-}
-
-.live-row-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.live-list {
-  display: none;
-  gap: var(--sakai-space-3);
-}
-
-.live-list__item {
-  display: grid;
-  gap: var(--sakai-space-3);
-  padding: var(--sakai-space-4);
-  border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid
-    color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
-  background: color-mix(in srgb, var(--sakai-surface-card) 96%, transparent);
-}
-
-.live-list__header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-2);
-}
-
-.live-list__header h3 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: var(--sakai-font-weight-semibold);
-}
-
-.live-list__field {
-  display: grid;
-  gap: var(--sakai-space-2);
-}
-
-.live-list__field label {
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--sakai-text-color-muted);
-}
-
-.live-list__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-}
-
-@media (max-width: 1024px) {
-  .live-card :deep(.ui-table-container) {
-    display: none;
-  }
-
-  .live-list {
-    display: grid;
-  }
-}
-</style>

@@ -5,7 +5,11 @@
         <form class="certificates-form flex flex-col gap-4" @submit.prevent="generate">
           <label class="certificates-field flex flex-col gap-2 font-medium">
             <span>{{ t('certificates.teacher.template') }}</span>
-            <select v-model="form.templateKey" required>
+            <select
+              v-model="form.templateKey"
+              required
+              class="px-3 py-[0.65rem] rounded-sakai-md bg-surface font-[inherit] [border:1px_solid_color-mix(in_srgb,var(--sakai-border-color)_80%,transparent)]"
+            >
               <option v-for="template in templates" :key="template.value" :value="template.value">
                 {{ template.label }}
               </option>
@@ -18,12 +22,18 @@
               v-model="studentSearch"
               type="search"
               :placeholder="t('certificates.teacher.studentSearchPlaceholder')"
+              class="px-3 py-[0.65rem] rounded-sakai-md bg-surface font-[inherit] [border:1px_solid_color-mix(in_srgb,var(--sakai-border-color)_80%,transparent)]"
             />
           </label>
 
           <label class="certificates-field flex flex-col gap-2 font-medium">
             <span>{{ t('certificates.teacher.student') }}</span>
-            <select v-model.number="form.studentId" :disabled="studentsLoading || !students.length" required>
+            <select
+              v-model.number="form.studentId"
+              :disabled="studentsLoading || !students.length"
+              required
+              class="px-3 py-[0.65rem] rounded-sakai-md bg-surface font-[inherit] [border:1px_solid_color-mix(in_srgb,var(--sakai-border-color)_80%,transparent)]"
+            >
               <option value="" disabled>
                 {{ studentsLoading ? t('certificates.teacher.loadingStudents') : t('certificates.teacher.studentPlaceholder') }}
               </option>
@@ -38,7 +48,11 @@
 
           <label class="certificates-field flex flex-col gap-2 font-medium">
             <span>{{ t('certificates.teacher.course') }}</span>
-            <select v-model.number="form.courseId" required>
+            <select
+              v-model.number="form.courseId"
+              required
+              class="px-3 py-[0.65rem] rounded-sakai-md bg-surface font-[inherit] [border:1px_solid_color-mix(in_srgb,var(--sakai-border-color)_80%,transparent)]"
+            >
               <option value="" disabled>{{ t('certificates.teacher.coursePlaceholder') }}</option>
               <option v-for="course in courses" :key="course.id" :value="course.id">
                 {{ course.title }}
@@ -48,7 +62,12 @@
 
           <label class="certificates-field flex flex-col gap-2 font-medium">
             <span>{{ t('certificates.teacher.issueDate') }}</span>
-            <input v-model="form.issueDate" type="date" required />
+            <input
+              v-model="form.issueDate"
+              type="date"
+              required
+              class="px-3 py-[0.65rem] rounded-sakai-md bg-surface font-[inherit] [border:1px_solid_color-mix(in_srgb,var(--sakai-border-color)_80%,transparent)]"
+            />
           </label>
 
           <UiAlert v-if="studentsError" color="danger" variant="soft">
@@ -68,8 +87,8 @@
       <UiCard v-if="result" class="certificates-card min-h-[320px]" :title="t('certificates.teacher.resultTitle')" hover>
         <div class="certificates-result flex flex-col gap-3">
           <div>
-            <h3>{{ result.studentName }}</h3>
-            <p>{{ result.courseName }}</p>
+            <h3 class="m-0 text-[1.2rem]">{{ result.studentName }}</h3>
+            <p class="m-0 text-content-secondary">{{ result.courseName }}</p>
           </div>
           <div class="certificates-meta flex flex-col gap-[0.35rem] text-content-tertiary">
             <span>{{ t('certificates.teacher.issuedAt') }}: {{ formatDate(result.issuedAt) }}</span>
@@ -104,7 +123,6 @@
           :headers="certificateHeaders"
           :items="certificateRows"
           :loading="certificatesLoading"
-          density="comfortable"
           :empty-text="t('certificates.teacher.listEmpty')"
         >
           <template #item.issuedAt="{ item }">
@@ -300,24 +318,3 @@ const formatDate = (value: string) => {
   }
 };
 </script>
-
-<style scoped>
-.certificates-field select,
-.certificates-field input {
-  padding: 0.65rem 0.75rem;
-  border-radius: var(--sakai-border-radius-md);
-  border: 0.0625rem solid color-mix(in srgb, var(--sakai-border-color) 80%, transparent);
-  background: var(--sakai-surface);
-  font: inherit;
-}
-
-.certificates-result h3 {
-  margin: 0;
-  font-size: 1.2rem;
-}
-
-.certificates-result p {
-  margin: 0;
-  color: var(--sakai-text-color-secondary);
-}
-</style>

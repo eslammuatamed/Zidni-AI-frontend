@@ -11,31 +11,32 @@
       </UiButton>
     </template>
 
-    <section class="offers-list" :class="{ 'offers-list--disabled': !offersEnabled }">
+    <section class="mt-4 grid gap-6" :class="{ 'pointer-events-none opacity-60': !offersEnabled }">
       <UiAlert
         v-if="!offersEnabled"
         color="warning"
         variant="soft"
-        class="offers-list__disabled"
       >
         {{ t('offers.disabled') }}
       </UiAlert>
 
-      <UiCard class="offers-list__filters" hover>
-        <header class="offers-list__filters-header">
-          <h2>{{ t('offers.filters.title') }}</h2>
-          <UiButton variant="link" color="secondary" prepend-icon="ReloadOutlined" @click="resetFilters">
-            {{ t('common.reset') }}
-          </UiButton>
-        </header>
-        <div class="offers-list__filters-grid">
-          <UiInput
-            v-model="filters.search"
-            :label="t('offers.filters.search')"
-            appearance="search"
-            :placeholder="t('offers.filters.searchPlaceholder')"
-          />
-          <UiSelect :model-value="filters.status" :label="t('offers.filters.status')" @update:model-value="onStatusChange">
+      <UiCard hover>
+        <!-- Filter bar: search + status + valid-from/until (stacks on mobile, row on ≥720px) -->
+        <div class="flex flex-col gap-3 min-[720px]:flex-row min-[720px]:items-end">
+          <div class="min-[720px]:flex-1">
+            <UiInput
+              v-model="filters.search"
+              :label="t('offers.filters.search')"
+              appearance="search"
+              :placeholder="t('offers.filters.searchPlaceholder')"
+            />
+          </div>
+          <UiSelect
+            :model-value="filters.status"
+            :label="t('offers.filters.status')"
+            class="min-[720px]:w-56"
+            @update:model-value="onStatusChange"
+          >
             <option v-for="option in statusOptions" :key="option.value" :value="option.value">
               {{ option.label }}
             </option>
@@ -45,74 +46,103 @@
             type="datetime-local"
             appearance="datetime"
             :label="t('offers.filters.validFrom')"
+            class="min-[720px]:w-56"
           />
           <UiInput
             v-model="filters.to"
             type="datetime-local"
             appearance="datetime"
             :label="t('offers.filters.validUntil')"
+            class="min-[720px]:w-56"
           />
+          <UiButton
+            variant="link"
+            color="secondary"
+            prepend-icon="ReloadOutlined"
+            @click="resetFilters"
+          >
+            {{ t('common.reset') }}
+          </UiButton>
         </div>
-      </UiCard>
 
-      <UiTable
-        class="offers-list__table"
-        :headers="headers"
-        :items="store.items"
-        :items-length="store.total"
-        :page="currentPage"
-        :items-per-page="filters.size"
-        :items-per-page-options="[10, 20, 50]"
-        :loading="store.loading"
-        density="comfortable"
-        @update:page="onPageChange"
-        @update:items-per-page="onItemsPerPageChange"
-      >
-        <template #item.code="{ item }">
-          <span class="offers-list__code">{{ item.code }}</span>
-        </template>
-        <template #item.type="{ item }">
-          <UiTag size="sm" color="secondary">{{ readableType(item.type) }}</UiTag>
-        </template>
-        <template #item.applicability="{ item }">
-          <span>{{ readableApplicability(item) }}</span>
-        </template>
-        <template #item.valid="{ item }">
-          <div class="offers-list__valid">
-            <span>{{ formatDate(item.validFrom) }}</span>
-            <span v-if="item.validUntil" class="offers-list__valid-until">{{ formatDate(item.validUntil) }}</span>
-            <span v-else class="offers-list__valid-until">∞</span>
-          </div>
-        </template>
-        <template #item.status="{ item }">
-          <UiTag :color="statusColor(item.status)" size="sm">{{ readableStatus(item.status) }}</UiTag>
-        </template>
-        <template #item.actions="{ item }">
-          <div class="offers-list__row-actions">
-            <UiButton
-              variant="link"
-              color="primary"
-              size="sm"
-              prepend-icon="EditOutlined"
-              @click="openEdit(item)"
-            >
-              {{ t('common.edit') }}
-            </UiButton>
-            <UiButton
-              variant="link"
-              color="danger"
-              size="sm"
-              prepend-icon="DeleteOutlined"
-              @click="remove(item)"
-            >
-              {{ t('common.delete') }}
-            </UiButton>
-          </div>
-        </template>
-        <template #empty>
-          <UiAlert variant="soft" color="info">{{ t('offers.empty') }}</UiAlert>
-        </template>
-      </UiTable>
+        <!-- Desktop table (scrolls horizontally; 7 columns overflow on narrow screens). -->
+        <div v-if="store.loading || store.items.length > 0" class="overflow-x-auto">
+          <UiTable :headers="headers" :items="store.items" :loading="store.loading">
+            <template #item.code="{ item }">
+              <span class="font-semibold tracking-wide">{{ item.code }}</span>
+            </template>
+            <template #item.type="{ item }">
+              <UiTag size="sm" color="secondary">{{ readableType(item.type) }}</UiTag>
+            </template>
+            <template #item.applicability="{ item }">
+              <span>{{ readableApplicability(item) }}</span>
+            </template>
+            <template #item.valid="{ item }">
+              <div class="flex flex-col gap-0.5">
+                <span>{{ formatDate(item.validFrom) }}</span>
+                <span v-if="item.validUntil" class="text-sm text-content-tertiary">{{ formatDate(item.validUntil) }}</span>
+                <span v-else class="text-sm text-content-tertiary">∞</span>
+              </div>
+            </template>
+            <template #item.status="{ item }">
+              <UiTag :color="statusColor(item.status)" variant="soft" size="sm" dot>{{ readableStatus(item.status) }}</UiTag>
+            </template>
+            <template #item.actions="{ item }">
+              <div class="flex items-center gap-2">
+                <UiButton
+                  variant="link"
+                  color="primary"
+                  size="sm"
+                  prepend-icon="EditOutlined"
+                  @click="openEdit(item)"
+                >
+                  {{ t('common.edit') }}
+                </UiButton>
+                <UiButton
+                  variant="link"
+                  color="danger"
+                  size="sm"
+                  prepend-icon="DeleteOutlined"
+                  @click="remove(item)"
+                >
+                  {{ t('common.delete') }}
+                </UiButton>
+              </div>
+            </template>
+          </UiTable>
+        </div>
+
+        <UiPagination
+          v-if="!store.loading && store.items.length"
+          :current-page="currentPage"
+          :total-items="store.total"
+          :page-size="filters.size"
+          :page-size-options="[10, 20, 50]"
+          :prev-label="t('common.previous')"
+          :next-label="t('common.next')"
+          @update:current-page="onPageChange"
+          @update:page-size="onItemsPerPageChange"
+        >
+          <template #info="{ from, to, total }">
+            {{
+              t('pagination.showing', {
+                from,
+                to,
+                total,
+                entity: t('offers.offersEntity'),
+              })
+            }}
+          </template>
+        </UiPagination>
+
+        <UiAlert
+          v-else-if="!store.loading && !store.items.length"
+          color="info"
+          variant="soft"
+        >
+          {{ t('offers.empty') }}
+        </UiAlert>
+      </UiCard>
     </section>
 
   </ThemePage>
@@ -131,6 +161,7 @@ import UiInput from '@/components/ui/UiInput.vue';
 import UiSelect from '@/components/ui/UiSelect.vue';
 import UiTable from '@/components/ui/UiTable.vue';
 import UiTag from '@/components/ui/UiTag.vue';
+import UiPagination from '@/components/ui/UiPagination.vue';
 import { useToast } from '@/composables/useToast';
 import { useOffersStore, type StatusFilter } from '@/stores/offers';
 import { useFeaturesStore } from '@/stores/features';
@@ -366,64 +397,3 @@ onMounted(async () => {
   await fetchOffers({ page: 0 });
 });
 </script>
-
-<style scoped>
-.offers-list {
-  display: grid;
-  gap: var(--sakai-space-6);
-}
-
-.offers-list--disabled {
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-.offers-list__disabled {
-  margin-bottom: var(--sakai-space-4);
-}
-
-.offers-list__filters {
-  display: grid;
-  gap: var(--sakai-space-4);
-  padding: var(--sakai-space-6);
-}
-
-.offers-list__filters-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-3);
-}
-
-.offers-list__filters-grid {
-  display: grid;
-  gap: var(--sakai-space-4);
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
-.offers-list__table {
-  overflow-x: auto;
-}
-
-.offers-list__row-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--sakai-space-2);
-}
-
-.offers-list__valid {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.offers-list__valid-until {
-  color: var(--sakai-color-text-subtle);
-  font-size: 0.85rem;
-}
-
-.offers-list__code {
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-</style>
