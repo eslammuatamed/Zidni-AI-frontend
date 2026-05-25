@@ -47,6 +47,7 @@ const StudentAssessmentsView = () => import('@/views/StudentAssessmentsView.vue'
 const AssessmentPlayerView = () => import('@/views/AssessmentPlayerView.vue');
 const TeacherAssessmentAttemptsView = () => import('@/views/TeacherAssessmentAttemptsView.vue');
 const TeacherLiveSessionsList = () => import('@/views/teacher/live/LiveSessionsList.vue');
+const TeacherSessionEditor = () => import('@/views/teacher/live/TeacherSessionEditorView.vue');
 const TeacherLiveModerationView = () => import('@/views/teacher/live/LiveModeration.vue');
 const TeacherLivePollsView = () => import('@/views/teacher/live/LivePolls.vue');
 const StudentLiveSessionsList = () => import('@/views/student/live/StudentLiveSessions.vue');
@@ -627,6 +628,18 @@ const router = createRouter({
       path: '/teacher/live-sessions',
       name: 'teacher-live-sessions',
       component: TeacherLiveSessionsList,
+      meta: { requiresAuth: true, roles: ['TEACHER'], requiresFeature: FEATURE.liveSessionsCore }
+    },
+    {
+      path: '/teacher/live-sessions/create',
+      name: 'teacher-session-create',
+      component: TeacherSessionEditor,
+      meta: { requiresAuth: true, roles: ['TEACHER'], requiresFeature: FEATURE.liveSessionsCore }
+    },
+    {
+      path: '/teacher/live-sessions/:sessionId/edit',
+      name: 'teacher-session-edit',
+      component: TeacherSessionEditor,
       meta: { requiresAuth: true, roles: ['TEACHER'], requiresFeature: FEATURE.liveSessionsCore }
     },
     {
