@@ -282,9 +282,9 @@ export const useAuthStore = defineStore('auth', {
     },
     clearAuthState(): void {
       this.user = null;
-      const tenantStore = useTenantStore();
-      tenantStore.setSlug('');
-      clearStoredTenantSlug();
+      // const tenantStore = useTenantStore();
+      // tenantStore.setSlug('');
+      // clearStoredTenantSlug();
       try {
         useStudentStore().clear();
       } catch (error) {
