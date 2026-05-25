@@ -8,6 +8,7 @@
       { 'ui-tag--rounded': props.rounded, 'ui-tag--pill': props.pill }
     ]"
   >
+    <span v-if="props.dot" class="ui-tag__dot" aria-hidden="true"></span>
     <span v-if="resolvedStartIcon" class="ui-tag__icon ui-tag__icon--start">
       <UiIcon :name="resolvedStartIcon" :size="iconSize" />
     </span>
@@ -40,6 +41,7 @@ const props = withDefaults(
     color?: UiTagTone;
     variant?: UiTagVariant;
     size?: UiTagSize;
+    dot?: boolean;
     rounded?: boolean;
     pill?: boolean;
     startIcon?: string;
@@ -51,6 +53,7 @@ const props = withDefaults(
     color: 'primary',
     variant: 'soft',
     size: 'md',
+    dot: false,
     rounded: false,
     pill: false,
     startIcon: undefined,
@@ -105,6 +108,21 @@ const onDismiss = () => {
 
 .ui-tag--size-sm .ui-tag__icon {
   margin-inline-start: -0.1rem;
+}
+
+/* Leading status dot. Inherits the tag's tone via currentColor: in soft/outline
+   variants currentColor is the tone color; in solid it is the contrast color. */
+.ui-tag__dot {
+  flex: 0 0 auto;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--sakai-border-radius-pill);
+  background: currentColor;
+}
+
+.ui-tag--size-sm .ui-tag__dot {
+  width: 0.4rem;
+  height: 0.4rem;
 }
 
 .ui-tag--soft {

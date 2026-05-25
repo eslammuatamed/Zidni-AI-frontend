@@ -80,7 +80,10 @@ const iconMap: Record<IconKey, string> = {
   StarOutlined: 'pi pi-star',
   StarFilled: 'pi pi-star-fill',
   SunOutlined: 'pi pi-sun',
-  MoonOutlined: 'pi pi-moon'
+  MoonOutlined: 'pi pi-moon',
+  CopyOutlined: 'pi pi-copy',
+  EllipsisOutlined: 'pi pi-ellipsis-v',
+  ShareAltOutlined: 'pi pi-share-alt'
 };
 
 const props = withDefaults(
