@@ -114,7 +114,7 @@
                 </UiButton>
               </div>
             </div>
-            <div class="student-hero-card__insights flex items-center gap-6 p-5 bg-surface-alt rounded-[var(--sakai-border-radius-2xl)] border border-border flex-wrap justify-center">
+            <div class="student-hero-card__insights flex items-center gap-6 p-5 bg-surface-alt rounded-[var(--sakai-border-radius-2xl)] [border:1px_solid_var(--sakai-border-color)] flex-wrap justify-center">
               <div class="student-progress-circle-wrap flex flex-col items-center gap-2">
                 <UiProgressCircle :value="completionRate" :size="96" :stroke-width="10" show-value />
                 <span class="student-progress-circle-wrap__label text-[0.75rem] uppercase font-bold text-content-muted">{{ t('student.tableProgress') }}</span>
@@ -338,7 +338,7 @@
               <button
                 v-for="course in courseSummaries"
                 :key="course.id"
-                class="course-mini-item flex items-center justify-between py-3 px-4 bg-surface-alt border border-border rounded-lg cursor-pointer transition-all text-left"
+                class="course-mini-item flex items-center justify-between py-3 px-4 bg-surface-alt [border:1px_solid_var(--sakai-border-color)] rounded-lg cursor-pointer transition-all text-left"
                 @click="handleCourseClick(course)"
               >
                 <div class="course-mini-item__info flex flex-col gap-1 min-w-0 flex-1">
@@ -359,7 +359,7 @@
                 <p>{{ t('certificates.student.empty') }}</p>
               </div>
               <div v-else class="certificate-mini-list__items flex flex-col gap-2">
-                <div v-for="certificate in certificateItems" :key="certificate.id" class="certificate-mini-item flex items-center justify-between gap-3 p-2 rounded-lg border border-border bg-surface-alt">
+                <div v-for="certificate in certificateItems" :key="certificate.id" class="certificate-mini-item flex items-center justify-between gap-3 p-2 rounded-lg [border:1px_solid_var(--sakai-border-color)] bg-surface-alt">
                   <div class="certificate-mini-item__info flex flex-col gap-[2px]">
                     <span class="certificate-mini-item__title font-semibold text-content">{{ certificate.courseTitle }}</span>
                     <small class="certificate-mini-item__date text-[0.75rem] text-content-secondary">{{ formatDate(certificate.issuedAt) }}</small>

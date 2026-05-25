@@ -1,314 +1,168 @@
 <template>
-  <ThemePage :title="pageTitle" :subtitle="courseSubtitle">
+  <ThemePage
+    :title="pageTitle"
+    :subtitle="courseSubtitle"
+    class="min-[1025px]:[&_.theme-page__sidebar]:basis-[21.875rem]"
+  >
     <template #actions>
       <UiButton
-        variant="link"
-        color="secondary"
-        prepend-icon="ArrowLeftOutlined"
-        @click="goBack"
+        variant="solid"
+        color="primary"
+        :prepend-icon="savingAction === 'publish' ? 'pi pi-spin pi-spinner' : 'CheckCircleOutlined'"
+        :disabled="isSaving"
+        @click="setActiveAndSave(true, 'publish')"
       >
-        {{ t("nav.teacher") }}
+        {{ t("courses.publishCourse") }}
+      </UiButton>
+      <UiButton
+        variant="soft"
+        color="primary"
+        :prepend-icon="savingAction === 'draft' ? 'pi pi-spin pi-spinner' : undefined"
+        :disabled="isSaving"
+        @click="setActiveAndSave(false, 'draft')"
+      >
+        {{ t("courses.saveAsDraft") }}
+      </UiButton>
+      <UiButton
+        variant="outline"
+        color="neutral"
+        prepend-icon="CloseOutlined"
+        :disabled="isSaving"
+        @click="handleCancel"
+      >
+        {{ t("common.cancel") }}
       </UiButton>
     </template>
 
-    <div v-if="course" class="course-editor grid md:grid-cols-5 grid-cols-1 gap-5">
-      <section class="md:col-span-3">
-        <UiCard :title="t('courses.modules')">
-          <template #actions>
-            <UiButton
-              color="primary"
-              prepend-icon="FolderAddOutlined"
-              @click="openModuleDialog()"
+    <div v-if="course" class="course-editor flex flex-col gap-5">
+      <UiCollapsibleSection
+        :title="t('courses.basicInfoSection')"
+        icon="Information"
+        default-open
+      >
+          <div class="mb-4">
+            <UiTag
+              :color="form.active ? 'success' : 'neutral'"
+              variant="soft"
+              pill
+              :start-icon="form.active ? 'CheckCircleOutlined' : 'ClockCircleOutlined'"
             >
-              {{ t("courses.addModule") }}
-            </UiButton>
-          </template>
-
-          <UiAccordion
-            v-if="moduleAccordionItems.length"
-            :items="moduleAccordionItems"
-            multiple
-            class="course-editor__accordion"
-          >
-            <template #header="{ item }">
-              <div class="course-editor__module-header">
-                <div class="course-editor__module-heading">
-                  <span class="course-editor__module-title">{{
-                    item.module.title
-                  }}</span>
-                  <div class="course-editor__module-meta">
-                    <UiTag size="sm" color="secondary">
-                      {{
-                        t("courses.modulePositionLabel", {
-                          position: item.module.position,
-                        })
-                      }}
-                    </UiTag>
-                    <UiTag size="sm" color="info">
-                      {{
-                        t("courses.lessonsCount", {
-                          count: item.module.lessons.length,
-                        })
-                      }}
-                    </UiTag>
-                  </div>
-                </div>
-                <div class="course-editor__module-actions">
-                  <UiButton
-                    variant="link"
-                    color="primary"
-                    prepend-icon="EditOutlined"
-                    @click.stop="openModuleDialog(item.module)"
-                  >
-                    {{ t("common.edit") }}
-                  </UiButton>
-                  <UiButton
-                    variant="link"
-                    color="danger"
-                    prepend-icon="DeleteOutlined"
-                    @click.stop="confirmDeleteModule(item.module)"
-                  >
-                    {{ t("common.delete") }}
-                  </UiButton>
-                </div>
-              </div>
-            </template>
-            <template #content="{ item }">
-              <div class="course-editor__module-body">
-                <div class="course-editor__module-toolbar">
-                  <p class="course-editor__module-label">
-                    {{ t("courses.lessons") }}
-                  </p>
-                  <UiButton
-                    color="primary"
-                    prepend-icon="PlusOutlined"
-                    @click="goToLessonCreate(item.module)"
-                  >
-                    {{ t("courses.addLesson") }}
-                  </UiButton>
-                </div>
-                <ul
-                  v-if="item.module.lessons.length"
-                  class="course-editor__lessons"
-                >
-                  <li
-                    v-for="lesson in sortedLessons(item.module.lessons)"
-                    :key="lesson.id"
-                    class="course-editor__lesson"
-                  >
-                    <div class="course-editor__lesson-details">
-                      <span class="course-editor__lesson-title">{{
-                        lesson.title
-                      }}</span>
-                      <div class="course-editor__lesson-meta">
-                        <UiTag
-                          v-if="lessonVideoStatusMeta(lesson.videoStatus)"
-                          size="sm"
-                          :color="
-                            lessonVideoStatusMeta(lesson.videoStatus)?.color ||
-                            'secondary'
-                          "
-                        >
-                          {{ lessonVideoStatusMeta(lesson.videoStatus)?.label }}
-                        </UiTag>
-                        <UiTag size="sm" color="neutral">
-                          {{
-                            t("courses.lessonPositionLabel", {
-                              position: lesson.position,
-                            })
-                          }}
-                        </UiTag>
-                        <UiTag size="sm" color="neutral">
-                          {{
-                            t("courses.assignmentsCount", {
-                              count: assignmentsCountByLesson[lesson.id] ?? 0,
-                            })
-                          }}
-                        </UiTag>
-                        <UiTag size="sm" color="info" v-if="lesson.duration">
-                          {{ formatDuration(lesson.duration) }}
-                        </UiTag>
-                        <UiTag size="sm" color="secondary" v-if="lesson.ytId">
-                          {{ t("courses.lessonYoutube") }}
-                        </UiTag>
-                        <UiTag size="sm" color="secondary" v-if="lesson.pdfUrl">
-                          {{ t("courses.lessonPdf") }}
-                        </UiTag>
-                        <UiTag
-                          size="sm"
-                          color="secondary"
-                          v-if="lesson.videoUrl"
-                        >
-                          {{ t("courses.lessonVideoTag") }}
-                        </UiTag>
-                      </div>
-                      <div
-                        v-if="lesson.content"
-                        class="course-editor__lesson-content"
-                      >
-                        <h4 class="course-editor__lesson-section-title">
-                          {{ t("courses.lessonContentHeading") }}
-                        </h4>
-                        <p>{{ lesson.content }}</p>
-                      </div>
-                      <div
-                        v-if="lesson.videoUrl || lesson.ytId"
-                        class="course-editor__lesson-video"
-                      >
-                        <h4 class="course-editor__lesson-section-title">
-                          {{ t("courses.lessonVideoPreviewHeading") }}
-                        </h4>
-                        <UiAlert
-                          v-if="
-                            lessonVideoStatusMeta(lesson.videoStatus)?.banner
-                          "
-                          variant="soft"
-                          :color="
-                            lessonVideoStatusMeta(lesson.videoStatus)?.color ||
-                            'info'
-                          "
-                          class="course-editor__lesson-status"
-                        >
-                          <div class="course-editor__lesson-status-title">
-                            {{
-                              lessonVideoStatusMeta(lesson.videoStatus)?.banner
-                                ?.title
-                            }}
-                          </div>
-                          <p class="course-editor__lesson-status-description">
-                            {{
-                              lessonVideoStatusMeta(lesson.videoStatus)?.banner
-                                ?.description
-                            }}
-                          </p>
-                        </UiAlert>
-                        <div
-                          v-if="
-                            lessonVideoStatusMeta(lesson.videoStatus)?.banner
-                          "
-                          class="course-editor__lesson-video-placeholder"
-                        >
-                          {{
-                            lessonVideoStatusMeta(lesson.videoStatus)?.banner
-                              ?.placeholder
-                          }}
-                        </div>
-                        <MediaVideoPlayer
-                          v-else-if="lesson.videoUrl"
-                          class="course-editor__lesson-video-player"
-                          :src="lessonVideoPlaybackUrl(lesson.videoUrl)"
-                          controls
-                          crossorigin="anonymous"
-                          playsinline
-                        />
-                        <iframe
-                          v-else
-                          class="course-editor__lesson-video-embed"
-                          :src="youtubeEmbed(lesson.ytId)"
-                          :title="lesson.title"
-                          frameborder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                          allowfullscreen
-                        ></iframe>
-                      </div>
-                      <div
-                        v-if="lesson.pdfUrl"
-                        class="course-editor__lesson-resources"
-                      >
-                        <h4 class="course-editor__lesson-section-title">
-                          {{ t("courses.lessonResourcesHeading") }}
-                        </h4>
-                        <a
-                          class="course-editor__lesson-link"
-                          :href="lesson.pdfUrl"
-                          target="_blank"
-                          rel="noopener"
-                        >
-                          {{ t("courses.lessonPdfLinkText") }}
-                        </a>
-                      </div>
-                    </div>
-                    <div class="course-editor__lesson-actions">
-                      <UiButton
-                        variant="link"
-                        color="primary"
-                        prepend-icon="EditOutlined"
-                        @click.stop="goToLessonEdit(item.module, lesson)"
-                      >
-                        {{ t("common.edit") }}
-                      </UiButton>
-                      <UiButton
-                        variant="link"
-                        color="secondary"
-                        prepend-icon="FileTextOutlined"
-                        @click.stop="openAssignments(lesson)"
-                      >
-                        {{ t("teacher.assignments.title") }}
-                      </UiButton>
-                      <UiButton
-                        variant="link"
-                        color="danger"
-                        prepend-icon="DeleteOutlined"
-                        @click.stop="confirmDeleteLesson(item.module, lesson)"
-                      >
-                        {{ t("common.delete") }}
-                      </UiButton>
-                    </div>
-                  </li>
-                </ul>
-                <UiAlert v-else color="info" variant="soft">
-                  {{ t("courses.noLessons") }}
-                </UiAlert>
-              </div>
-            </template>
-          </UiAccordion>
-
-          <UiAlert v-else color="info" variant="soft">
-            {{ t("courses.noModules") }}
-          </UiAlert>
-        </UiCard>
-      </section>
-
-      
-      <aside class="md:col-span-2">
-        <UiCard>
-          <div class="course-editor__form-header">
-            <div
-              class="course-editor__form-status"
-              :class="`course-editor__form-status--${visibilityAlert.state}`"
-            >
-              <span class="course-editor__form-status-dot" />
-              <div class="course-editor__form-status-copy">
-                <p class="course-editor__form-status-heading">
-                  {{ visibilityAlert.heading }}
-                </p>
-                <p class="course-editor__form-status-message">
-                  {{ visibilityAlert.message }}
-                </p>
-              </div>
-            </div>
-            <h3 class="course-editor__form-title">
-              {{ t("courses.subtitle") }}
-            </h3>
+              {{ visibilityAlert.heading }}
+            </UiTag>
           </div>
-          <form class="course-editor__form" @submit.prevent="saveInfo">
-            <!-- <h1>edit course</h1> -->
-            <!-- <UploadVideo :courseId="{ courseId }" /> -->
-            <section class="course-editor__thumbnail">
-              <header class="course-editor__thumbnail-header">
-                <h4>{{ t("courses.thumbnailLabel") }}</h4>
-                <p>{{ t("courses.thumbnailHint") }}</p>
+          <form class="grid gap-4" @submit.prevent="saveInfo">
+            <UiInput
+              v-model="form.title"
+              :label="t('courses.courseTitle')"
+              required
+            />
+            <UiTextarea
+              v-model="form.description"
+              :label="t('courses.descriptionLabel')"
+              :rows="3"
+            />
+            <UiSelect
+              :model-value="form.type"
+              :label="t('courses.typeLabel')"
+              @update:model-value="onCourseTypeChange"
+            >
+              <option
+                v-for="option in courseTypes"
+                :key="option.value"
+                :value="option.value"
+              >
+                {{ option.title }}
+              </option>
+            </UiSelect>
+            <UiInput v-model="form.faq" :label="t('courses.faq')" />
+          </form>
+      </UiCollapsibleSection>
+
+      <UiCollapsibleSection
+        :title="t('courses.goalsRequirementsSection')"
+        icon="CheckCircleOutlined"
+      >
+        <div class="flex flex-col gap-5">
+          <div class="flex flex-col gap-2">
+            <span class="block text-sm font-semibold text-content-tertiary text-start mb-2">{{
+              t("courses.whatYouWillLearn")
+            }}</span>
+            <div class="flex items-center gap-2">
+              <UiInput
+                v-model="whatYouWillLearnItem"
+                class="flex-1 min-w-0"
+                :placeholder="t('courses.whatYouWillLearnPlaceholder')"
+                @keyup.enter.prevent="addItemToArr"
+              />
+              <UiButton
+                variant="soft"
+                color="primary"
+                prepend-icon="PlusOutlined"
+                :disabled="!whatYouWillLearnItem"
+                @click="addItemToArr"
+              >
+                {{ t("courses.addLearnItem") }}
+              </UiButton>
+            </div>
+            <div
+              v-if="whatYouWillLearnArray.length"
+              class="flex flex-wrap gap-2"
+            >
+              <UiTag
+                v-for="(item, index) in whatYouWillLearnArray"
+                :key="index"
+                color="primary"
+                variant="soft"
+                dismissible
+                :dismiss-label="t('courses.removeLearnItem')"
+                @dismiss="removeItem(index)"
+              >
+                {{ item.learnText }}
+              </UiTag>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <span class="block text-sm font-semibold text-content-tertiary text-start mb-2">{{
+              t("courses.courseRequirements")
+            }}</span>
+            <QuillEditor
+              v-model:content="form.courseRequirements"
+              contentType="html"
+            />
+          </div>
+
+          <UiInput
+            v-model="form.targetAudience"
+            :label="t('courses.targetAudience')"
+          />
+        </div>
+      </UiCollapsibleSection>
+
+      <UiCollapsibleSection
+        :title="t('courses.visualMediaSection')"
+        icon="VideoCameraOutlined"
+      >
+        <div class="flex flex-col gap-5">
+            <section
+              class="flex flex-col gap-3 p-4 rounded-sakai-lg [border:1px_solid_color-mix(in_srgb,var(--sakai-border-color)_75%,transparent)] bg-[color-mix(in_srgb,var(--sakai-surface)_95%,var(--sakai-primary)_5%)]"
+            >
+              <header class="flex flex-col gap-1 text-content-tertiary">
+                <h4 class="m-0 text-[0.95rem] font-semibold text-content">
+                  {{ t("courses.thumbnailLabel") }}
+                </h4>
+                <p class="m-0 text-[0.85rem]">{{ t("courses.thumbnailHint") }}</p>
               </header>
               <div
                 v-if="thumbnailPreviewUrl"
-                class="course-editor__thumbnail-preview"
+                class="flex flex-col gap-2 rounded-sakai-md overflow-hidden [border:1px_solid_color-mix(in_srgb,var(--sakai-border-color)_65%,transparent)] bg-[color-mix(in_srgb,var(--sakai-surface)_92%,var(--sakai-primary)_6%)]"
               >
                 <img
                   :src="thumbnailPreviewUrl"
                   :alt="form.title || t('courses.thumbnailAlt')"
-                  class="course-editor__thumbnail-image"
+                  class="w-full aspect-video object-cover bg-[color-mix(in_srgb,var(--sakai-border-color)_40%,transparent)]"
                 />
-                <div class="course-editor__thumbnail-actions">
+                <div class="flex flex-wrap gap-2 justify-end pt-0 px-2 pb-2">
                   <UiButton
                     variant="link"
                     size="sm"
@@ -485,252 +339,280 @@
                 </div>
               </template>
             </div>
-            <UiInput
-              v-model="form.title"
-              :label="t('courses.title')"
-              required
-            />
-            <label>{{ t("courses.whatYouWillLearn") }}</label>
-            <input
-              v-model="whatYouWillLearnItem"
-              placeholder="Enter text"
-              class="form-control"
-            />
-            <input
-              type="number"
-              v-model="whatYouWillLearnItemOrder"
-              placeholder="order"
-              class="form-control"
-            />
-            <button
-              type="button"
-              class="btn btn-add-item"
-              :disabled="!whatYouWillLearnItem"
-              @click="addItemToArr"
-            >
-              Add
-            </button>
+        </div>
+      </UiCollapsibleSection>
 
-            <div
-              class="text-center"
-              v-for="(item, index) in whatYouWillLearnArray"
-              :key="index"
-            >
-              <textarea
-                style="min-height: 150px; width: 100%; margin-bottom: 10px"
-                v-model="item.learnText"
-                :placeholder="item.learnText"
-                class="form-control"
-              ></textarea>
-              <input
-                type="number"
-                v-model="item.ordered"
-                :placeholder="item.ordered"
-                class="form-control"
-              />
-              <!-- {{ item.text }} -->
-              <button
-                type="button"
-                class="ui-button ui-button--link ui-button--tone-danger"
-                @click="removeItem(index)"
-              >
-                <i
-                  style="color: red; font-weight: bold; margin-left: 10px"
-                  class="pi pi-trash"
-                ></i>
-              </button>
-            </div>
+      <UiCollapsibleSection
+        :title="t('courses.courseContentSection')"
+        icon="BookOutlined"
+        default-open
+      >
+        <template #header-actions>
+          <UiButton
+            color="primary"
+            prepend-icon="FolderAddOutlined"
+            @click="openModuleDialog()"
+          >
+            {{ t("courses.addModule") }}
+          </UiButton>
+        </template>
 
-            <!-- <label>{{ t("courses.whatYouWillLearn") }}</label>
-            <input type="text" v-model="learnItem" class="form-control" />
-            <button
-              type="button"
-              @click="addLearnitemToArray"
-              class="btn btn-add-item"
-            >
-              Add Item
-            </button>
-
-            <ul>
-              <li v-for="(item, index) in arrayItemsLast" :key="index">
-                {{ item.text }}
-              </li>
-            </ul> -->
-
-            <!-- <QuillEditor
-              v-model:content="form.whatYouWillLearn"
-              contentType="html"
-            /> -->
-            <!-- <UiInput v-model="form.hero" :label="'Hero Content'" /> -->
-
-            <label>{{ t("courses.courseRequirements") }}</label>
-            <QuillEditor
-              v-model:content="form.courseRequirements"
-              contentType="html"
-            />
-
-            <!-- <label>{{ t("courses.refundPolicy") }}</label>
-            <QuillEditor
-              v-model:content="form.refundPolicy"
-              contentType="html"
-            /> -->
-            <!-- <label>{{ t("courses.curriculum") }}</label>
-            <QuillEditor v-model:content="form.curriculum" contentType="html" /> -->
-            <!-- <UiTextarea
-              v-model="form.courseOverview"
-              :label="t('courses.courseOverview')"
-              :rows="3"
-            /> -->
-            <UiInput
-              v-model="form.instructor"
-              :label="t('courses.instructor')"
-            />
-            <!-- <UiInput v-model="form.pricing" :label="t('courses.pricing')" /> -->
-            <UiInput v-model="form.faq" :label="t('courses.faq')" />
-            <!-- <UiInput
-              v-model="form.certificateInfo"
-              :label="t('courses.certificateInfo')"
-            /> -->
-            <label>
-              <input type="checkbox" v-model="form.certificateInfo" />
-              {{ t("courses.certificateInfo") }}
-            </label>
-            <UiInput v-model="form.duration" :label="t('courses.duration')" />
-            <UiInput
-              v-model="form.targetAudience"
-              :label="t('courses.targetAudience')"
-            />
-            <!-- <UiInput
-              v-model="form.previewVideo"
-              :label="t('courses.previewVideo')"
-            /> -->
-            <!-- <section class="lesson-editor__section">
-              <h3 class="lesson-editor__section-title">
-                {{ t("courses.lessonMediaSectionTitle") }}
-              </h3>
-
-              <div class="lesson-editor__upload">
-                <label class="lesson-editor__field-label">{{
-                  lessonVideoTexts.label
-                }}</label>
-                <UiFileUpload
-                  v-model="lessonVideoFiles"
-                  :label="lessonVideoTexts.uploadLabel"
-                  :hint="lessonVideoTexts.hint"
-                  :disabled="lessonVideoState.uploading"
-                  :button-label="lessonVideoTexts.browse"
-                  accept="video/mp4,video/quicktime,video/x-matroska,video/webm,video/x-msvideo"
-                  @change="onLessonVideoChange"
-                />
-                <UiAlert
-                  v-if="lessonVideoState.uploading"
-                  color="info"
-                  variant="soft"
-                >
-                  <div class="lesson-editor__upload-progress">
-                    <span>{{ lessonVideoTexts.uploading }}</span>
-                    <span
-                      v-if="lessonVideoState.progress > 0"
-                      class="lesson-editor__upload-progress-value"
-                    >
-                      {{ lessonVideoState.progress }}%
-                    </span>
+          <UiAccordion
+            v-if="moduleAccordionItems.length"
+            :items="moduleAccordionItems"
+            multiple
+            flush
+            class="[&_.ui-accordion\_\_content]:bg-transparent"
+          >
+            <template #header="{ item }">
+              <div class="flex flex-wrap justify-between gap-3 items-start">
+                <div class="flex flex-col gap-2">
+                  <span class="font-semibold text-content">{{
+                    item.module.title
+                  }}</span>
+                  <div class="flex flex-wrap gap-2">
+                    <UiTag size="sm" color="secondary">
+                      {{
+                        t("courses.modulePositionLabel", {
+                          position: item.module.position,
+                        })
+                      }}
+                    </UiTag>
+                    <UiTag size="sm" color="info">
+                      {{
+                        t("courses.lessonsCount", {
+                          count: item.module.lessons.length,
+                        })
+                      }}
+                    </UiTag>
                   </div>
-                  <UiProgressBar
-                    :value="lessonVideoState.progress"
-                    color="info"
-                  />
-                </UiAlert>
-                <UiAlert
-                  v-else-if="lessonVideoState.error"
-                  color="danger"
-                  variant="soft"
-                >
-                  {{ lessonVideoState.error }}
-                </UiAlert>
-                <UiAlert
-                  v-else-if="form.videoUrl"
-                  color="success"
-                  variant="soft"
-                  class="lesson-editor__upload-alert"
-                >
-                  <span>{{ lessonVideoTexts.uploaded }}</span>
+                </div>
+                <div class="inline-flex flex-wrap justify-end gap-2">
                   <UiButton
                     variant="link"
                     color="primary"
-                    @click.prevent="openLessonVideo"
+                    prepend-icon="EditOutlined"
+                    @click.stop="openModuleDialog(item.module)"
                   >
-                    {{ lessonVideoTexts.preview }}
+                    {{ t("common.edit") }}
                   </UiButton>
                   <UiButton
                     variant="link"
                     color="danger"
-                    @click.prevent="clearLessonVideo"
+                    prepend-icon="DeleteOutlined"
+                    @click.stop="confirmDeleteModule(item.module)"
                   >
-                    {{ lessonVideoTexts.remove }}
+                    {{ t("common.delete") }}
                   </UiButton>
-                </UiAlert>
-                <UiAlert
-                  v-else
-                  color="info"
-                  variant="soft"
-                  class="lesson-editor__empty-alert"
-                >
-                  {{ lessonVideoTexts.empty }}
-                </UiAlert>
-                <UiAlert
-                  v-if="lessonVideoState.warning"
-                  color="warning"
-                  variant="soft"
-                >
-                  {{ lessonVideoState.warning }}
-                </UiAlert>
-                <UiAlert
-                  v-if="lessonVideoStatusMeta(form.videoStatus)?.banner"
-                  :color="
-                    lessonVideoStatusMeta(form.videoStatus)?.color || 'info'
-                  "
-                  variant="soft"
-                  class="lesson-editor__status"
-                >
-                  <div class="lesson-editor__status-title">
-                    {{ lessonVideoStatusMeta(form.videoStatus)?.banner?.title }}
-                  </div>
-                  <p class="lesson-editor__status-description">
-                    {{
-                      lessonVideoStatusMeta(form.videoStatus)?.banner
-                        ?.description
-                    }}
-                  </p>
-                </UiAlert>
-                <div
-                  v-if="lessonVideoStatusMeta(form.videoStatus)?.banner"
-                  class="lesson-editor__video-placeholder"
-                >
-                  {{
-                    lessonVideoStatusMeta(form.videoStatus)?.banner?.placeholder
-                  }}
                 </div>
               </div>
-            </section> -->
-            <UiTextarea
-              v-model="form.description"
-              :label="t('courses.descriptionLabel')"
-              :rows="3"
-            />
-            <UiSelect
-              :model-value="form.type"
-              :label="t('courses.typeLabel')"
-              @update:model-value="onCourseTypeChange"
-            >
-              <option
-                v-for="option in courseTypes"
-                :key="option.value"
-                :value="option.value"
-              >
-                {{ option.title }}
-              </option>
-            </UiSelect>
+            </template>
+            <template #content="{ item }">
+              <div class="flex flex-col gap-4">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                  <p class="m-0 font-semibold text-content-tertiary">
+                    {{ t("courses.lessons") }}
+                  </p>
+                  <UiButton
+                    color="primary"
+                    prepend-icon="PlusOutlined"
+                    @click="goToLessonCreate(item.module)"
+                  >
+                    {{ t("courses.addLesson") }}
+                  </UiButton>
+                </div>
+                <ul
+                  v-if="item.module.lessons.length"
+                  class="list-none p-0 m-0 flex flex-col gap-3"
+                >
+                  <li
+                    v-for="lesson in sortedLessons(item.module.lessons)"
+                    :key="lesson.id"
+                    class="flex flex-col gap-4 p-4 rounded-sakai-lg bg-[color-mix(in_srgb,var(--sakai-primary)_6%,transparent)] [border:1px_solid_color-mix(in_srgb,var(--sakai-border-color)_65%,transparent)] min-[640px]:flex-row min-[640px]:items-start min-[640px]:justify-between"
+                  >
+                    <div class="flex flex-col gap-2 flex-auto min-w-0">
+                      <span class="font-medium text-content">{{
+                        lesson.title
+                      }}</span>
+                      <div class="flex flex-wrap gap-2 text-content-tertiary">
+                        <UiTag
+                          v-if="lessonVideoStatusMeta(lesson.videoStatus)"
+                          size="sm"
+                          :color="
+                            lessonVideoStatusMeta(lesson.videoStatus)?.color ||
+                            'secondary'
+                          "
+                        >
+                          {{ lessonVideoStatusMeta(lesson.videoStatus)?.label }}
+                        </UiTag>
+                        <UiTag size="sm" color="neutral">
+                          {{
+                            t("courses.lessonPositionLabel", {
+                              position: lesson.position,
+                            })
+                          }}
+                        </UiTag>
+                        <UiTag size="sm" color="neutral">
+                          {{
+                            t("courses.assignmentsCount", {
+                              count: assignmentsCountByLesson[lesson.id] ?? 0,
+                            })
+                          }}
+                        </UiTag>
+                        <UiTag size="sm" color="info" v-if="lesson.duration">
+                          {{ formatDuration(lesson.duration) }}
+                        </UiTag>
+                        <UiTag size="sm" color="secondary" v-if="lesson.ytId">
+                          {{ t("courses.lessonYoutube") }}
+                        </UiTag>
+                        <UiTag size="sm" color="secondary" v-if="lesson.pdfUrl">
+                          {{ t("courses.lessonPdf") }}
+                        </UiTag>
+                        <UiTag
+                          size="sm"
+                          color="secondary"
+                          v-if="lesson.videoUrl"
+                        >
+                          {{ t("courses.lessonVideoTag") }}
+                        </UiTag>
+                      </div>
+                      <div
+                        v-if="lesson.content"
+                        class="flex flex-col gap-2"
+                      >
+                        <h4 class="mt-0 mx-0 mb-2 text-sm font-semibold text-content-tertiary">
+                          {{ t("courses.lessonContentHeading") }}
+                        </h4>
+                        <p class="m-0 text-content whitespace-pre-wrap">
+                          {{ lesson.content }}
+                        </p>
+                      </div>
+                      <div
+                        v-if="lesson.videoUrl || lesson.ytId"
+                        class="flex flex-col gap-2"
+                      >
+                        <h4 class="mt-0 mx-0 mb-2 text-sm font-semibold text-content-tertiary">
+                          {{ t("courses.lessonVideoPreviewHeading") }}
+                        </h4>
+                        <UiAlert
+                          v-if="
+                            lessonVideoStatusMeta(lesson.videoStatus)?.banner
+                          "
+                          variant="soft"
+                          :color="
+                            lessonVideoStatusMeta(lesson.videoStatus)?.color ||
+                            'info'
+                          "
+                          class="m-0"
+                        >
+                          <div class="font-semibold">
+                            {{
+                              lessonVideoStatusMeta(lesson.videoStatus)?.banner
+                                ?.title
+                            }}
+                          </div>
+                          <p class="mt-1 mx-0 mb-0 text-content">
+                            {{
+                              lessonVideoStatusMeta(lesson.videoStatus)?.banner
+                                ?.description
+                            }}
+                          </p>
+                        </UiAlert>
+                        <div
+                          v-if="
+                            lessonVideoStatusMeta(lesson.videoStatus)?.banner
+                          "
+                          class="flex items-center justify-center min-h-[180px] max-w-[520px] p-4 rounded-sakai-md bg-[color-mix(in_srgb,var(--sakai-border-color)_25%,var(--sakai-surface)_75%)] text-content text-center font-medium"
+                        >
+                          {{
+                            lessonVideoStatusMeta(lesson.videoStatus)?.banner
+                              ?.placeholder
+                          }}
+                        </div>
+                        <MediaVideoPlayer
+                          v-else-if="lesson.videoUrl"
+                          class="block w-full max-w-[480px] max-h-[320px] rounded-sakai-md border-none bg-surface shadow-sakai-sm"
+                          :src="lessonVideoPlaybackUrl(lesson.videoUrl)"
+                          controls
+                          crossorigin="anonymous"
+                          playsinline
+                        />
+                        <iframe
+                          v-else
+                          class="w-full max-w-[480px] aspect-video rounded-sakai-md border-none bg-surface shadow-sakai-sm"
+                          :src="youtubeEmbed(lesson.ytId)"
+                          :title="lesson.title"
+                          frameborder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowfullscreen
+                        ></iframe>
+                      </div>
+                      <div
+                        v-if="lesson.pdfUrl"
+                        class="flex flex-col gap-2"
+                      >
+                        <h4 class="mt-0 mx-0 mb-2 text-sm font-semibold text-content-tertiary">
+                          {{ t("courses.lessonResourcesHeading") }}
+                        </h4>
+                        <a
+                          class="text-sakai-primary font-medium no-underline hover:underline focus:underline"
+                          :href="lesson.pdfUrl"
+                          target="_blank"
+                          rel="noopener"
+                        >
+                          {{ t("courses.lessonPdfLinkText") }}
+                        </a>
+                      </div>
+                    </div>
+                    <div class="inline-flex flex-wrap gap-2 justify-end">
+                      <UiButton
+                        variant="link"
+                        color="primary"
+                        prepend-icon="EditOutlined"
+                        @click.stop="goToLessonEdit(item.module, lesson)"
+                      >
+                        {{ t("common.edit") }}
+                      </UiButton>
+                      <UiButton
+                        variant="link"
+                        color="secondary"
+                        prepend-icon="FileTextOutlined"
+                        @click.stop="openAssignments(lesson)"
+                      >
+                        {{ t("teacher.assignments.title") }}
+                      </UiButton>
+                      <UiButton
+                        variant="link"
+                        color="danger"
+                        prepend-icon="DeleteOutlined"
+                        @click.stop="confirmDeleteLesson(item.module, lesson)"
+                      >
+                        {{ t("common.delete") }}
+                      </UiButton>
+                    </div>
+                  </li>
+                </ul>
+                <UiAlert v-else color="info" variant="soft">
+                  {{ t("courses.noLessons") }}
+                </UiAlert>
+              </div>
+            </template>
+          </UiAccordion>
+
+          <UiAlert v-else color="info" variant="soft">
+            {{ t("courses.noModules") }}
+          </UiAlert>
+      </UiCollapsibleSection>
+    </div>
+
+    <div v-else class="grid gap-3">
+      <UiSkeleton height="24px" />
+      <UiSkeleton height="280px" />
+    </div>
+
+    <template #sidebar>
+      <!-- Sections 3-4 fill this: Pricing + Additional Settings cards. -->
+      <UiCard :title="t('courses.pricingSection')">
             <UiInput
               :model-value="form.price"
               type="number"
@@ -750,12 +632,18 @@
                 {{ option.title }}
               </option>
             </UiSelect>
-            <div class="course-editor__module-pricing-toggle" style="margin-bottom: var(--sakai-space-4);">
+            <div class="mb-4">
               <UiCheckbox
                 v-model="form.useModulePricing"
                 :label="t('courses.useModulePricingLabel')"
               />
             </div>
+      </UiCard>
+      <UiCard :title="t('courses.additionalSettingsSection')">
+            <UiInput
+              v-model="form.instructor"
+              :label="t('courses.instructor')"
+            />
             <UiSelect
               v-model="form.level"
               :label="t('courses.levelLabel')"
@@ -784,42 +672,18 @@
                 {{ language.title }}
               </option>
             </UiSelect>
-
-            <div class="course-editor__status">
-              <UiSwitch
-                v-model="form.active"
-                :label="
-                  form.active
-                    ? t('courses.statusActive')
-                    : t('courses.statusInactive')
-                "
-              />
-              <p class="course-editor__status-hint">
-                {{ t("courses.statusHint") }}
-              </p>
-            </div>
-            <UiButton
-              button-type="submit"
-              color="primary"
-              prepend-icon="SaveOutlined"
-              :disabled="thumbnailState.uploading"
-            >
-              {{ t("common.save") }}
-            </UiButton>
-          </form>
-        </UiCard>
-      </aside>
-    </div>
-
-    <div v-else class="course-editor__loading">
-      <UiSkeleton height="24px" />
-      <UiSkeleton height="280px" />
-    </div>
+            <UiInput v-model="form.duration" :label="t('courses.duration')" />
+            <UiSwitch
+              v-model="form.certificateInfo"
+              :label="t('courses.certificateInfo')"
+            />
+      </UiCard>
+    </template>
 
     <UiDialog v-model="moduleDialog.open" :title="moduleDialogTitle">
       <form
         id="module-dialog-form"
-        class="course-editor__dialog-form"
+        class="grid gap-4"
         @submit.prevent="submitModule"
       >
         <UiInput
@@ -840,16 +704,16 @@
           :label="t('courses.positionLabel')"
           @update:model-value="onModulePositionChange"
         />
-        <p class="course-editor__dialog-hint">
+        <p class="m-0 text-[0.8rem] text-content-tertiary">
           {{ t("courses.modulePositionHelp") }}
         </p>
-        <div class="course-editor__module-pricing" style="margin-top: var(--sakai-space-4); margin-bottom: var(--sakai-space-4);">
+        <div class="mt-4 mb-4">
           <UiCheckbox
             v-model="moduleDialog.form.priced"
             :label="t('courses.modulePricedLabel')"
           />
         </div>
-        <div v-if="moduleDialog.form.priced" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sakai-space-4); margin-bottom: var(--sakai-space-4);">
+        <div v-if="moduleDialog.form.priced" class="grid grid-cols-2 gap-4 mb-4">
           <UiInput
             v-model.number="moduleDialog.form.price"
             type="number"
@@ -937,9 +801,9 @@ import UiFileUpload from "@/components/ui/UiFileUpload.vue";
 import UiProgressBar from "@/components/ui/UiProgressBar.vue";
 import UiSwitch from "@/components/ui/UiSwitch.vue";
 import UiCheckbox from "@/components/ui/UiCheckbox.vue";
+import UiCollapsibleSection from "@/components/ui/UiCollapsibleSection.vue";
 import { useToast } from "@/composables/useToast";
 import MediaVideoPlayer from "@/components/media/MediaVideoPlayer.vue";
-import UploadVideo from "@/components/uploadVideo/UploadVideo.vue";
 import TeacherAssignmentsDialog from "@/components/teacher/assignments/TeacherAssignmentsDialog.vue";
 import { useLearningStore } from "@/stores/learning";
 
@@ -1055,10 +919,6 @@ const resolveCurrency = (value?: string | number | null) => {
     ? normalized
     : SUPPORTED_COURSE_CURRENCIES[0];
 };
-const learnItem = ref<any>("");
-
-const arrayItemsLast = ref<any>([]);
-
 const currencyOptions = computed(() => [
   { title: t("courses.currencyOptionEGP"), value: "EGP" },
   { title: t("courses.currencyOptionAED"), value: "AED" },
@@ -1191,28 +1051,20 @@ const courseIntroVideoSource = ref<"youtube" | "bunny">("youtube");
 function removeItem(index: any) {
   whatYouWillLearnArray.value.splice(index, 1);
 }
-const addLearnitemToArray = () => {
-  arrayItemsLast.value.push({
-    text: learnItem,
-  });
-  console.log(arrayItemsLast);
-  learnItem.value = "";
-};
-
 const whatYouWillLearnItem = ref<any>("");
-const whatYouWillLearnItemOrder = ref<any>("");
 const whatYouWillLearnArray = ref<any>([]);
 
 function addItemToArr() {
-  if (!whatYouWillLearnItem.value) return;
+  const text = whatYouWillLearnItem.value?.trim();
+  if (!text) return;
 
+  // Auto-order by insertion; the order field is no longer surfaced to users.
   whatYouWillLearnArray.value.push({
-    learnText: whatYouWillLearnItem.value,
-    ordered: whatYouWillLearnItemOrder.value,
+    learnText: text,
+    ordered: whatYouWillLearnArray.value.length + 1,
   });
 
   whatYouWillLearnItem.value = "";
-  whatYouWillLearnItemOrder.value = 0;
 }
 
 const lessonPdfFiles = ref<File[]>([]);
@@ -2007,6 +1859,12 @@ const hasInitializedVisibility = ref(false);
 const hasUserAdjustedVisibility = ref(false);
 const syncingVisibilityFromCourse = ref(false);
 
+// Top action bar (Section 2): save-in-flight + which action triggered it, and a
+// best-effort dirty flag for the Cancel unsaved-changes guard.
+const isSaving = ref(false);
+const savingAction = ref<"publish" | "draft" | null>(null);
+const isDirty = ref(false);
+
 watch(
   () => form.active,
   (next, prev) => {
@@ -2022,6 +1880,20 @@ watch(
   }
 );
 
+// Mark the form dirty on any field change, except while the store is syncing the
+// form from the loaded course or while a save is in flight (those are not user
+// edits). Powers the Cancel unsaved-changes confirm.
+watch(
+  form,
+  () => {
+    if (syncingVisibilityFromCourse.value || isSaving.value) {
+      return;
+    }
+    isDirty.value = true;
+  },
+  { deep: true },
+);
+
 watch(
   course,
   (value) => {
@@ -2034,7 +1906,6 @@ watch(
       // targetAudience?: string;
       // whatYouWillLearn?: [];
 
-      // console.log("---- valueeee" + value.certificateInfo);
       syncingVisibilityFromCourse.value = true;
       try {
         form.title = value.title;
@@ -2052,11 +1923,9 @@ watch(
         form.previewVideoBunnyId = value?.previewVideoBunnyId ?? null;
         form.previewVideoStatus = value?.previewVideoStatus ?? null;
         courseIntroVideoSource.value = value?.previewVideoBunnyId ? "bunny" : "youtube";
-        console.log(form.whatYouWillLearn);
         for (let i = 0; i < form.whatYouWillLearn?.length; i++) {
           whatYouWillLearnArray.value.push(form.whatYouWillLearn[i]);
         }
-        console.log(whatYouWillLearnArray);
         // whatYouWillLearnArray = value?.whatYouWillLearn
         // form.certificateInfo = value.certificateInfo;
         // certificateInfo
@@ -2151,7 +2020,6 @@ const resetLessonDialog = () => {
   resetLessonPdfState();
 };
 
-const goBack = () => router.push({ name: "teacher-dashboard" });
 
 const openModuleDialog = (module?: ModulePayload) => {
   moduleDialogAttempt.value = false;
@@ -2593,14 +2461,13 @@ const youtubeEmbed = (value?: string | null) => {
   return `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`;
 };
 
-const saveInfo = async () => {
+const saveInfo = async (successToastKey?: string) => {
   const seen = new Set();
   const unique = whatYouWillLearnArray?.value.filter((item) => {
     if (seen.has(item.learnText)) return false;
     seen.add(item.learnText);
     return true;
   });
-  console.log(unique);
   const description = form.description?.trim();
   const thumbnail = form.thumbnailUrl.trim();
   const previewVideo =
@@ -2611,31 +2478,6 @@ const saveInfo = async () => {
     courseIntroVideoSource.value === "bunny"
       ? form.previewVideoBunnyId || null
       : null;
-  const loggedValue = {
-    title: form.title,
-    description: description && description.length ? description : undefined,
-    type: form.type,
-    price: form.price,
-    currency: form.currency,
-    useModulePricing: form.useModulePricing,
-    thumbnailUrl: thumbnail ? thumbnail : null,
-    level: form.level || null,
-    language: form.language || null,
-    active: form.active,
-    // courseOverview: form.courseOverview,
-    instructor: form.instructor,
-    faq: form.faq,
-    certificateInfo: form.certificateInfo,
-    duration: form.duration,
-    targetAudience: form.targetAudience,
-    previewVideo,
-    previewVideoBunnyId,
-    whatYouWillLearn: unique,
-    courseRequirements: form?.courseRequirements,
-    // refundPolicy: form.refundPolicy,
-    // curriculum: form.curriculum,
-  };
-  console.log(loggedValue);
   await store.updateCourse(courseId, {
     title: form.title,
     description: description && description.length ? description : undefined,
@@ -2661,565 +2503,46 @@ const saveInfo = async () => {
     // curriculum: form.curriculum,
   });
   hasUserAdjustedVisibility.value = false;
-  const toastKey = form.active
-    ? "courses.toast.courseSaved"
-    : "courses.toast.courseSavedHidden";
+  isDirty.value = false;
+  const toastKey =
+    successToastKey ??
+    (form.active
+      ? "courses.toast.courseSaved"
+      : "courses.toast.courseSavedHidden");
   toast.success(t(toastKey));
 };
+
+// Top action bar handlers. Publish/Draft set visibility then reuse saveInfo with
+// an action-specific success toast; isSaving guards re-entrancy and disables the
+// bar (the dirty watch also ignores the programmatic form.active change while it
+// is true).
+const setActiveAndSave = async (
+  active: boolean,
+  action: "publish" | "draft",
+) => {
+  if (isSaving.value) return;
+  isSaving.value = true;
+  savingAction.value = action;
+  form.active = active;
+  try {
+    await saveInfo(
+      action === "publish"
+        ? "courses.toast.coursePublished"
+        : "courses.toast.draftSaved",
+    );
+  } finally {
+    isSaving.value = false;
+    savingAction.value = null;
+  }
+};
+
+const handleCancel = () => {
+  if (isDirty.value && !window.confirm(t("courses.cancelConfirmUnsaved"))) {
+    return;
+  }
+  const listRoute = route.path.startsWith("/assistant/")
+    ? "assistant-courses"
+    : "teacher-courses";
+  router.push({ name: listRoute });
+};
 </script>
-
-<style scoped>
-.justify-content-spaceB {
-  justify-content: space-between;
-}
-.btn-add-item {
-  background-color: #0d6efd;
-  padding: 8px 20px;
-  border-radius: 50px;
-  color: #fff;
-  font-weight: bold;
-  margin: 0 10px;
-  font-size: 14px;
-}
-.btn-add-item:disabled {
-  background-color: #ccc;
-  color: #666;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-.form-control {
-  position: relative;
-  display: flex;
-  align-items: center;
-  border-radius: var(--sakai-border-radius-lg);
-  background: var(--sakai-surface-card);
-  border: 1px solid var(--sakai-border-color);
-  transition: all var(--sakai-transition-duration) var(--sakai-transition-ease);
-  box-shadow: var(--sakai-shadow-sm);
-  padding: 0.7rem 1rem;
-}
-/* .course-editor {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: var(--sakai-space-5);
-} */
-
-.course-editor__visibility-card {
-  width: 100%;
-  max-width: 28rem;
-  margin-bottom: var(--sakai-space-4);
-  box-shadow: none;
-  border: none;
-  background: transparent;
-}
-
-.course-editor__visibility-card :deep(.ui-card__body) {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--sakai-space-3);
-  padding: var(--sakai-space-4);
-  border-radius: var(--sakai-border-radius-lg);
-}
-
-.course-editor__visibility-card--published :deep(.ui-card__body) {
-  background: var(--sakai-success-surface);
-}
-
-.course-editor__visibility-card--draft :deep(.ui-card__body) {
-  background: var(--sakai-danger-surface);
-}
-
-.course-editor__visibility-content {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--sakai-space-3);
-}
-
-.course-editor__visibility-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.course-editor__visibility-dot {
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: var(--sakai-border-radius-pill);
-  flex-shrink: 0;
-  margin-top: 0.2rem;
-  box-shadow: 0 0 0 6px transparent;
-}
-
-.course-editor__visibility-dot--published {
-  background: var(--sakai-success);
-  box-shadow: 0 0 0 6px
-    color-mix(in srgb, var(--sakai-success) 22%, transparent);
-}
-
-.course-editor__visibility-dot--draft {
-  background: var(--sakai-danger);
-  box-shadow: 0 0 0 6px color-mix(in srgb, var(--sakai-danger) 22%, transparent);
-}
-
-.course-editor__visibility-heading {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.course-editor__visibility-card--published .course-editor__visibility-heading {
-  color: color-mix(in srgb, var(--sakai-success) 45%, var(--sakai-text-color));
-}
-
-.course-editor__visibility-card--draft .course-editor__visibility-heading {
-  color: color-mix(in srgb, var(--sakai-danger) 45%, var(--sakai-text-color));
-}
-
-.course-editor__visibility-message {
-  margin: 0;
-  font-size: 0.9rem;
-  color: var(--sakai-text-color-secondary);
-  line-height: var(--sakai-line-height-md);
-}
-
-.course-editor__main {
-  flex: 1 1 640px;
-  min-width: 0;
-}
-
-/* .course-editor__sidebar {
-  flex: 0 0 320px;
-  min-width: 280px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-} */
-
-.course-editor__accordion :deep(.ui-accordion__content) {
-  background: transparent;
-}
-
-.course-editor__module-header {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--sakai-space-3);
-  align-items: flex-start;
-}
-
-.course-editor__module-heading {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
-.course-editor__module-title {
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.course-editor__module-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-}
-
-.course-editor__module-actions {
-  display: inline-flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: var(--sakai-space-2);
-}
-
-.course-editor__module-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.course-editor__module-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--sakai-space-3);
-}
-
-.course-editor__module-label {
-  margin: 0;
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color-tertiary);
-}
-
-.course-editor__lessons {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.course-editor__lesson {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-  padding: var(--sakai-space-4);
-  border-radius: var(--sakai-border-radius-lg);
-  background: color-mix(in srgb, var(--sakai-primary) 6%, transparent);
-  border: 1px solid
-    color-mix(in srgb, var(--sakai-border-color) 65%, transparent);
-}
-
-@media (min-width: 640px) {
-  .course-editor__lesson {
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-}
-
-.course-editor__lesson-details {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.course-editor__lesson-title {
-  font-weight: var(--sakai-font-weight-medium);
-  color: var(--sakai-text-color);
-}
-
-.course-editor__lesson-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-  color: var(--sakai-text-color-tertiary);
-}
-
-.course-editor__lesson-section-title {
-  margin: 0 0 var(--sakai-space-2);
-  font-size: var(--sakai-font-size-sm);
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color-tertiary);
-}
-
-.course-editor__lesson-content,
-.course-editor__lesson-video,
-.course-editor__lesson-resources {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
-.course-editor__lesson-content p {
-  margin: 0;
-  color: var(--sakai-text-color);
-  white-space: pre-wrap;
-}
-
-.course-editor__lesson-video-player,
-.course-editor__lesson-video-embed {
-  width: 100%;
-  max-width: 480px;
-  border-radius: var(--sakai-border-radius-md);
-  background: var(--sakai-surface-color);
-  box-shadow: var(--sakai-shadow-xs);
-  border: none;
-}
-
-.course-editor__lesson-status {
-  margin: 0;
-}
-
-.course-editor__lesson-status-title {
-  font-weight: var(--sakai-font-weight-semibold);
-}
-
-.course-editor__lesson-status-description {
-  margin: var(--sakai-space-1) 0 0;
-  color: var(--sakai-text-color);
-}
-
-.course-editor__lesson-video-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 180px;
-  max-width: 520px;
-  padding: var(--sakai-space-4);
-  border-radius: var(--sakai-border-radius-md);
-  background: color-mix(
-    in srgb,
-    var(--sakai-border-color) 25%,
-    var(--sakai-surface) 75%
-  );
-  color: var(--sakai-text-color);
-  text-align: center;
-  font-weight: var(--sakai-font-weight-medium);
-}
-
-.course-editor__lesson-video-player {
-  display: block;
-  max-height: 320px;
-}
-
-.course-editor__lesson-video-embed {
-  aspect-ratio: 16 / 9;
-}
-
-.course-editor__lesson-link {
-  color: var(--sakai-primary);
-  font-weight: var(--sakai-font-weight-medium);
-  text-decoration: none;
-}
-
-.course-editor__lesson-link:hover,
-.course-editor__lesson-link:focus {
-  text-decoration: underline;
-}
-
-.course-editor__field-label {
-  display: block;
-  margin-bottom: var(--sakai-space-2);
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color-tertiary);
-}
-
-.course-editor__video-upload {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.course-editor__video-progress {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-2);
-  font-weight: var(--sakai-font-weight-medium);
-  color: var(--sakai-text-color);
-}
-
-.course-editor__video-progress-value {
-  color: var(--sakai-primary);
-}
-
-.course-editor__video-alert {
-  flex-wrap: wrap;
-}
-
-.course-editor__pdf-upload {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.course-editor__pdf-progress {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-2);
-  font-weight: var(--sakai-font-weight-medium);
-  color: var(--sakai-text-color);
-}
-
-.course-editor__pdf-progress-value {
-  color: var(--sakai-primary);
-}
-
-.course-editor__pdf-alert {
-  flex-wrap: wrap;
-}
-
-.course-editor__lesson-actions {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-  justify-content: flex-end;
-}
-
-.course-editor__form-header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-  margin-bottom: var(--sakai-space-4);
-}
-
-.course-editor__form-title {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.course-editor__form-status {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--sakai-space-3);
-  padding: var(--sakai-space-3);
-  border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid transparent;
-  background: color-mix(
-    in srgb,
-    var(--sakai-surface) 92%,
-    var(--sakai-text-color) 8%
-  );
-  color: var(--sakai-text-color-tertiary);
-}
-
-.course-editor__form-status--published {
-  border-color: color-mix(in srgb, var(--sakai-success) 26%, transparent);
-  background: color-mix(in srgb, var(--sakai-success) 14%, transparent);
-  color: color-mix(in srgb, var(--sakai-success) 40%, var(--sakai-text-color));
-}
-
-.course-editor__form-status--draft {
-  border-color: color-mix(in srgb, var(--sakai-danger) 26%, transparent);
-  background: color-mix(in srgb, var(--sakai-danger) 16%, transparent);
-  color: color-mix(in srgb, var(--sakai-danger) 40%, var(--sakai-text-color));
-}
-
-.course-editor__form-status-dot {
-  width: 0.625rem;
-  height: 0.625rem;
-  margin-top: 0.1rem;
-  border-radius: var(--sakai-border-radius-pill);
-  flex-shrink: 0;
-  background: currentColor;
-  box-shadow: 0 0 0 6px color-mix(in srgb, currentColor 18%, transparent);
-}
-
-.course-editor__form-status-copy {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-1);
-}
-
-.course-editor__form-status-heading {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: var(--sakai-font-weight-semibold);
-  color: inherit;
-}
-
-.course-editor__form-status-message {
-  margin: 0;
-  font-size: 0.85rem;
-  color: color-mix(in srgb, currentColor 60%, var(--sakai-text-color-tertiary));
-  line-height: var(--sakai-line-height-md);
-}
-
-.course-editor__form {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.course-editor__thumbnail {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-  padding: var(--sakai-space-4);
-  border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid
-    color-mix(in srgb, var(--sakai-border-color) 75%, transparent);
-  background: color-mix(
-    in srgb,
-    var(--sakai-surface) 95%,
-    var(--sakai-primary) 5%
-  );
-}
-
-.course-editor__thumbnail-header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-1);
-  color: var(--sakai-text-color-tertiary);
-}
-
-.course-editor__thumbnail-header h4 {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.course-editor__thumbnail-header p {
-  margin: 0;
-  font-size: 0.85rem;
-}
-
-.course-editor__thumbnail-preview {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-  border-radius: var(--sakai-border-radius-md);
-  overflow: hidden;
-  border: 1px solid
-    color-mix(in srgb, var(--sakai-border-color) 65%, transparent);
-  background: color-mix(
-    in srgb,
-    var(--sakai-surface) 92%,
-    var(--sakai-primary) 6%
-  );
-}
-
-.course-editor__thumbnail-image {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  background: color-mix(in srgb, var(--sakai-border-color) 40%, transparent);
-}
-
-.course-editor__thumbnail-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-  justify-content: flex-end;
-  padding: 0 var(--sakai-space-2) var(--sakai-space-2);
-}
-
-.course-editor__status {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-  padding: var(--sakai-space-3);
-  border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid
-    color-mix(in srgb, var(--sakai-border-color) 70%, transparent);
-  background: color-mix(in srgb, var(--sakai-primary) 6%, transparent);
-}
-
-.course-editor__status-hint {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
-.course-editor__dialog-form {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.course-editor__dialog-hint {
-  margin: 0;
-  font-size: 0.8rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
-.course-editor__loading {
-  display: grid;
-  gap: var(--sakai-space-3);
-}
-
-/* @media (max-width: 960px) {
-  .course-editor__sidebar {
-    flex-basis: 100%;
-    min-width: 0;
-  }
-} */
-</style>

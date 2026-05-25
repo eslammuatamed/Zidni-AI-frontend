@@ -29,8 +29,14 @@ import { computed } from "vue";
 import { RouterLink } from "vue-router";
 import UiIcon from "./UiIcon.vue";
 
-export type UiVariant = "solid" | "outline" | "link" | "ghost";
-export type UiTone = "primary" | "secondary" | "info" | "success" | "danger";
+export type UiVariant = "solid" | "outline" | "link" | "ghost" | "soft";
+export type UiTone =
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "danger"
+  | "neutral";
 
 const props = withDefaults(
   defineProps<{
@@ -126,6 +132,12 @@ const href = computed(() =>
   --ui-button-gradient: var(--sakai-gradient-info);
 }
 
+.ui-button--tone-neutral {
+  --ui-button-color: var(--sakai-text-color);
+  --ui-button-gradient: var(--sakai-text-color-strong);
+  --ui-button-solid-text: var(--sakai-surface-card);
+}
+
 .ui-button--solid {
   background: var(--ui-button-gradient);
   color: var(--ui-button-solid-text);
@@ -159,5 +171,33 @@ const href = computed(() =>
 
 .ui-button--ghost:hover {
   background: color-mix(in srgb, var(--ui-button-color) 12%, transparent);
+}
+
+/* Soft (tonal) variant: persistent low-opacity tint of the tone color, no
+   border, no shadow. Works for any tone via --ui-button-color. */
+.ui-button--soft {
+  background: color-mix(in srgb, var(--ui-button-color) 10%, transparent);
+  color: var(--ui-button-color);
+  border: none;
+  box-shadow: none;
+}
+
+.ui-button--soft:hover {
+  background: color-mix(in srgb, var(--ui-button-color) 15%, transparent);
+}
+
+/* Neutral tone uses the surface border + text tokens rather than a brand color,
+   so the outline reads as a quiet, non-branded affordance. */
+.ui-button--outline.ui-button--tone-neutral {
+  border-color: var(--sakai-border-color);
+  color: var(--sakai-text-color);
+}
+
+.ui-button--outline.ui-button--tone-neutral:hover {
+  background: color-mix(in srgb, var(--sakai-text-color-tertiary) 6%, transparent);
+}
+
+.ui-button--link.ui-button--tone-neutral:hover {
+  color: var(--sakai-text-color-strong);
 }
 </style>

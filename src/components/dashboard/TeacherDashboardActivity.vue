@@ -41,7 +41,7 @@
           <li
             v-for="session in upcomingSessions"
             :key="session.id"
-            class="teacher-dashboard__activity-item relative flex items-start gap-3 pb-4 last:pb-0"
+            class="teacher-dashboard__activity-item relative flex items-start gap-3 pb-4 last:pb-0 before:content-[''] before:absolute before:start-[5.5px] before:top-6 before:bottom-0 before:[border-inline-start:1px_dashed_var(--sakai-border-color)] before:pointer-events-none last:before:hidden"
           >
             <span
               :class="[
@@ -100,7 +100,7 @@
           <li
             v-for="assignment in upcomingAssignments"
             :key="assignment.id"
-            class="teacher-dashboard__activity-item relative flex items-start gap-3 pb-4 last:pb-0"
+            class="teacher-dashboard__activity-item relative flex items-start gap-3 pb-4 last:pb-0 before:content-[''] before:absolute before:start-[5.5px] before:top-6 before:bottom-0 before:[border-inline-start:1px_dashed_var(--sakai-border-color)] before:pointer-events-none last:before:hidden"
           >
             <span
               :class="[
@@ -226,22 +226,3 @@ const formatActivityDateTime = (value?: string | null) => {
   }
 };
 </script>
-
-<style scoped>
-/* ── Activity timeline — dashed vertical connector in the dot column ── */
-/* The connector lives on each item except the last, sitting in the
-   inset-inline-start column where the 12px dot is. RTL-safe via logical props. */
-.teacher-dashboard__activity-timeline .teacher-dashboard__activity-item::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: 5.5px;
-  inset-block-start: 1.5rem;
-  inset-block-end: 0;
-  border-inline-start: 1px dashed var(--sakai-border-color);
-  pointer-events: none;
-}
-
-.teacher-dashboard__activity-timeline .teacher-dashboard__activity-item:last-child::before {
-  display: none;
-}
-</style>

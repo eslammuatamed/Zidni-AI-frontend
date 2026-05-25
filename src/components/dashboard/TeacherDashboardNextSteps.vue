@@ -6,7 +6,7 @@
     hover
   >
     <ul
-      class="teacher-dashboard__steps list-none m-0 p-0 flex flex-col divide-y divide-border/40"
+      class="teacher-dashboard__steps list-none m-0 p-0 flex flex-col divide-y divide-solid divide-[color-mix(in_srgb,var(--sakai-border-color)_40%,transparent)]"
     >
       <li
         v-for="step in nextSteps"

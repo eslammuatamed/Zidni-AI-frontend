@@ -72,9 +72,9 @@
         {{ streamingWarning }}
       </UiAlert>
 
-      <div class="mt-5 divide-y divide-border/40">
+      <div class="mt-5 divide-y divide-solid divide-[color-mix(in_srgb,var(--sakai-border-color)_40%,transparent)]">
         <div
-          class="teacher-dashboard__plan-usage-item flex flex-col gap-1.5 py-3 first:pt-0 last:pb-0"
+          class="teacher-dashboard__plan-usage-item flex flex-col gap-1.5 py-3 first:pt-0 last:pb-0 [&_.ui-progress\_\_track]:!bg-border"
         >
           <div class="flex items-center justify-between gap-2">
             <span class="font-medium text-content">
@@ -109,7 +109,7 @@
           />
           <div
             v-else
-            class="h-3 rounded-full border border-dashed border-border/50"
+            class="h-3 rounded-full [border:1px_dashed_color-mix(in_srgb,var(--sakai-border-color)_50%,transparent)]"
             aria-hidden="true"
           />
           <div
@@ -121,7 +121,7 @@
         </div>
 
         <div
-          class="teacher-dashboard__plan-usage-item flex flex-col gap-1.5 py-3 first:pt-0 last:pb-0"
+          class="teacher-dashboard__plan-usage-item flex flex-col gap-1.5 py-3 first:pt-0 last:pb-0 [&_.ui-progress\_\_track]:!bg-border"
         >
           <div class="flex items-center justify-between gap-2">
             <span class="font-medium text-content">
@@ -156,7 +156,7 @@
           />
           <div
             v-else
-            class="h-3 rounded-full border border-dashed border-border/50"
+            class="h-3 rounded-full [border:1px_dashed_color-mix(in_srgb,var(--sakai-border-color)_50%,transparent)]"
             aria-hidden="true"
           />
           <div
@@ -168,7 +168,7 @@
         </div>
 
         <div
-          class="teacher-dashboard__plan-usage-item flex flex-col gap-1.5 py-3 first:pt-0 last:pb-0"
+          class="teacher-dashboard__plan-usage-item flex flex-col gap-1.5 py-3 first:pt-0 last:pb-0 [&_.ui-progress\_\_track]:!bg-border"
         >
           <div class="flex items-center justify-between gap-2">
             <span class="font-medium text-content">
@@ -203,7 +203,7 @@
           />
           <div
             v-else
-            class="h-3 rounded-full border border-dashed border-border/50"
+            class="h-3 rounded-full [border:1px_dashed_color-mix(in_srgb,var(--sakai-border-color)_50%,transparent)]"
             aria-hidden="true"
           />
           <div
@@ -216,7 +216,7 @@
       </div>
 
       <div
-        class="border-t border-border/40 pt-6 mt-6 flex flex-col gap-4"
+        class="[border-top:1px_solid_color-mix(in_srgb,var(--sakai-border-color)_40%,transparent)] pt-6 mt-6 flex flex-col gap-4"
       >
         <div
           class="text-[0.85rem] font-semibold text-content-secondary uppercase tracking-[0.08em]"
@@ -634,11 +634,3 @@ const streamingWarning = computed(() => {
   );
 });
 </script>
-
-<style scoped>
-/* Plan usage progress track — boost contrast on white card surface */
-/* Couples to UiProgressBar's internal class name; scoped to this card only. */
-.teacher-dashboard__plan-usage-item :deep(.ui-progress__track) {
-  background: var(--sakai-border-color);
-}
-</style>

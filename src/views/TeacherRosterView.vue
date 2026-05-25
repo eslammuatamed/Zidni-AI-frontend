@@ -76,9 +76,7 @@
             </UiButton>
           </div>
 
-          test
           <div v-if="showBulkStudentsBar" class="teacher-roster__bulk-bar">
-            test2
             <div class="teacher-roster__bulk-info flex flex-col gap-1">
               <strong>{{
                 t("bulk.studentsSelected", { count: selectedStudentCount })
@@ -286,7 +284,10 @@
         </UiCard>
       </section>
 
-      <section v-else class="teacher-roster__section w-full flex flex-col gap-4">
+      <section
+        v-else
+        class="teacher-roster__section w-full flex flex-col gap-4"
+      >
         <UiCard
           class="teacher-roster__card flex flex-col gap-4"
           :title="t('roster.groupsTitle')"

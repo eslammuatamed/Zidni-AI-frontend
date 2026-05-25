@@ -80,7 +80,7 @@
           disabled
         />
         <section class="attempts__questions flex flex-col gap-4 mt-5">
-          <article v-for="question in attemptForm.questions" :key="question.id" class="attempts__question border border-border rounded-sakai-md p-4">
+          <article v-for="question in attemptForm.questions" :key="question.id" class="attempts__question [border:1px_solid_var(--sakai-border-color)] rounded-sakai-md p-4">
             <header>
               <h4>{{ question.position }}. {{ question.stem }}</h4>
               <div class="attempts__question-scores">

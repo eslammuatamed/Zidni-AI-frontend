@@ -993,7 +993,7 @@
             v-if="assistantDialog.form.avatar"
             :src="assistantDialog.form.avatar"
             alt="Avatar"
-            class="w-24 h-24 rounded-full object-cover shadow-sm mb-3 border-2 border-surface-100"
+            class="w-24 h-24 rounded-full object-cover shadow-sm mb-3 [border:2px_solid_var(--sakai-border-color)]"
           />
           <div
             v-else
@@ -1008,19 +1008,19 @@
         </div>
 
         <div class="space-y-4 px-2">
-          <div class="flex flex-col border-b border-surface-100 pb-3">
+          <div class="flex flex-col [border-bottom:1px_solid_var(--sakai-border-color)] pb-3">
             <span class="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-1">{{ t('teacher.assistants.team.form.email') }}</span>
             <span class="text-surface-900">{{ assistantDialog.form.email }}</span>
           </div>
-          <div class="flex flex-col border-b border-surface-100 pb-3">
+          <div class="flex flex-col [border-bottom:1px_solid_var(--sakai-border-color)] pb-3">
             <span class="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-1">{{ t('teacher.assistants.team.form.username') }}</span>
             <span class="text-surface-900">{{ assistantDialog.form.username }}</span>
           </div>
-          <div v-if="assistantDialog.form.phone" class="flex flex-col border-b border-surface-100 pb-3">
+          <div v-if="assistantDialog.form.phone" class="flex flex-col [border-bottom:1px_solid_var(--sakai-border-color)] pb-3">
             <span class="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-1">{{ t('teacher.assistants.team.form.phone') }}</span>
             <span class="text-surface-900" dir="ltr">{{ assistantDialog.form.phone }}</span>
           </div>
-          <div v-if="assistantDialog.form.bio" class="flex flex-col border-b border-surface-100 pb-3">
+          <div v-if="assistantDialog.form.bio" class="flex flex-col [border-bottom:1px_solid_var(--sakai-border-color)] pb-3">
             <span class="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-1">{{ t('teacher.assistants.team.form.bio') }}</span>
             <p class="text-surface-900 whitespace-pre-wrap text-sm leading-relaxed">{{ assistantDialog.form.bio }}</p>
           </div>

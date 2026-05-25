@@ -1,5 +1,5 @@
 <template>
-  <div class="ui-table-container w-full overflow-x-auto bg-surface-card rounded-sakai-xl shadow-sakai-sm border border-border" :class="containerClasses" :style="containerStyle">
+  <div class="ui-table-container w-full overflow-x-auto bg-surface-card rounded-sakai-xl shadow-sakai-sm [border:1px_solid_var(--sakai-border-color)]" :class="containerClasses" :style="containerStyle">
     <table class="ui-table w-full border-collapse text-left text-[0.925rem]">
       <thead class="ui-table__head">
         <tr>

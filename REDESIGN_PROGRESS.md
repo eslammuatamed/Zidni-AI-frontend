@@ -322,8 +322,72 @@ After Phase 2 main work, a cleanup pass removed:
 - **`UiChart.vue` retired**.
 - **Net project**: +298 LOC (modest growth, justified by clean component separation + reusable infrastructure consumable by future student / admin dashboards).
 
+## Course Editor Redesign Track (COMPLETED)
+
+- **View:** `src/views/CourseEditorView.vue`
+- **Sections completed:** 9 (+ Field Redistribution pass) + Tailwind migration pass + Vuetify `.border` collision project-wide fix
+- **Line delta:** 3,225 → 2,548 (−677, −21%) including the Tailwind migration
+- **New component:** `src/components/ui/UiCollapsibleSection.vue` (reusable standalone collapsible card primitive)
+- **DS extensions:** `UiButton` gained `variant="soft"` (tonal fill) + `color="neutral"` (neutral tone) — additive, now available app-wide
+- **i18n keys added:** 15 new keys × 2 locales (section headers, sidebar titles, action bar, toasts, `courseTitle`, widget keys) + 2 i18n bug fixes (`lessonDurationSystemHint` added to AR, `faq` AR corrected)
+
+**Bugs fixed during track:**
+1. Course title field mislabeled "My Courses" → new `courses.courseTitle` key
+2. `courses.faq` AR was "التعليمات" → "الأسئلة الشائعة"
+3. Vuetify `.border` CSS collision (project-wide, **24 occurrences fixed across 14 files** including dashboard surfaces)
+4. `divide-y` dividers rendering invisible (3 dashboard surfaces fixed)
+5. `--sakai-shadow-xs` + `--sakai-surface-color` undefined tokens fixed
+6. `--sakai-surface-100` token undefined (4 occurrences in `AssistantsManagementView` fixed; broader pattern logged to backlog)
+
+**Constraints honored:** No backend/store/route changes; no new/removed fields; all `form.*` bindings byte-identical throughout.
+
+**Section breakdown:**
+- Section 1: Layout shell (`ThemePage` 2-zone with `#sidebar` slot, `UiCollapsibleSection` component)
+- Section 2: Top action bar (Publish + Save as draft + Cancel in `#actions` slot)
+- Field Redistribution pass: re-homed fields into correct sections (structural only)
+- Sections 3–8 (batched): Pricing card, Additional Settings card, Basic Info, Goals & Requirements, Visual Media, Course Content (visual restyle with DS vocabulary)
+- Section 9: Cleanup (dead CSS, dead script, console.logs, commented blocks)
+- Tailwind migration pass: **557 lines scoped CSS eliminated across 4 files**
+- Vuetify `.border` collision fix: 24 occurrences project-wide
+
+## Lesson + Assignment Editor Redesign Track (COMPLETED)
+
+- **Views:** `src/views/LessonEditorView.vue`, `src/views/TeacherAssignmentEditorView.vue`, `src/components/teacher/assignments/TeacherAssignmentsDialog.vue`
+- **Total line delta:** 2,124 → 1,784 (−340 across 3 components)
+- **Components touched:** 3 Vue components + `en.json` + `ar.json` + `REDESIGN_BACKLOG.md`
+- **Zero scoped `<style>` blocks remain** in any of the three
+- **i18n keys added:** 5 (`lessonVideoSectionTitle`, `lessonAiAssistantSectionTitle`, `lessonVideoTooLong`, `editor.detailsSectionTitle`, `editor.contextSectionTitle`) — full ar/en parity
+
+**Bugs fixed during track:**
+1. `courses.lessonVideoTooLong` missing from both locales (was English-only fallback)
+2. `goBack` assistant-route bug — assistants on `assistant-lesson-*` routes were bounced to teacher course route; now path-aware
+3. READY video status pill visibility — previously had no banner, now surfaces as a success pill
+4. RTL AI guide — physical `padding-left` → logical `ps-5`
+
+**Batch breakdown:**
+- Batch 1: Lesson layout shell + redistribution (`ThemePage` `#sidebar` + main slots, 4 `UiCollapsibleSection`s, action bar, `isDirty`)
+- Batch 2: Lesson content restyle (`UiTag` status pill, DS field vocabulary, section rhythm harmonization)
+- Batch 3: Lesson cleanup (scoped CSS elimination, 2 bug fixes, console cleanup, dead code removal)
+- Batch 4: Assignment page redesign (single column, 3 `UiCollapsibleSection`s with cross-course gate, action bar, reorder fix to put Course & lesson FIRST in cross-course mode)
+- Batch 5: `TeacherAssignmentsDialog` restyle (module-modal vocabulary, 9 scoped rules migrated)
+
+**Course Editor patterns reused:** `ThemePage` `#actions` (Save + Cancel) & `#sidebar` slots, `UiCollapsibleSection` field grouping, `UiCard` sidebar cards, `isDirty` + `window.confirm` guard, `UiTag` soft pill for status, 350px sidebar override, route-aware navigation, module-modal `UiDialog` chrome.
+
+## Standing Rules — Institutional Memory (active for all future work)
+
+Established during the Course Editor + Lesson/Assignment tracks; now apply to all subsequent project work:
+
+1. **Tailwind 3 first.** All styling via Tailwind utilities inline. Scoped `<style>` is a last resort. Use `before:`/`after:`, `[&_.deep__class]:`, arbitrary values, arbitrary properties, data-attribute variants, animations, and logical properties instead of falling back to scoped CSS.
+2. **Vuetify `.border` collision avoidance.** NEVER use the bare `border` utility with a Tailwind color (e.g. `border border-border`, `border border-white/10`). Vuetify defines `.border` with `!important` color + style and silently overrides Tailwind. Use shorthand: `[border:1px_solid_TOKEN]` / `[border:1px_dashed_TOKEN]`. Directional borders (`border-t/b/s/e`) collide too — use `[border-top:1px_solid_TOKEN]` etc.
+3. **Logical RTL properties.** Use `ms-/me-`, `start-/end-`, `ps-/pe-`, `inset-inline-start/end-`, `text-start/end`. Never physical left/right unless it is a visual convention anchor (e.g. notification dots).
+4. **Custom breakpoints.** This project's `sm` is 600px, not Tailwind's default. Use `min-[Npx]:` / `max-[Npx]:` for arbitrary breakpoints (e.g. `min-[1025px]:`, `min-[720px]:`).
+5. **Backlog discipline.** Orphans logged to `REDESIGN_BACKLOG.md`, never deleted silently. Verify before delete (the `LESSON_*_FALLBACK` constants case proved this gate matters).
+6. **Hard rules from Phase 1 still apply:** no commits/pushes, color tokens only (no hardcoded hex), no Vuetify internals touched, dark mode + RTL must work for every change, no features without backing data/route.
+
 ## Currently Awaiting
 
-**Phase 1 + Phase 2 are COMPLETE.** Branch `redesign` is ready for review and manual push by the user.
+**All completed redesign tracks current. Course Editor + Lesson/Assignment Editor finished. Phase 2 (Dashboard extraction) complete. No active in-flight work.**
 
-Note: REMAINING Sections list above (Sections 7-10) reflects the original deferred-work scope as drafted; those sections were completed during the same session as Section 11. Implementation details live in the git history. No further dashboard work is queued — next surfaces (student dashboard, admin dashboard, auth pages, landing pages) follow their own tracks per the backlog.
+Branch `redesign` is ready for review and manual push by the user.
+
+Note: REMAINING Sections list above (Sections 7-10) reflects the original deferred-work scope as drafted; those sections were completed during the same session as Section 11. Implementation details live in the git history. Next surfaces (student dashboard, admin dashboard, auth pages, landing pages) follow their own tracks per the backlog.

@@ -1,261 +1,254 @@
 <template>
-  <ThemePage :title="pageTitle" :subtitle="pageSubtitle">
+  <ThemePage
+    :title="pageTitle"
+    :subtitle="pageSubtitle"
+    class="min-[1025px]:[&_.theme-page__sidebar]:basis-[21.875rem]"
+  >
     <template #actions>
       <UiButton
-        variant="link"
-        color="secondary"
-        prepend-icon="ArrowLeftOutlined"
-        @click="goBack"
+        variant="solid"
+        color="primary"
+        :disabled="!formValid || lessonPdfState.uploading || lessonVideoState.uploading"
+        @click="saveLesson"
       >
-        {{ t('courses.backToCourse') }}
+        {{ t('common.save') }}
+      </UiButton>
+      <UiButton variant="outline" color="neutral" @click="handleCancel">
+        {{ t('common.cancel') }}
       </UiButton>
     </template>
 
-    <div v-if="isLoading" class="lesson-editor__loading">
+    <div v-if="isLoading" class="grid gap-4">
       <UiSkeleton height="24px" width="40%" />
       <UiSkeleton height="320px" />
     </div>
 
-    <UiCard v-else class="lesson-editor__card">
-      <form id="lesson-editor-form" class="lesson-editor__form" @submit.prevent="saveLesson">
-        <div class="lesson-editor__layout">
-          <section class="lesson-editor__progress" aria-live="polite">
-            <div class="lesson-editor__progress-header">
-              <h3 class="lesson-editor__section-title lesson-editor__progress-title">
-                {{ t('courses.lessonProgressHeading') }}
-              </h3>
-              <UiProgressBar
-                class="lesson-editor__progress-bar"
-                :value="lessonProgressPercent"
-                color="primary"
-                :label="t('courses.lessonProgressHeading')"
-              />
-            </div>
-            <ul class="lesson-editor__progress-list">
-              <li v-for="section in lessonProgressSections" :key="section.key">
-                <div class="lesson-editor__progress-row">
-                  <span class="lesson-editor__progress-label">{{ section.label }}</span>
-                  <UiTag size="sm" :color="section.tagColor">{{ section.statusLabel }}</UiTag>
-                </div>
-                <p class="lesson-editor__progress-hint">{{ section.description }}</p>
-              </li>
-            </ul>
-          </section>
+    <div v-else class="lesson-editor flex flex-col gap-5">
+      <UiCollapsibleSection
+        :title="t('courses.lessonDetailsSectionTitle')"
+        icon="Information"
+        default-open
+      >
+        <div class="flex flex-col gap-4">
+          <UiInput
+            v-model="form.title"
+            :label="t('courses.lessonTitleLabel')"
+            :error="attempted && !formValid ? t('courses.lessonTitleRequired') : ''"
+            required
+          />
+          <UiTextarea
+            v-model="form.content"
+            :label="t('courses.lessonContentLabel')"
+            :placeholder="t('courses.lessonContentPlaceholder')"
+            :rows="4"
+          />
+          <p
+            class="m-0 text-sm"
+            :class="lessonContentOutOfRange ? 'text-warning' : 'text-content-tertiary'"
+            aria-live="polite"
+          >
+            {{ lessonContentHint }}
+          </p>
+        </div>
+      </UiCollapsibleSection>
 
-          <div class="lesson-editor__fields">
-            <section class="lesson-editor__section lesson-editor__section--full">
-              <h3 class="lesson-editor__section-title">{{ t('courses.lessonDetailsSectionTitle') }}</h3>
-              <UiInput
-                v-model="form.title"
-                :label="t('courses.lessonTitleLabel')"
-                :error="attempted && !formValid ? t('courses.lessonTitleRequired') : ''"
-                required
-              />
-              <UiTextarea
-                v-model="form.content"
-                :label="t('courses.lessonContentLabel')"
-                :placeholder="t('courses.lessonContentPlaceholder')"
-                :rows="4"
-              />
-              <p
-                class="lesson-editor__hint"
-                :class="{ 'lesson-editor__hint--warning': lessonContentOutOfRange }"
-                aria-live="polite"
-              >
-                {{ lessonContentHint }}
-              </p>
-              <UiAlert
-                v-if="aiTeacherEnabled"
-                color="info"
+      <UiCollapsibleSection
+        :title="t('courses.lessonVideoSectionTitle')"
+        icon="VideoCameraOutlined"
+        default-open
+      >
+        <div class="flex flex-col gap-4">
+          <UiInput
+            v-model="form.ytId"
+            :label="t('courses.lessonYoutubeLabel')"
+            placeholder="https://youtu.be/..."
+            :hint="lessonYoutubeHint"
+            @blur="onLessonYoutubeBlur"
+          />
+          <div class="flex flex-col gap-3">
+            <label class="block text-sm font-semibold text-content-tertiary text-start">{{ lessonVideoTexts.label }}</label>
+            <UiFileUpload
+              v-model="lessonVideoFiles"
+              :label="lessonVideoTexts.uploadLabel"
+              :hint="lessonVideoTexts.hint"
+              :disabled="lessonVideoState.uploading"
+              :button-label="lessonVideoTexts.browse"
+              accept="video/mp4,video/quicktime,video/x-matroska,video/webm,video/x-msvideo"
+              @change="onLessonVideoChange"
+            />
+            <UiAlert v-if="lessonVideoState.uploading" color="info" variant="soft">
+              <div class="flex items-center justify-between gap-2 font-medium text-content">
+                <span>{{ lessonVideoTexts.uploading }}</span>
+                <span v-if="lessonVideoState.progress > 0" class="text-sakai-primary">
+                  {{ lessonVideoState.progress }}%
+                </span>
+              </div>
+              <UiProgressBar :value="lessonVideoState.progress" color="info" />
+            </UiAlert>
+            <UiAlert v-else-if="lessonVideoState.error" color="danger" variant="soft">
+              {{ lessonVideoState.error }}
+            </UiAlert>
+            <UiAlert v-else-if="form.videoUrl" color="success" variant="soft" class="flex flex-wrap gap-2 items-center">
+              <span>{{ lessonVideoTexts.uploaded }}</span>
+              <UiButton variant="link" color="primary" @click.prevent="openLessonVideo">
+                {{ lessonVideoTexts.preview }}
+              </UiButton>
+              <UiButton variant="link" color="danger" @click.prevent="clearLessonVideo">
+                {{ lessonVideoTexts.remove }}
+              </UiButton>
+            </UiAlert>
+            <UiAlert v-else color="info" variant="soft" class="m-0">
+              {{ lessonVideoTexts.empty }}
+            </UiAlert>
+            <UiAlert v-if="lessonVideoState.warning" color="warning" variant="soft">
+              {{ lessonVideoState.warning }}
+            </UiAlert>
+            <div v-if="lessonVideoStatusMeta(form.videoStatus)">
+              <UiTag
+                :color="lessonVideoStatusMeta(form.videoStatus)?.color"
                 variant="soft"
-                class="lesson-editor__assistant-hint"
+                pill
+                :start-icon="videoStatusIcon(form.videoStatus)"
               >
-                {{ t('courses.lessonAiAssistantHint') }}
-              </UiAlert>
-              <TeacherLessonAiAssistant
-                v-if="aiTeacherEnabled"
-                :lesson-id="existingLessonId"
-                :lesson-title="form.title"
-                :lesson-content="form.content"
-              />
-              <section
-                v-if="aiTeacherEnabled"
-                class="lesson-editor__assistant-guide"
-                aria-labelledby="lesson-ai-guide"
-              >
-                <h4 id="lesson-ai-guide" class="lesson-editor__assistant-guide-title">
-                  {{ t('courses.lessonAiAssistantGuideTitle') }}
-                </h4>
-                <ol class="lesson-editor__assistant-guide-list">
-                  <li
-                    v-for="(step, index) in aiGuideSteps"
-                    :key="index"
-                    class="lesson-editor__assistant-guide-item"
-                  >
-                    <span class="lesson-editor__assistant-guide-step">
-                      {{ t('courses.lessonAiAssistantGuideStepLabel', { step: index + 1 }) }}
-                    </span>
-                    <span>{{ step }}</span>
-                  </li>
-                </ol>
-                <p class="lesson-editor__assistant-guide-footer">
-                  {{ t('courses.lessonAiAssistantGuideReminder') }}
-                </p>
-              </section>
-            </section>
-
-            <section class="lesson-editor__section">
-              <h3 class="lesson-editor__section-title">{{ t('courses.lessonMediaSectionTitle') }}</h3>
-              <UiInput
-                v-model="form.ytId"
-                :label="t('courses.lessonYoutubeLabel')"
-                placeholder="https://youtu.be/..."
-                :hint="lessonYoutubeHint"
-                @blur="onLessonYoutubeBlur"
-              />
-              <div class="lesson-editor__upload">
-                <label class="lesson-editor__field-label">{{ lessonPdfTexts.label }}</label>
-                <UiFileUpload
-                  v-model="lessonPdfFiles"
-                  :label="lessonPdfTexts.uploadLabel"
-                  :hint="lessonPdfTexts.hint"
-                  :disabled="lessonPdfState.uploading"
-                  :button-label="lessonPdfTexts.browse"
-                  accept="application/pdf"
-                  @change="onLessonPdfChange"
-                />
-                <UiAlert v-if="lessonPdfState.uploading" color="info" variant="soft">
-                  <div class="lesson-editor__upload-progress">
-                    <span>{{ lessonPdfTexts.uploading }}</span>
-                    <span v-if="lessonPdfState.progress > 0" class="lesson-editor__upload-progress-value">
-                      {{ lessonPdfState.progress }}%
-                    </span>
-                  </div>
-                  <UiProgressBar :value="lessonPdfState.progress" color="info" />
-                </UiAlert>
-                <UiAlert v-else-if="lessonPdfState.error" color="danger" variant="soft">
-                  {{ lessonPdfState.error }}
-                </UiAlert>
-                <UiAlert v-else-if="form.pdfUrl" color="success" variant="soft" class="lesson-editor__upload-alert">
-                  <span>{{ lessonPdfTexts.uploaded }}</span>
-                  <UiButton variant="link" color="primary" @click.prevent="openLessonPdf">
-                    {{ lessonPdfTexts.preview }}
-                  </UiButton>
-                  <UiButton variant="link" color="danger" @click.prevent="clearLessonPdf">
-                    {{ lessonPdfTexts.remove }}
-                  </UiButton>
-                </UiAlert>
-                <UiAlert v-else color="info" variant="soft" class="lesson-editor__empty-alert">
-                  {{ lessonPdfTexts.empty }}
-                </UiAlert>
-              </div>
-
-              <div class="lesson-editor__upload">
-                <label class="lesson-editor__field-label">{{ lessonVideoTexts.label }}</label>
-                <UiFileUpload
-                  v-model="lessonVideoFiles"
-                  :label="lessonVideoTexts.uploadLabel"
-                  :hint="lessonVideoTexts.hint"
-                  :disabled="lessonVideoState.uploading"
-                  :button-label="lessonVideoTexts.browse"
-                  accept="video/mp4,video/quicktime,video/x-matroska,video/webm,video/x-msvideo"
-                  @change="onLessonVideoChange"
-                />
-                <UiAlert v-if="lessonVideoState.uploading" color="info" variant="soft">
-                  <div class="lesson-editor__upload-progress">
-                    <span>{{ lessonVideoTexts.uploading }}</span>
-                    <span v-if="lessonVideoState.progress > 0" class="lesson-editor__upload-progress-value">
-                      {{ lessonVideoState.progress }}%
-                    </span>
-                  </div>
-                  <UiProgressBar :value="lessonVideoState.progress" color="info" />
-                </UiAlert>
-                <UiAlert v-else-if="lessonVideoState.error" color="danger" variant="soft">
-                  {{ lessonVideoState.error }}
-                </UiAlert>
-                <UiAlert v-else-if="form.videoUrl" color="success" variant="soft" class="lesson-editor__upload-alert">
-                  <span>{{ lessonVideoTexts.uploaded }}</span>
-                  <UiButton variant="link" color="primary" @click.prevent="openLessonVideo">
-                    {{ lessonVideoTexts.preview }}
-                  </UiButton>
-                  <UiButton variant="link" color="danger" @click.prevent="clearLessonVideo">
-                    {{ lessonVideoTexts.remove }}
-                  </UiButton>
-                </UiAlert>
-                <UiAlert v-else color="info" variant="soft" class="lesson-editor__empty-alert">
-                  {{ lessonVideoTexts.empty }}
-                </UiAlert>
-                <UiAlert v-if="lessonVideoState.warning" color="warning" variant="soft">
-                  {{ lessonVideoState.warning }}
-                </UiAlert>
-                <UiAlert
-                  v-if="lessonVideoStatusMeta(form.videoStatus)?.banner"
-                  :color="lessonVideoStatusMeta(form.videoStatus)?.color || 'info'"
-                  variant="soft"
-                  class="lesson-editor__status"
-                >
-                  <div class="lesson-editor__status-title">
-                    {{ lessonVideoStatusMeta(form.videoStatus)?.banner?.title }}
-                  </div>
-                  <p class="lesson-editor__status-description">
-                    {{ lessonVideoStatusMeta(form.videoStatus)?.banner?.description }}
-                  </p>
-                </UiAlert>
-                <div
-                  v-if="lessonVideoStatusMeta(form.videoStatus)?.banner"
-                  class="lesson-editor__video-placeholder"
-                >
-                  {{ lessonVideoStatusMeta(form.videoStatus)?.banner?.placeholder }}
-                </div>
-              </div>
-            </section>
-
-            <section class="lesson-editor__section">
-              <h3 class="lesson-editor__section-title">{{ t('courses.lessonSchedulingSectionTitle') }}</h3>
-              <UiInput
-                :model-value="form.duration"
-                type="number"
-                min="0"
-                :label="t('courses.lessonDurationLabel')"
-                disabled
-              />
-              <UiInput
-                :model-value="form.position"
-                type="number"
-                min="1"
-                :label="t('courses.lessonPositionLabel')"
-                @update:model-value="onLessonPositionChange"
-              />
-              <p class="lesson-editor__hint">{{ t('courses.lessonDurationSystemHint') }}</p>
-            </section>
+                {{ lessonVideoStatusMeta(form.videoStatus)?.label }}
+              </UiTag>
+            </div>
           </div>
         </div>
+      </UiCollapsibleSection>
 
-        <footer class="lesson-editor__footer">
-          <UiButton variant="link" color="secondary" @click.prevent="goBack">
-            {{ t('common.cancel') }}
-          </UiButton>
-          <UiButton
-            button-type="submit"
-            color="primary"
-            :disabled="!formValid || lessonPdfState.uploading || lessonVideoState.uploading"
+      <UiCollapsibleSection
+        :title="t('courses.lessonResourcesHeading')"
+        icon="FileTextOutlined"
+      >
+        <div class="flex flex-col gap-3">
+          <label class="block text-sm font-semibold text-content-tertiary text-start">{{ lessonPdfTexts.label }}</label>
+          <UiFileUpload
+            v-model="lessonPdfFiles"
+            :label="lessonPdfTexts.uploadLabel"
+            :hint="lessonPdfTexts.hint"
+            :disabled="lessonPdfState.uploading"
+            :button-label="lessonPdfTexts.browse"
+            accept="application/pdf"
+            @change="onLessonPdfChange"
+          />
+          <UiAlert v-if="lessonPdfState.uploading" color="info" variant="soft">
+            <div class="flex items-center justify-between gap-2 font-medium text-content">
+              <span>{{ lessonPdfTexts.uploading }}</span>
+              <span v-if="lessonPdfState.progress > 0" class="text-sakai-primary">
+                {{ lessonPdfState.progress }}%
+              </span>
+            </div>
+            <UiProgressBar :value="lessonPdfState.progress" color="info" />
+          </UiAlert>
+          <UiAlert v-else-if="lessonPdfState.error" color="danger" variant="soft">
+            {{ lessonPdfState.error }}
+          </UiAlert>
+          <UiAlert v-else-if="form.pdfUrl" color="success" variant="soft" class="flex flex-wrap gap-2 items-center">
+            <span>{{ lessonPdfTexts.uploaded }}</span>
+            <UiButton variant="link" color="primary" @click.prevent="openLessonPdf">
+              {{ lessonPdfTexts.preview }}
+            </UiButton>
+            <UiButton variant="link" color="danger" @click.prevent="clearLessonPdf">
+              {{ lessonPdfTexts.remove }}
+            </UiButton>
+          </UiAlert>
+          <UiAlert v-else color="info" variant="soft" class="m-0">
+            {{ lessonPdfTexts.empty }}
+          </UiAlert>
+        </div>
+      </UiCollapsibleSection>
+
+      <UiCollapsibleSection
+        v-if="aiTeacherEnabled"
+        :title="t('courses.lessonAiAssistantSectionTitle')"
+        icon="MessageOutlined"
+        default-open
+      >
+        <div class="flex flex-col gap-4">
+          <UiAlert color="info" variant="soft" class="m-0">
+            {{ t('courses.lessonAiAssistantHint') }}
+          </UiAlert>
+          <TeacherLessonAiAssistant
+            :lesson-id="existingLessonId"
+            :lesson-title="form.title"
+            :lesson-content="form.content"
+          />
+          <section
+            class="flex flex-col gap-3 p-4 rounded-sakai-lg [border:1px_solid_color-mix(in_srgb,var(--sakai-primary)_25%,transparent)] bg-[color-mix(in_srgb,var(--sakai-primary)_10%,var(--sakai-surface)_90%)]"
+            aria-labelledby="lesson-ai-guide"
           >
-            {{ t('common.save') }}
-          </UiButton>
-        </footer>
-      </form>
-    </UiCard>
+            <h4 id="lesson-ai-guide" class="m-0 text-[0.95rem] font-semibold text-sakai-primary">
+              {{ t('courses.lessonAiAssistantGuideTitle') }}
+            </h4>
+            <ol class="flex flex-col gap-2 m-0 ps-5 text-content">
+              <li
+                v-for="(step, index) in aiGuideSteps"
+                :key="index"
+                class="flex flex-col gap-1 leading-[1.4]"
+              >
+                <span class="font-semibold text-content">
+                  {{ t('courses.lessonAiAssistantGuideStepLabel', { step: index + 1 }) }}
+                </span>
+                <span>{{ step }}</span>
+              </li>
+            </ol>
+            <p class="m-0 text-sm text-content-tertiary">
+              {{ t('courses.lessonAiAssistantGuideReminder') }}
+            </p>
+          </section>
+        </div>
+      </UiCollapsibleSection>
+    </div>
+
+    <template #sidebar>
+      <UiCard v-if="!isLoading" :title="t('courses.lessonProgressHeading')">
+        <UiProgressBar
+          class="w-full"
+          :value="lessonProgressPercent"
+          color="primary"
+          :label="t('courses.lessonProgressHeading')"
+        />
+        <ul class="flex flex-col gap-3 m-0 p-0 list-none">
+          <li v-for="section in lessonProgressSections" :key="section.key">
+            <div class="flex items-center justify-between gap-3">
+              <span class="font-medium text-content">{{ section.label }}</span>
+              <UiTag size="sm" :color="section.tagColor">{{ section.statusLabel }}</UiTag>
+            </div>
+            <p class="m-0 text-sm text-content-tertiary leading-[1.4]">{{ section.description }}</p>
+          </li>
+        </ul>
+      </UiCard>
+      <UiCard v-if="!isLoading" :title="t('courses.lessonSchedulingSectionTitle')">
+        <UiInput
+          :model-value="form.position"
+          type="number"
+          min="1"
+          :label="t('courses.lessonPositionLabel')"
+          @update:model-value="onLessonPositionChange"
+        />
+        <UiInput
+          :model-value="form.duration"
+          type="number"
+          min="0"
+          :label="t('courses.lessonDurationLabel')"
+          disabled
+        />
+        <p class="m-0 text-sm text-content-tertiary">{{ t('courses.lessonDurationSystemHint') }}</p>
+      </UiCard>
+    </template>
   </ThemePage>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import ThemePage from '@/layout/theme/ThemePage.vue';
 import UiButton from '@/components/ui/UiButton.vue';
 import UiCard from '@/components/ui/UiCard.vue';
+import UiCollapsibleSection from '@/components/ui/UiCollapsibleSection.vue';
 import UiSkeleton from '@/components/ui/UiSkeleton.vue';
 import UiProgressBar from '@/components/ui/UiProgressBar.vue';
 import UiTag from '@/components/ui/UiTag.vue';
@@ -341,6 +334,21 @@ const lessonPdfFiles = ref<File[]>([]);
 const lessonVideoState = reactive({ uploading: false, error: '', warning: '', progress: 0 });
 const lessonPdfState = reactive({ uploading: false, error: '', progress: 0 });
 const attempted = ref(false);
+
+// Unsaved-changes guard (Course Editor parity). `syncingForm` suppresses the
+// dirty flag while resetForm populates from the loaded lesson; any later user
+// edit flips `isDirty` true and powers the Cancel confirm in handleCancel.
+const isDirty = ref(false);
+const syncingForm = ref(false);
+
+watch(
+  form,
+  () => {
+    if (syncingForm.value) return;
+    isDirty.value = true;
+  },
+  { deep: true }
+);
 
 const LESSON_CONTENT_RECOMMENDED_MIN = 120;
 const LESSON_CONTENT_RECOMMENDED_MAX = 600;
@@ -449,43 +457,14 @@ const lessonVideoTexts = computed(() => ({
 }));
 
 const lessonVideoStatusMap = computed(() => {
-  const processingBanner = {
-    title: translateCourseString(
-      'courses.lessonVideoProcessingBannerTitle',
-      'Video is being prepared'
-    ),
-    description: translateCourseString(
-      'courses.lessonVideoProcessingBannerDescription',
-      'Usually takes 3-5 minutes. You can keep editing the lesson and course now.'
-    ),
-    placeholder: translateCourseString(
-      'courses.lessonVideoProcessingPlaceholder',
-      'Video is processing… It will play automatically once it is ready.'
-    )
-  };
-
-  const failedBanner = {
-    title: translateCourseString('courses.lessonVideoFailedBannerTitle', 'Processing failed'),
-    description: translateCourseString(
-      'courses.lessonVideoFailedBannerDescription',
-      'Please try uploading the video again.'
-    ),
-    placeholder: translateCourseString(
-      'courses.lessonVideoFailedPlaceholder',
-      'Video is unavailable until processing completes successfully.'
-    )
-  };
-
   return {
     UPLOADING: {
       label: translateCourseString('courses.lessonVideoStatusUploading', 'Uploading video'),
-      color: 'info',
-      banner: processingBanner
+      color: 'info'
     },
     PROCESSING: {
       label: translateCourseString('courses.lessonVideoStatusProcessing', 'Processing video'),
-      color: 'warning',
-      banner: processingBanner
+      color: 'warning'
     },
     READY: {
       label: translateCourseString('courses.lessonVideoStatusReady', 'Ready to watch'),
@@ -496,18 +475,28 @@ const lessonVideoStatusMap = computed(() => {
         'courses.lessonVideoStatusFailed',
         'Processing failed — please re-upload the video'
       ),
-      color: 'danger',
-      banner: failedBanner
+      color: 'danger'
     }
-  } as Record<LessonVideoStatus, { label: string; color: string; banner?: {
-    title: string;
-    description: string;
-    placeholder: string;
-  } }>;
+  } as Record<LessonVideoStatus, { label: string; color: string }>;
 });
 
 const lessonVideoStatusMeta = (status?: LessonVideoStatus | null) =>
   (status ? lessonVideoStatusMap.value[status] : null) ?? null;
+
+// Icon paired with the read-only video-status pill (tone comes from meta.color).
+const videoStatusIcon = (status?: LessonVideoStatus | null) => {
+  switch (status) {
+    case 'READY':
+      return 'CheckCircleOutlined';
+    case 'FAILED':
+      return 'Warning';
+    case 'UPLOADING':
+    case 'PROCESSING':
+      return 'ClockCircleOutlined';
+    default:
+      return undefined;
+  }
+};
 
 const lessonPdfTexts = computed(() => ({
   label: translateCourseString('courses.lessonPdfLabel', 'Lesson attachment (PDF)'),
@@ -665,24 +654,17 @@ interface UploadProgressEvent {
   total?: number | null;
 }
 
-const logUploadProgress = (kind: string, progress: number) => {
-  console.debug(`[upload ${kind}] ${progress}%`);
-};
-
 const createUploadProgressHandler = (
-  kind: string,
   onProgress?: (progress: number) => void
 ) =>
   (event: UploadProgressEvent) => {
     const total = event.total ?? 0;
     if (total <= 0) {
       onProgress?.(0);
-      logUploadProgress(kind, 0);
       return;
     }
     const progress = Math.min(100, Math.max(0, Math.floor((event.loaded / total) * 100)));
     onProgress?.(progress);
-    logUploadProgress(kind, progress);
   };
 
 type LessonUploadKind = 'pdf' | 'video';
@@ -719,7 +701,7 @@ const uploadLessonAsset = async (
         timeout: 0,
         withCredentials: true,
         headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: createUploadProgressHandler(`lesson-${kind}`, onProgress)
+        onUploadProgress: createUploadProgressHandler(onProgress)
       });
       if (onProgress) {
         onProgress(100);
@@ -795,6 +777,7 @@ const patchExistingLesson = (patch: Partial<LessonPayload>) => {
 };
 
 const resetForm = (moduleValue: ModulePayload, lessonValue: LessonPayload | null) => {
+  syncingForm.value = true;
   attempted.value = false;
   resetLessonVideoState();
   resetLessonPdfState();
@@ -822,6 +805,11 @@ const resetForm = (moduleValue: ModulePayload, lessonValue: LessonPayload | null
     form.duration = null;
     form.position = moduleValue.lessons.length + 1;
   }
+  // Release the guard after the populated values flush, so only later user
+  // edits mark the form dirty.
+  nextTick(() => {
+    syncingForm.value = false;
+  });
 };
 
 watch(
@@ -1059,7 +1047,17 @@ const onLessonPositionChange = (value: string | number | null) => {
 };
 
 const goBack = () => {
-  router.push({ name: 'teacher-course', params: { courseId } });
+  const courseRoute = route.path.startsWith('/assistant/')
+    ? 'assistant-course'
+    : 'teacher-course';
+  router.push({ name: courseRoute, params: { courseId } });
+};
+
+const handleCancel = () => {
+  if (isDirty.value && !window.confirm(t('courses.cancelConfirmUnsaved'))) {
+    return;
+  }
+  goBack();
 };
 
 const saveLesson = async () => {
@@ -1084,241 +1082,7 @@ const saveLesson = async () => {
   } else {
     await store.addLesson(courseId, moduleId, payload);
   }
+  isDirty.value = false;
   goBack();
 };
 </script>
-
-<style scoped>
-.lesson-editor__loading {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.lesson-editor__card {
-  padding: var(--sakai-space-4);
-}
-
-.lesson-editor__form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-5);
-}
-
-.lesson-editor__layout {
-  display: grid;
-  gap: var(--sakai-space-5);
-  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
-  align-items: flex-start;
-}
-
-.lesson-editor__progress {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-  padding: var(--sakai-space-4);
-  border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 75%, transparent);
-  background: color-mix(in srgb, var(--sakai-surface) 95%, var(--sakai-primary) 5%);
-}
-
-.lesson-editor__progress-header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.lesson-editor__section-title {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.lesson-editor__progress-title {
-  font-size: 1.1rem;
-}
-
-.lesson-editor__progress-bar {
-  width: 100%;
-}
-
-.lesson-editor__progress-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.lesson-editor__progress-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-3);
-}
-
-.lesson-editor__progress-label {
-  font-weight: var(--sakai-font-weight-medium);
-  color: var(--sakai-text-color);
-}
-
-.lesson-editor__progress-hint {
-  margin: 0;
-  color: var(--sakai-text-color-tertiary);
-  font-size: 0.875rem;
-  line-height: 1.4;
-}
-
-.lesson-editor__fields {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.lesson-editor__section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-  padding: var(--sakai-space-4);
-  border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 75%, transparent);
-  background: color-mix(in srgb, var(--sakai-surface) 96%, transparent);
-}
-
-.lesson-editor__section--full {
-  grid-column: 1 / -1;
-}
-
-.lesson-editor__hint {
-  margin: 0;
-  font-size: 0.875rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
-.lesson-editor__hint--warning {
-  color: var(--sakai-warning);
-}
-
-.lesson-editor__assistant-hint {
-  margin: 0;
-}
-
-.lesson-editor__assistant-guide {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-  padding: var(--sakai-space-4);
-  border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--sakai-primary) 25%, transparent);
-  background: color-mix(in srgb, var(--sakai-primary) 10%, var(--sakai-surface) 90%);
-}
-
-.lesson-editor__assistant-guide-title {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-primary);
-}
-
-.lesson-editor__assistant-guide-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-  margin: 0;
-  padding-left: 1.25rem;
-  color: var(--sakai-text-color);
-}
-
-.lesson-editor__assistant-guide-item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-1);
-  line-height: 1.4;
-}
-
-.lesson-editor__assistant-guide-step {
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.lesson-editor__assistant-guide-footer {
-  margin: 0;
-  font-size: 0.875rem;
-  color: var(--sakai-text-color-tertiary);
-}
-
-.lesson-editor__field-label {
-  font-size: 0.875rem;
-  font-weight: var(--sakai-font-weight-medium);
-  color: var(--sakai-text-color);
-}
-
-.lesson-editor__upload {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.lesson-editor__upload-progress {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-2);
-  font-weight: var(--sakai-font-weight-medium);
-  color: var(--sakai-text-color);
-}
-
-.lesson-editor__upload-progress-value {
-  color: var(--sakai-primary);
-}
-
-.lesson-editor__upload-alert {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-  align-items: center;
-}
-
-.lesson-editor__empty-alert {
-  margin: 0;
-}
-
-.lesson-editor__status {
-  margin: 0;
-}
-
-.lesson-editor__status-title {
-  font-weight: var(--sakai-font-weight-semibold);
-}
-
-.lesson-editor__status-description {
-  margin: var(--sakai-space-1) 0 0;
-  color: var(--sakai-text-color);
-}
-
-.lesson-editor__video-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 160px;
-  padding: var(--sakai-space-4);
-  border-radius: var(--sakai-border-radius-md);
-  background: color-mix(in srgb, var(--sakai-border-color) 25%, var(--sakai-surface) 75%);
-  color: var(--sakai-text-color);
-  font-weight: var(--sakai-font-weight-medium);
-  text-align: center;
-}
-
-.lesson-editor__footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--sakai-space-3);
-}
-
-@media (max-width: 960px) {
-  .lesson-editor__layout {
-    grid-template-columns: 1fr;
-  }
-}
-</style>

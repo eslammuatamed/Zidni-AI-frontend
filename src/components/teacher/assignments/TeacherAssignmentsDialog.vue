@@ -5,9 +5,9 @@
     width="720px"
     @update:model-value="onDialogUpdate"
   >
-    <div class="teacher-assignments-dialog">
-      <div class="teacher-assignments-dialog__header">
-        <p class="teacher-assignments-dialog__subtitle">
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center justify-between gap-3">
+        <p class="m-0 text-content-tertiary text-[0.9rem]">
           {{ t('teacher.assignments.subtitle') }}
         </p>
         <UiButton
@@ -28,7 +28,7 @@
         </div>
       </UiAlert>
 
-      <div v-else-if="loading" class="teacher-assignments-dialog__loading">
+      <div v-else-if="loading" class="flex flex-col gap-2">
         <UiSkeleton height="56px" />
         <UiSkeleton height="56px" />
       </div>
@@ -41,17 +41,17 @@
         {{ t('teacher.assignments.empty') }}
       </UiAlert>
 
-      <ul v-else class="teacher-assignments-dialog__list">
+      <ul v-else class="list-none m-0 p-0 flex flex-col gap-3">
         <li
           v-for="assignment in lessonAssignments"
           :key="assignment.id"
-          class="teacher-assignments-dialog__item"
+          class="flex flex-col gap-3 p-4 rounded-sakai-lg [border:1px_solid_color-mix(in_srgb,var(--sakai-border-color)_75%,transparent)] bg-[color-mix(in_srgb,var(--sakai-surface)_96%,transparent)]"
         >
-          <div class="teacher-assignments-dialog__item-main">
-            <h4 class="teacher-assignments-dialog__item-title">
+          <div>
+            <h4 class="m-0 text-base font-semibold text-content">
               {{ assignment.title }}
             </h4>
-            <div class="teacher-assignments-dialog__item-meta">
+            <div class="flex flex-wrap gap-2 mt-2">
               <UiTag size="sm" color="info">
                 {{ assignment.dueAt ? t('teacher.assignments.dueAt', { date: formatDateTime(assignment.dueAt) }) : t('teacher.assignments.noDueDate') }}
               </UiTag>
@@ -64,12 +64,12 @@
             </div>
             <p
               v-if="assignment.description"
-              class="teacher-assignments-dialog__item-description"
+              class="mt-2 mx-0 mb-0 text-content-tertiary text-[0.9rem] leading-normal"
             >
               {{ assignment.description }}
             </p>
           </div>
-          <div class="teacher-assignments-dialog__item-actions">
+          <div class="flex flex-wrap gap-2">
             <UiButton
               variant="link"
               color="primary"
@@ -240,76 +240,3 @@ function onViewSubmissions(assignment: Assignment) {
   submissionsDialogOpen.value = true;
 }
 </script>
-
-<style scoped>
-.teacher-assignments-dialog {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-4);
-}
-
-.teacher-assignments-dialog__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-assignments-dialog__subtitle {
-  margin: 0;
-  color: var(--sakai-text-color-tertiary);
-  font-size: 0.9rem;
-}
-
-.teacher-assignments-dialog__loading {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-2);
-}
-
-.teacher-assignments-dialog__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.teacher-assignments-dialog__item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-  padding: var(--sakai-space-4);
-  border-radius: var(--sakai-border-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--sakai-border-color) 75%, transparent);
-  background: color-mix(in srgb, var(--sakai-surface) 96%, transparent);
-}
-
-.teacher-assignments-dialog__item-title {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.teacher-assignments-dialog__item-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-  margin-top: var(--sakai-space-2);
-}
-
-.teacher-assignments-dialog__item-description {
-  margin: var(--sakai-space-2) 0 0;
-  color: var(--sakai-text-color-tertiary);
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-
-.teacher-assignments-dialog__item-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sakai-space-2);
-}
-</style>

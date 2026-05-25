@@ -322,7 +322,7 @@
 
         <AdminTeacherAssistantsPanel :teacher-id="selectedTeacher.id" />
 
-        <footer class="admin-teachers__danger-zone flex justify-end pt-5 border-t border-border">
+        <footer class="admin-teachers__danger-zone flex justify-end pt-5 [border-top:1px_solid_var(--sakai-border-color)]">
           <UiButton color="danger" variant="outline" @click="confirmDeleteTeacher(selectedTeacher.id, selectedTeacher.name)">
             {{ t('adminTeachers.detail.deleteTeacher') }}
           </UiButton>

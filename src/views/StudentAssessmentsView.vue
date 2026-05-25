@@ -135,7 +135,7 @@
             <div
               v-for="certificate in certificateItems"
               :key="certificate.id"
-              class="student-assessments__certificates-item flex items-center justify-between gap-3 p-2 rounded-sakai-lg border border-border bg-surface-alt"
+              class="student-assessments__certificates-item flex items-center justify-between gap-3 p-2 rounded-sakai-lg [border:1px_solid_var(--sakai-border-color)] bg-surface-alt"
             >
               <div class="student-assessments__certificates-info flex flex-col gap-[2px]">
                 <span class="student-assessments__certificates-title font-semibold text-content">{{ certificate.courseTitle }}</span>

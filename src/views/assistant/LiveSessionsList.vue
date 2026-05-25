@@ -83,7 +83,7 @@
                 min-width="350px"
                 max-width="400px"
                 elevation="4"
-                class="rounded-xl overflow-hidden border border-border"
+                class="rounded-xl overflow-hidden [border:1px_solid_var(--sakai-border-color)]"
               >
                 <!-- Header -->
                 <div
@@ -231,7 +231,7 @@
                   <!-- Join Link -->
                   <div
                     v-if="selectedEvent.joinUrl"
-                    class="mt-5 p-3 rounded-lg border border-border flex flex-col gap-2"
+                    class="mt-5 p-3 rounded-lg [border:1px_solid_var(--sakai-border-color)] flex flex-col gap-2"
                   >
                     <div
                       class="text-xs font-weight-medium text-medium-emphasis flex items-center gap-1"

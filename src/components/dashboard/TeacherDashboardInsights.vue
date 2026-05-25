@@ -1,6 +1,6 @@
 <template>
   <div
-    class="teacher-dashboard__insights bg-gradient-brand-soft text-white rounded-[14px] p-6 border border-white/10 flex flex-col gap-4"
+    class="teacher-dashboard__insights bg-gradient-brand-soft text-white rounded-[14px] p-6 [border:1px_solid_rgb(255_255_255_/_0.1)] flex flex-col gap-4"
   >
     <div class="flex flex-col gap-1">
       <h2 class="text-white text-base font-bold m-0">

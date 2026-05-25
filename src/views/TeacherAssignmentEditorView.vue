@@ -2,27 +2,36 @@
   <ThemePage :title="pageTitle" :subtitle="pageSubtitle">
     <template #actions>
       <UiButton
-        variant="link"
-        color="secondary"
-        prepend-icon="ArrowLeftOutlined"
-        @click="goBack"
+        variant="solid"
+        color="primary"
+        :loading="submitting"
+        :disabled="!isFormReady"
+        @click="onSave"
       >
-        {{ backLabel }}
+        {{ submitting ? t('teacher.assignments.editor.saving') : t('teacher.assignments.editor.save') }}
+      </UiButton>
+      <UiButton variant="outline" color="neutral" @click="handleCancel">
+        {{ t('teacher.assignments.editor.cancel') }}
       </UiButton>
     </template>
 
-    <div v-if="isLoading" class="assignment-editor__loading">
+    <div v-if="isLoading" class="grid gap-4">
       <UiSkeleton height="24px" width="40%" />
       <UiSkeleton height="320px" />
     </div>
 
-    <UiCard v-else class="assignment-editor__card">
-      <form class="assignment-editor__form" @submit.prevent="onSave">
-        <UiAlert v-if="loadError" color="danger" variant="soft">
-          {{ loadError }}
-        </UiAlert>
+    <div v-else class="assignment-editor flex flex-col gap-5">
+      <UiAlert v-if="loadError" color="danger" variant="soft">
+        {{ loadError }}
+      </UiAlert>
 
-        <section v-if="isCrossCourse" class="assignment-editor__grid">
+      <UiCollapsibleSection
+        v-if="isCrossCourse"
+        :title="t('teacher.assignments.editor.contextSectionTitle')"
+        icon="BookOutlined"
+        default-open
+      >
+        <div class="grid grid-cols-1 gap-3 min-[720px]:grid-cols-2">
           <UiSelect
             :model-value="selectedCourseId ?? ''"
             :label="t('teacher.assignments.fields.course')"
@@ -63,9 +72,15 @@
               {{ lesson.label }}
             </option>
           </UiSelect>
-        </section>
+        </div>
+      </UiCollapsibleSection>
 
-        <section class="assignment-editor__section">
+      <UiCollapsibleSection
+        :title="t('teacher.assignments.editor.detailsSectionTitle')"
+        icon="FileTextOutlined"
+        default-open
+      >
+        <div class="flex flex-col gap-4">
           <UiInput
             v-model="form.title"
             :label="t('teacher.assignments.fields.title')"
@@ -81,65 +96,46 @@
             :error="attempted && !form.description.trim() ? t('teacher.assignments.validation.descriptionRequired') : ''"
             required
           />
-        </section>
+          <div class="grid grid-cols-1 gap-3 min-[720px]:grid-cols-2">
+            <UiDateTimePicker
+              v-model="form.dueAt"
+              :label="t('teacher.assignments.fields.dueAt')"
+              :error="attempted && !form.dueAt ? t('teacher.assignments.validation.dueAtRequired') : ''"
+              required
+            />
+            <UiInput
+              :model-value="form.maxScore"
+              type="number"
+              min="1"
+              :label="t('teacher.assignments.fields.maxScore')"
+              :error="attempted && !(form.maxScore > 0) ? t('teacher.assignments.validation.maxScoreRequired') : ''"
+              required
+              @update:model-value="onMaxScoreChange"
+            />
+          </div>
+        </div>
+      </UiCollapsibleSection>
 
-        <section class="assignment-editor__grid">
-          <UiDateTimePicker
-            v-model="form.dueAt"
-            :label="t('teacher.assignments.fields.dueAt')"
-            :error="attempted && !form.dueAt ? t('teacher.assignments.validation.dueAtRequired') : ''"
-            required
-          />
-          <UiInput
-            :model-value="form.maxScore"
-            type="number"
-            min="1"
-            :label="t('teacher.assignments.fields.maxScore')"
-            :error="attempted && !(form.maxScore > 0) ? t('teacher.assignments.validation.maxScoreRequired') : ''"
-            required
-            @update:model-value="onMaxScoreChange"
-          />
-        </section>
-
-        <section class="assignment-editor__section">
-          <h3 class="assignment-editor__section-title">
-            {{ t('teacher.assignments.fields.attachments') }}
-          </h3>
-          <TeacherAssignmentAttachmentUploader
-            :attachments="form.attachments"
-            @update:attachments="onAttachmentsChange"
-          />
-        </section>
-
-        <footer class="assignment-editor__footer">
-          <UiButton
-            variant="link"
-            color="secondary"
-            button-type="button"
-            @click="goBack"
-          >
-            {{ t('teacher.assignments.editor.cancel') }}
-          </UiButton>
-          <UiButton
-            button-type="submit"
-            color="primary"
-            :loading="submitting"
-            :disabled="!isFormReady"
-          >
-            {{ submitting ? t('teacher.assignments.editor.saving') : t('teacher.assignments.editor.save') }}
-          </UiButton>
-        </footer>
-      </form>
-    </UiCard>
+      <UiCollapsibleSection
+        :title="t('teacher.assignments.fields.attachments')"
+        icon="UploadOutlined"
+        default-open
+      >
+        <TeacherAssignmentAttachmentUploader
+          :attachments="form.attachments"
+          @update:attachments="onAttachmentsChange"
+        />
+      </UiCollapsibleSection>
+    </div>
   </ThemePage>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import ThemePage from '@/layout/theme/ThemePage.vue';
-import UiCard from '@/components/ui/UiCard.vue';
+import UiCollapsibleSection from '@/components/ui/UiCollapsibleSection.vue';
 import UiButton from '@/components/ui/UiButton.vue';
 import UiInput from '@/components/ui/UiInput.vue';
 import UiTextarea from '@/components/ui/UiTextarea.vue';
@@ -204,6 +200,21 @@ const submitting = ref(false);
 const isLoading = ref(true);
 const loadError = ref('');
 
+// Unsaved-changes guard (Course Editor / Lesson parity). `syncingForm` suppresses
+// the dirty flag while loadInitialData/populateForm seed the form from the route
+// or loaded assignment; user edits to the form or the course/lesson selects flip it.
+const isDirty = ref(false);
+const syncingForm = ref(false);
+
+watch(
+  [form, selectedCourseId, selectedLessonId],
+  () => {
+    if (syncingForm.value) return;
+    isDirty.value = true;
+  },
+  { deep: true }
+);
+
 const courseOptions = computed(() => courses.list);
 
 const lessonOptions = computed(() => {
@@ -237,12 +248,6 @@ const pageSubtitle = computed(() =>
   lessonTitle.value
     ? t('teacher.assignments.editor.lessonHeading', { lesson: lessonTitle.value })
     : ''
-);
-
-const backLabel = computed(() =>
-  isCrossCourse.value
-    ? t('teacher.assignments.backToList')
-    : t('teacher.assignments.backToCourse')
 );
 
 const isFormReady = computed(() => {
@@ -321,6 +326,7 @@ async function findAssignment(assignmentId: number): Promise<Assignment | null> 
 async function loadInitialData() {
   isLoading.value = true;
   loadError.value = '';
+  syncingForm.value = true;
   try {
     if (isCrossCourse.value) {
       if (!courses.list.length) {
@@ -363,6 +369,10 @@ async function loadInitialData() {
     });
   } finally {
     isLoading.value = false;
+    // Release the guard after seeded values flush, so only later user edits dirty.
+    void nextTick(() => {
+      syncingForm.value = false;
+    });
   }
 }
 
@@ -378,6 +388,13 @@ function goBack() {
     name: 'teacher-course',
     params: { courseId: String(selectedCourseId.value ?? routeCourseId.value ?? '') }
   });
+}
+
+function handleCancel() {
+  if (isDirty.value && !window.confirm(t('courses.cancelConfirmUnsaved'))) {
+    return;
+  }
+  goBack();
 }
 
 async function onSave() {
@@ -414,6 +431,7 @@ async function onSave() {
       await learning.createAssignment(payload);
       toast.success(t('teacher.assignments.toast.created'));
     }
+    isDirty.value = false;
     goBack();
   } catch (error) {
     handleApiError(error, { fallback: t('teacher.assignments.errors.generic') });
@@ -434,51 +452,3 @@ onMounted(() => {
   void loadInitialData();
 });
 </script>
-
-<style scoped>
-.assignment-editor__loading {
-  display: grid;
-  gap: var(--sakai-space-4);
-}
-
-.assignment-editor__card {
-  padding: var(--sakai-space-4);
-}
-
-.assignment-editor__form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-5);
-}
-
-.assignment-editor__section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sakai-space-3);
-}
-
-.assignment-editor__section-title {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: var(--sakai-font-weight-semibold);
-  color: var(--sakai-text-color);
-}
-
-.assignment-editor__grid {
-  display: grid;
-  gap: var(--sakai-space-3);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-}
-
-.assignment-editor__footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--sakai-space-3);
-}
-
-@media (max-width: 720px) {
-  .assignment-editor__grid {
-    grid-template-columns: 1fr;
-  }
-}
-</style>

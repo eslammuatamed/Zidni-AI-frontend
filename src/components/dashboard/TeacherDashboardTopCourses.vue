@@ -106,7 +106,7 @@
         </span>
         <ul
           v-if="viewsSummarySafe.topCourses.length"
-          class="list-none p-0 m-0 flex flex-col divide-y divide-border/40"
+          class="list-none p-0 m-0 flex flex-col divide-y divide-solid divide-[color-mix(in_srgb,var(--sakai-border-color)_40%,transparent)]"
         >
           <li
             v-for="(course, index) in viewsSummarySafe.topCourses"
