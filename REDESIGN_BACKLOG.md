@@ -12,6 +12,70 @@ Phase 2 established 4 reusable building blocks for future dashboard surfaces (st
 
 When a new dashboard surface starts (student or admin), prefer the same extraction pattern: composables for cross-cutting concerns, one self-contained component per card, view is a slim composition root.
 
+## Phase: Index Pages redesign (branch `redesign`, in progress)
+
+Redesign of INDEX/LIST surfaces (data tables: page header + filter bar + table + pagination) to the Figma pattern at node `574:745` (Live Sessions, "الجلسات المباشرة"). Reference page first (`src/views/teacher/live/LiveSessionsList.vue`), then propagation. Adopt-or-enhance existing primitives; no upfront shared "DataIndexPage" component.
+
+**Foundation primitives (Phase 1, Sub-step 1 — DONE; additive; vue-tsc clean against the 176-error baseline):**
+- `UiTag` gained `dot?: boolean` (leading status dot; color via `currentColor`). Additive — 0 existing usages affected.
+- `UiButton` gained `size?: 'xs'|'sm'|'md'|'lg'` (default `md` = legacy metrics). Additive — see latent-intent item below.
+- New `src/components/ui/UiPagination.vue` (1-indexed, MUI-style page model, RTL-aware logical layout, optional size selector, `#info` scoped slot for i18n).
+
+**DEFERRED — Index Pages Phase 3 Sub-batch B2** (discovery done this session; the audit dossier in the chat transcript is the source of truth). 2 simple-list pages remain, same `LiveSessionsList` vocabulary; both need hand-rolled prev/next pagination → `UiPagination`. Est. 1–2 Claude Code turns.
+- [ ] `src/views/teacher/TeacherLandingMessagesView.vue` — 522 LOC, **190 scoped-CSS lines** incl. a responsive table↔list switch (`:deep`), hand-rolled pagination, a composite name + message-snippet cell, 1 row action (view). Namespace `teacherLandingMessages.*`; add a `*Entity` key for `pagination.showing`.
+- [ ] `src/views/teacher/audit/TeacherAudit.vue` — 497 LOC, 93 scoped-CSS lines, filter form (search + entityType + 2 dates), hand-rolled pagination, composite actor/entity cells, 1 `UiTag` (actor), 1 row action (view). Namespace `adminOps.audit.*`; add a `*Entity` key.
+
+**DEFERRED — Deep visual QA on Phase 3 B1 pages.** Light QA passed (2026-05-25); deep QA pending for `TeacherAssessmentsView`, `TeacherCertificatesView`, `OffersList`: filter behavior under data load, pagination edge cases (last page, empty-filter result), RTL + dark + mobile (<720/721px) spot-checks. Note: Offers pagination now actually works (previously dead `UiTable` props).
+
+**RESOLVED (Phase 3 Batch B) — `pagination.showing` is now generic.** `pagination.showing` was refactored to "Showing {from} to {to} of {total} **{entity}**" / "عرض {from} إلى {to} من {total} **{entity}**"; each caller passes an entity noun. Entity keys added: `live.teacher.sessionsEntity` ("جلسة"/"sessions"), `assessments.assessmentsEntity` ("اختبار"/"assessments"), `offers.offersEntity` ("عرض ترويجي"/"offers" — AR disambiguated from "عرض"=display). Reference page `LiveSessionsList` `#info` updated to pass `entity`. Future propagation pages just add their own `<ns>.xEntity` key.
+
+**Backlog items opened during this track:**
+
+- [ ] **Migrate remaining `UiBadge` usages to `UiTag`** (Q4: standardize on `UiTag`, eventually deprecate `UiBadge`). `TeacherAssessmentsView.vue` (×2) **DONE** in Phase 3 Batch B. **~21 other consumers remain** project-wide (e.g. `AssessmentBuilderView`, `CourseListView`, `StudentDashboardView`, `TeacherRosterView`, `StudentAssessmentsView`, checkout panels, landing/admin lists, `PlatformCourseCard`, …) — migrate opportunistically as each is touched in its own track; only delete `UiBadge.vue` once all are migrated (verify before delete).
+
+- [ ] **`UiButton size` latent-intent surfacing (accepted as intentional, Option A).** Before Phase 1, `size` was a dead no-op (fell through to the DOM); every `<UiButton size=…>` rendered at `md`. Making `size` real changes the rendered size of **236 of 240 usages across 57 files** (217× `sm` + 11× `xs` shrink; 8× `lg` grow; 3× `md` unchanged; 1× out-of-spec `size="small"` in `FilterBar.vue` safely falls back to `md`). **HIGH-regression-risk files (recently visually QA-approved) needing spot QA:** the 6 dashboard card components (`TeacherDashboardActivity`, `…Alerts`, `…Assistants`, `…NextSteps`, `…Toolbar`, `…TopCourses`) + `CourseEditorView.vue`. The remaining ~49 files are older/not-recently-QA'd; the shrink is likely the latent intent (table-row action links, hand-rolled pagination buttons) and is accepted wholesale. Group-1 spot-QA targets flagged by the user: `CourseEditorView.vue:166,175` (thumbnail Preview/Remove) + `TeacherDashboardActivity.vue:29,88` (View all sessions / Review assignments). Landing/public `lg`-grow usages (`TeacherPublicTabs`, `PublicCourseDetailView`) deferred to the landing track.
+
+- [ ] **Pre-existing `UiButton` invalid prop usages (NOT caused by the `size` change; not blocking).** These pass values outside the component's API (valid variants: `solid|outline|link|ghost|soft`; valid sizes: `xs|sm|md|lg`) — leftover Vuetify vocabulary. They render with the base/fallback style today and are unaffected by the `size` work. Fix opportunistically as each file is touched in future tracks:
+  - `src/components/ui/FilterBar.vue:26` — `variant="text"` + `size="small"` (+ `color="error"`) — legacy Vuetify-based FilterBar (not reused by the index track).
+  - `src/views/admin/AdminPlanBuilder.vue:34,43,52,471,532,726` — `variant="secondary"` (tone-as-variant).
+  - `src/views/admin/ops/AdminAudit.vue:54` and `src/views/teacher/audit/TeacherAudit.vue:41` — `variant="secondary"`.
+  - `src/views/PublicCourseDetailView.vue:758` and `src/views/PublicCoursesView.vue:36,84,90` — `variant="tonal"` (Vuetify) — landing/public track.
+  - `src/views/teacher/notifications/NotificationsCenter.vue:38,50` and `src/views/student/notifications/NotificationsCenter.vue:38,50` — `variant="text"` (icon-only buttons).
+
+- [ ] **Decide whether to convert `CourseListView` from card-grid to the table pattern** (Q6). This is a UX decision, not a restyle — the courses index is the only list rendered as a `UiCard` grid rather than a `UiTable`. Defer until the index-pages pattern is proven on the reference page; revisit during Phase 4 (outliers).
+
+- [ ] **Make `formatDateTime` globally locale-aware.** `src/utils/formatters.ts` gained an optional `locale?` param (default `undefined` = unchanged) during the reference-page build; only `LiveSessionsList` passes it (`ar-u-nu-latn` for the Latin-digits policy). The 8+ other callers still render dates in the **browser-default** locale, so dates show in English under an Arabic UI elsewhere. Dedicated pass: refactor `formatDateTime` to read the app i18n locale internally (import the i18n instance) + apply the Latin-digits policy centrally, then QA across all callers (same discipline as the `UiButton size` surfacing).
+
+- [ ] **Orphaned i18n keys `live.teacher.repeatedCopy`** ("نسخة مكررة" / "Copy") **and `live.teacher.repeatSource`** ("الأصل" / "Source"). The duplicate-copy and repeat-source status tags they fed were replaced (D2) by title-adjacent icons (`CopyOutlined` / `ShareAltOutlined`) using new tooltip keys (`live.teacher.duplicateCopyTooltip` / `live.teacher.repeatSourceTooltip`). No `t()` references remain (verified). Remove both from `ar.json` + `en.json` once confirmed no other surface needs them. (The data flags `item.repeatedCopy` / `item.repeatSource` are unrelated and still in use for the icon `v-if`s.)
+
+## Phase: Session Editor redesign (branch `redesign`, COMPLETED 2026-05-25)
+
+**Track extraction DONE:** `LiveSessionForm.vue` dialog → dedicated `TeacherSessionEditorView.vue` page; consumer migrated; old dialog deleted (Batch 3). The sub-items below remain open.
+
+Extracts "Schedule a new session" from the `LiveSessionForm` dialog into a dedicated full-page editor (`src/views/teacher/live/TeacherSessionEditorView.vue`) at `/teacher/live-sessions/create` + `/teacher/live-sessions/:sessionId/edit`, matching the Course/Lesson editor pattern (`ThemePage` + `UiCollapsibleSection` + sidebar `UiCard`s + `isDirty`/Cancel-confirm reusing `courses.cancelConfirmUnsaved`). Teacher-only (assistant/student LiveSessions have no create/edit). Figma node `577:1438`. No backend changes; all `LiveSessionForm` bindings + submit logic preserved byte-identical. Edit route loads via `getTeacherSession(id)` + `listTeacherRegistrations(id)`.
+
+**Figma-only fields SKIPPED (require backend / data-model additions before UI):**
+- `language` (presentation language — لغة التقديم)
+- `category` (session category — التصنيف; distinct from the existing required `courseId`)
+- `targetAudience` (audience selector — الجمهور المستهدف; distinct from the existing `studentIds` list)
+- `coverImage` (cover image upload — صورة الغلاف; the "Cover image" section was omitted entirely per D4)
+- `topics` (session topics/agenda — the original "Topics & schedule" section; repurposed to "Scheduling & Recurrence" to host existing recurrence fields)
+
+Each needs an API / data-model decision before UI implementation.
+
+**Deviations from the Batch-1 spec (flagged; byte-identical-preserving):**
+- `moduleId` kept as a number `UiInput` (not a courseId-dependent `UiSelect`) — course-list items aren't guaranteed to carry `modules` and the dialog used a free number input; a dependent select needs confirmed per-course module data (out of no-new-data scope).
+- Recurrence controls kept as the dialog had them — `isRecurring` (both modes) + independent `repeatEnabled` (create-only) + `repeatCount`/`repeatInterval` (when `repeatEnabled`) — rather than nesting `repeatEnabled` under `isRecurring`, which would change field reachability.
+- `description` is now **required** (canSave gate + Figma `*`); the dialog allowed empty. Binding unchanged (`description.trim() || undefined`).
+
+**Follow-ups:** Batch 2 = migrate `LiveSessionsList` create button + row Edit → `router.push`. Batch 3 = delete `LiveSessionForm.vue` after confirming zero references (its scoped CSS goes with it).
+
+**Spawned during Batch-1 QA fixes:**
+- [ ] **Migrate the 7 native `<UiSelect multiple>` consumers to `UiMultiSelect`** (closed-by-default chip dropdown, built this batch): `TeacherQuestionBanksView`, `TeacherRosterView` (×2), `CourseEditorView`, `StudentLearningView`, `admin/ops/AdminAlerts`, `teacher/offers/OfferForm`. Each needs its own visual QA pass during its respective track. (`LiveSessionForm` also uses one but is deleted in Batch 3.) `UiSelect` itself is untouched — native single-select unaffected.
+- [ ] **Session Editor `moduleId` — defensive local modules snapshot.** The dependent module select reads `coursesStore.current.modules` directly (shared course-detail slot). Optional hardening: keep a local snapshot keyed by courseId instead, defensive against multi-tab / concurrent-edit edge cases. Single-tab navigation (the common case) is unaffected.
+- [ ] **`UiMultiSelect` searchable mode.** Deferred — add a filter input inside the panel when a consumer needs 100+ options. Not needed by the Session Editor's student list today.
+- [ ] **Orphaned `live.teacher.*` i18n keys (logged per Rule 5, not deleted).** After the `LiveSessionForm` deletion + audit, these have zero `t()` consumers — remove from `ar.json` + `en.json` once confirmed no other surface needs them: `createTitle`, `editTitle` (old dialog title keys; the editor uses `liveSession.editor.title`/`updateSession`). Pre-existing orphans surfaced during the same audit (not caused by this track): `courseLabel`, `scheduledAtLabel`. (`repeatedCopy` + `repeatSource` already logged under the Index Pages track's orphan item.)
+
 ## Phase: Course Editor redesign (branch `redesign`, in progress)
 
 Restyle/restructure of `CourseEditorView.vue` **body only** (ThemeAppShell + topbar untouched — already redesigned in Dashboard Phase 1). Section-by-section; see REDESIGN_PROGRESS.md. No backend/store/route changes — restyle + restructure + re-home existing fields only.

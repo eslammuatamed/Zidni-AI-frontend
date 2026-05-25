@@ -373,6 +373,54 @@ After Phase 2 main work, a cleanup pass removed:
 
 **Course Editor patterns reused:** `ThemePage` `#actions` (Save + Cancel) & `#sidebar` slots, `UiCollapsibleSection` field grouping, `UiCard` sidebar cards, `isDirty` + `window.confirm` guard, `UiTag` soft pill for status, 350px sidebar override, route-aware navigation, module-modal `UiDialog` chrome.
 
+## Index Pages Redesign Track (IN PROGRESS — paused after Phase 3 B1)
+
+Propagates a unified INDEX/LIST vocabulary across the platform's data-table pages: `ThemePage` header + filter bar in a `UiCard` (search `UiInput` + `UiSelect` filters) + `UiTable` with `#item` slots + status pills (`UiTag` with `dot`) + `UiPagination` footer + `size="sm"` row actions + responsive mobile list. Figma reference node `574:745` (Live Sessions).
+
+**5 DS primitives / enhancements established (all additive):**
+- `UiButton` `size` prop (`xs|sm|md|lg`); `UiTag` `dot` prop; **new** `UiPagination.vue` (1-indexed, MUI-style, `#info` slot, RTL); **new** `UiDropdownMenu.vue` (teleported row-action overflow); **new** `UiMultiSelect.vue` (chip multi-select). + 3 `UiIcon` registry icons (`Copy`/`Ellipsis`/`ShareAlt`Outlined).
+
+**Phase 1 — Foundations + reference page: ✅ COMPLETE (visual-QA passed).**
+- `LiveSessionsList.vue` fully restyled: filter bar (search + course + status), status-dot pills, locale-aware date/time (Latin digits), instructor avatars, `UiPagination`, row overflow via `UiDropdownMenu`, RTL/dark/mobile. 3 QA-delta fixes applied (overflow menu, `repeatedCopy`/`repeatSource` title icons + tooltips, AR date locale).
+
+**Session Editor sub-track: ✅ COMPLETE** (see its own section below).
+
+**Phase 3 Batch B — simple-list propagation:**
+- **Sub-batch B1: ✅ COMPLETE (light QA only — deep QA deferred).** `TeacherAssessmentsView` (client-slice pagination + `UiBadge`→`UiTag` ×2 + search), `TeacherCertificatesView` (list restyle, no pagination — bounded generate-form+list hybrid), `OffersList` (real `UiPagination` wired to existing server handlers, fixed dead `UiTable` pagination props). **155 scoped-CSS lines → Tailwind; 0 `<style>` blocks.** `pagination.showing` made generic with `{entity}` + per-page entity nouns.
+- **Sub-batch B2: ⏸️ PENDING** (discovery done; dossier in REDESIGN_BACKLOG "DEFERRED — Index Pages Phase 3 B2"):
+  - `TeacherLandingMessagesView.vue` — 522 LOC, **190 scoped-CSS lines** incl. responsive table↔list switch (`:deep`), hand-rolled prev/next pagination, composite name+message-snippet cell, 1 row action.
+  - `TeacherAudit.vue` — 497 LOC, 93 scoped-CSS lines, filter form (search + entityType + 2 dates), hand-rolled pagination, composite actor/entity cells, 1 `UiTag`, 1 row action.
+  - Both: hand-rolled pagination → `UiPagination`; reuse `LiveSessionsList` vocabulary. Est. 1–2 turns.
+
+**Phase 2 — Sessions family reconciliation: ⏸️ DEFERRED.** Align `assistant/LiveSessionsList` + `student/live/StudentLiveSessions` with the teacher reference (visual only; they're divergent builds).
+
+**Phase 4 — Outliers: ⏸️ DEFERRED.** `TeacherRosterView` (2339 LOC, tabs/bulk-select/3 raw tables), `AssistantsManagementView` (3017 LOC, light pass), `CourseListView` (card-grid→table UX decision), Notifications/Feedback (list-not-table — pattern may not apply).
+
+## Session Editor Redesign Track (COMPLETED)
+
+Inserted mid-Index-Pages-track (after the Live Sessions reference page) to extract "Schedule a new session" from the `LiveSessionForm` dialog into a dedicated full-page editor, matching the Course/Lesson editor pattern. Figma node `577:1438`.
+
+- **New view:** `src/views/teacher/live/TeacherSessionEditorView.vue` (478 lines).
+- **Deleted:** `src/views/teacher/live/LiveSessionForm.vue` (was 402 lines — the old dialog; project-wide 0-ref verified before deletion per Rule 7).
+- **Consumer migrated:** `src/views/teacher/live/LiveSessionsList.vue` — toolbar "Schedule session" + both row Edit buttons → `router.push`; dialog state/import removed; pre-existing unused `tenantStore` cleaned.
+- **New routes:** `teacher-session-create` (`/teacher/live-sessions/create`) + `teacher-session-edit` (`/teacher/live-sessions/:sessionId/edit`) — teacher-only; edit loads via existing `getTeacherSession(id)` + `listTeacherRegistrations(id)` (no backend change).
+- **New DS primitive:** `src/components/ui/UiMultiSelect.vue` (277 lines) — closed-by-default chip multi-select (teleported panel, click-outside/Esc/keyboard, `:options` API). 5th redesign primitive after `UiPagination`, `UiDropdownMenu`.
+- **Layout:** main = 2 `UiCollapsibleSection`s (Basic info; Scheduling & Recurrence); sidebar = 2 `UiCard`s (Broadcast settings; Instructor & permissions). Cover-image section omitted (no data, D4).
+- **i18n:** new `liveSession.editor.*` namespace (8 keys) + `common.noOptions` + `common.remove` + `live.teacher.studentsPlaceholder`; all field labels reuse existing `live.teacher.*` / `tutoring.teacher.*` / `common.*` / `courses.cancelConfirmUnsaved`.
+
+**Bugs fixed:**
+1. `moduleId` — free number input → course-dependent `UiSelect` (options from `coursesStore.fetchCourse`, an existing endpoint; no backend addition).
+2. `studentIds` — `UiMultiSelect` replaces the always-open native `<select multiple>` listbox.
+3. (Batch 2) mobile Edit button left calling a deleted `openEdit` after an indentation-mismatched `replace_all` — caught by handler grep-count; codified as **Standing Rule 7**.
+
+**Skipped Figma-only fields** (no data model — logged to backlog for backend decisions): language, category, targetAudience, coverImage, topics.
+
+**Batch breakdown:** B1 = routes + view shell + field redistribution; (mid) Issue 1 + Issue 2 fixes; B2 = `LiveSessionsList` → `router.push`; B3 = `LiveSessionForm` deletion + i18n orphan audit + hygiene + close-out.
+
+**Course/Lesson Editor patterns reused:** `ThemePage` `#actions`/`#sidebar` shell + 350px sidebar override, `UiCollapsibleSection` grouping, `UiCard` sidebar cards, `isDirty` + `window.confirm` guard, route-aware navigation, `courses.cancelConfirmUnsaved` generic-key reuse.
+
+**Net line delta:** +478 (editor) + 277 (UiMultiSelect) − 402 (dialog) + small list/router/i18n edits.
+
 ## Standing Rules — Institutional Memory (active for all future work)
 
 Established during the Course Editor + Lesson/Assignment tracks; now apply to all subsequent project work:
@@ -383,10 +431,13 @@ Established during the Course Editor + Lesson/Assignment tracks; now apply to al
 4. **Custom breakpoints.** This project's `sm` is 600px, not Tailwind's default. Use `min-[Npx]:` / `max-[Npx]:` for arbitrary breakpoints (e.g. `min-[1025px]:`, `min-[720px]:`).
 5. **Backlog discipline.** Orphans logged to `REDESIGN_BACKLOG.md`, never deleted silently. Verify before delete (the `LESSON_*_FALLBACK` constants case proved this gate matters).
 6. **Hard rules from Phase 1 still apply:** no commits/pushes, color tokens only (no hardcoded hex), no Vuetify internals touched, dark mode + RTL must work for every change, no features without backing data/route.
+7. **Template handler reference checks after script refactors.** `vue-tsc` does **NOT** catch dangling template handler references — if a script function is removed/renamed but the template still references it (e.g. `@click="oldHandler"`), the type-check reports clean yet the call fails at runtime. When removing/renaming any script-level function bound in the template: (a) grep the file for the **old** name → confirm **0** remaining references; (b) confirm the **new** name has the expected count (rename in N bindings ⇒ `grep new` = N + 1 definition). Never rely on `vue-tsc` alone for template-handler integrity. (Caught a real bug in the Session Editor Batch 2 — a `replace_all` whose indentation differed between desktop/mobile renamed only one of two edit buttons, leaving the mobile button calling a deleted `openEdit`; vue-tsc stayed green.)
 
 ## Currently Awaiting
 
-**All completed redesign tracks current. Course Editor + Lesson/Assignment Editor finished. Phase 2 (Dashboard extraction) complete. No active in-flight work.**
+**Index Pages Track paused at end of Phase 3 B1** (3/5 simple-list pages complete with light QA). Deep visual QA + B2 implementation deferred. Switching to a different part of the project.
+
+Complete on the `redesign` branch (all uncommitted): Dashboard Phase 1+2, Course Editor, Lesson/Assignment Editor, project-wide Vuetify `.border` fix, Session Editor, Index Pages Phase 1 + Phase 3 B1. Deferred: Index Pages B2 (discovery done), Phase 2 (Sessions reconciliation), Phase 4 (outliers). See the Index Pages Track section above + REDESIGN_BACKLOG.md for re-entry.
 
 Branch `redesign` is ready for review and manual push by the user.
 
