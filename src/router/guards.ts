@@ -7,6 +7,8 @@ const TEACHER_ROLES = new Set(['TEACHER', 'TEACHER_ASSISTANT', 'PLATFORM_ADMIN']
 
 const resolveTeacherHome = (): string => '/teacher/home';
 const resolveStudentHome = (): string => '/student/home';
+// Teacher-assistants have their own /assistant/* section; live sessions is their landing page.
+const ASSISTANT_HOME = '/assistant/live-sessions';
 
 const resolveRouteRoleHint = (to: RouteLocationNormalized): string | null => {
   for (const record of to.matched) {
@@ -60,7 +62,20 @@ export const installGuards = (router: Router) => {
     }
 
     if (role === 'TEACHER_ASSISTANT' && isTeacherRoute) {
-      return next({ path: '/assistant/dashboard' });
+      // Authenticated assistants should never land on a teacher login page.
+      if (to.path === '/teacher/login' || to.path === '/teacher/assistant/login') {
+        return next({ path: ASSISTANT_HOME });
+      }
+      // Canonicalize teacher feature URLs to their /assistant/* mirror when one exists.
+      // Shared components (CourseListView, assessments, the assignments dialog, etc.) push to
+      // `teacher-*` route names; rewriting here keeps assistants inside their own section instead
+      // of bouncing them home. Routes with no assistant equivalent fall back to live sessions.
+      const mirrored = to.fullPath.replace(/^\/teacher\//, '/assistant/');
+      const resolved = router.resolve(mirrored);
+      if (resolved.name && resolved.name !== 'not-found' && resolved.fullPath !== to.fullPath) {
+        return next(resolved.fullPath);
+      }
+      return next({ path: ASSISTANT_HOME });
     }
 
     if (role === 'STUDENT' && isTeacherRoute) {

@@ -43,11 +43,11 @@ export const buildAssistantNavItems = ({
 
     const can = (permission: string) => assistantPermissions.has(permission);
 
-    // Assistant Dashboard
+    // Live Sessions (assistant landing page)
     items.push({
-        label: t('assistant.dashboard.title'),
-        to: '/assistant/dashboard', // Point to Assistant Dashboard
-        icon: 'DashboardOutlined'
+        label: t('nav.teacherLiveSessions'),
+        to: '/assistant/live-sessions',
+        icon: 'VideoCameraOutlined'
     });
 
     // Courses

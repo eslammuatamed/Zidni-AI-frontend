@@ -282,6 +282,9 @@ export const useAuthStore = defineStore('auth', {
     },
     clearAuthState(): void {
       this.user = null;
+      // Intentionally preserve the tenant slug on logout / session reset so the student
+      // login page can read edtech_tenant (via getStoredTenantSlug) and remember the
+      // last tenant. Re-enable the lines below to clear the tenant on logout again.
       // const tenantStore = useTenantStore();
       // tenantStore.setSlug('');
       // clearStoredTenantSlug();

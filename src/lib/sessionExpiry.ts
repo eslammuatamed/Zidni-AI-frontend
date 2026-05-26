@@ -1,6 +1,7 @@
 import { useToast } from '@/composables/useToast';
 import i18n from '@/plugins/i18n';
 import { buildAppUrl, buildTenantUrl, extractTenant } from '@/lib/host';
+import { getStoredTenantSlug } from '@/utils/tenantStorage';
 
 const SESSION_STATUS_CODES = new Set([401, 419, 440]);
 const MESSAGE_KEYWORDS = ['session expired', 'invalid token', 'invalid csrf', 'unauthorized'];
@@ -166,7 +167,9 @@ const resolveTenant = (role: RoleKind, tenantHint?: string | null): string | nul
   if (hostTenant) {
     return hostTenant;
   }
-  return 'mr-hossam';
+  // Fall back to the persisted tenant slug (preserved across logout) instead of a
+  // hardcoded placeholder, so the login redirect targets the user's real academy.
+  return getStoredTenantSlug().normalized || null;
 };
 
 const buildLoginUrl = (role: RoleKind, tenant: string | null, nextPath: string): string => {
@@ -177,7 +180,7 @@ const buildLoginUrl = (role: RoleKind, tenant: string | null, nextPath: string):
       case 'admin':
         return buildAppUrl(LOGIN_PATHS.admin);
       case 'student': {
-        const slug = tenant || 'mr-hossam';
+        const slug = tenant || '';
         return buildTenantUrl(slug, LOGIN_PATHS.student);
       }
       default:
@@ -188,15 +191,15 @@ const buildLoginUrl = (role: RoleKind, tenant: string | null, nextPath: string):
   try {
     const url = new URL(base);
     url.searchParams.set('next', nextPath);
-    if (role === 'assistant') {
-      url.searchParams.set('tenant', tenant || 'mr-hossam');
+    if (role === 'assistant' && tenant) {
+      url.searchParams.set('tenant', tenant);
     }
     return url.toString();
   } catch {
     const params = new URLSearchParams();
     params.set('next', nextPath);
-    if (role === 'assistant') {
-      params.set('tenant', tenant || 'mr-hossam');
+    if (role === 'assistant' && tenant) {
+      params.set('tenant', tenant);
     }
     const separator = base.includes('?') ? '&' : '?';
     return `${base}${separator}${params.toString()}`;

@@ -98,6 +98,7 @@ import { isAxiosError } from 'axios';
 import api from '@/services/api';
 import { useAuthStore } from '@/stores/auth';
 import { useTenantStore } from '@/stores/tenant';
+import { getStoredTenantSlug } from '@/utils/tenantStorage';
 import { handleApiError } from '@/composables/useApiError';
 import { safeRedirect } from '@/lib/safeRedirect';
 import { switchTenant as switchTenantSession } from '@/services/tenantMembership';
@@ -118,7 +119,7 @@ const missingTenantRouteName = computed(() => 'login-teacher');
 const forgotPasswordRouteName = computed(() =>
   isAssistantMode.value ? 'assistant-forgot-password' : 'teacher-forgot-password'
 );
-const dashboardRouteName = computed(() => (isAssistantMode.value ? 'assistant-dashboard' : 'teacher-dashboard'));
+const dashboardRouteName = computed(() => (isAssistantMode.value ? 'assistant-live-sessions' : 'teacher-dashboard'));
 const loginPathPrefix = computed(() => (isAssistantMode.value ? 'assistant' : 'teacher'));
 const targetRole = computed(() => (isAssistantMode.value ? 'TEACHER_ASSISTANT' : 'TEACHER'));
 const requiresTenantSlug = computed(() => isAssistantMode.value);
@@ -299,7 +300,9 @@ const updateInfoMessage = () => {
 const isMissingTenantRoute = computed(() => isAssistantMode.value && !routeTenant.value && !tenantStore.slug);
 
 const loadTenantFromRoute = async (tenantParam: unknown) => {
-  const normalizedSlug = normalizeTenantParam(tenantParam);
+  // Prefer the tenant from the route, then fall back to the persisted slug so the
+  // assistant login page remembers the last academy after logout instead of clearing it.
+  const normalizedSlug = normalizeTenantParam(tenantParam) || getStoredTenantSlug().normalized;
   tenantRequestToken += 1;
   const currentToken = tenantRequestToken;
   tenantLoading.value = true;

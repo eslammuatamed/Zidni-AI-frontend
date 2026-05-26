@@ -1065,6 +1065,18 @@ const router = createRouter({
       meta: { requiresAuth: true, roles: ['TEACHER_ASSISTANT'], requiresAssistantPermissions: ['courses.manage'] }
     },
     {
+      path: '/assistant/courses/:courseId/lessons/:lessonId/assignments/new',
+      name: 'assistant-assignment-create',
+      component: TeacherAssignmentEditorView,
+      meta: { requiresAuth: true, roles: ['TEACHER_ASSISTANT'], requiresAssistantPermissions: ['courses.manage'] }
+    },
+    {
+      path: '/assistant/courses/:courseId/lessons/:lessonId/assignments/:assignmentId/edit',
+      name: 'assistant-assignment-edit',
+      component: TeacherAssignmentEditorView,
+      meta: { requiresAuth: true, roles: ['TEACHER_ASSISTANT'], requiresAssistantPermissions: ['courses.manage'] }
+    },
+    {
       path: '/assistant/students',
       name: 'assistant-students',
       component: TeacherRosterView,
