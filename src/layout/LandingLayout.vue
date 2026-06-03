@@ -233,7 +233,11 @@ const handleKeydown = (event: KeyboardEvent) => {
 };
 
 const route = useRoute();
-const isHomeRoute = computed(() => route.name === 'tenant-public-landing');
+// LandingHome renders its own header/footer (HomeNavBar/HomeFooter sections),
+// so both home routes opt out of this layout's chrome to avoid double headers.
+const isHomeRoute = computed(
+  () => route.name === 'tenant-public-landing' || route.name === 'landing'
+);
 
 watch(
   () => route.fullPath,

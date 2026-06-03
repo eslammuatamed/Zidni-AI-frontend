@@ -1,7 +1,0 @@
-@tailwind base;
-
-@layer base {
-  :root {
-    font-family: 'Noto Sans Arabic', sans-serif;
-  }
-}
