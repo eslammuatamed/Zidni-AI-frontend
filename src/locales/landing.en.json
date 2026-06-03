@@ -1,4 +1,222 @@
 {
+  "home": {
+    "nav": {
+      "logoAria": "Zidni AI home",
+      "primaryLabel": "Primary navigation",
+      "home": "Home",
+      "solutions": "Solutions",
+      "pricing": "Pricing",
+      "resources": "Resources",
+      "langShort": "AR",
+      "languageAria": "Switch language to Arabic",
+      "profileAria": "Sign in to your account",
+      "cta": "Get In Touch",
+      "signIn": "Sign in",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu",
+      "whatsappMessage": "Hello! I'd like to learn more about Zidni AI."
+    },
+    "footer": {
+      "tagline": "Built for the Digital Curator. Empowering experts worldwide to scale their impact with intelligence.",
+      "socials": {
+        "website": "Website",
+        "share": "Share",
+        "chat": "Chat with us"
+      },
+      "product": {
+        "title": "Product",
+        "features": "Features",
+        "aiArchitect": "AI Architect",
+        "integrations": "Integrations",
+        "pricing": "Pricing"
+      },
+      "resources": {
+        "title": "Resources",
+        "documentation": "Documentation",
+        "caseStudies": "Case Studies",
+        "helpCenter": "Help Center",
+        "community": "Community"
+      },
+      "company": {
+        "title": "Company",
+        "about": "About Us",
+        "careers": "Careers",
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service"
+      },
+      "copyright": "© {year} Zidni AI. Built for the Digital Curator. All rights reserved."
+    },
+    "hero": {
+      "title": "Your Own Branded Learning Platform Powered by AI",
+      "subtitle": "Empower your expertise. Zidni AI handles the infrastructure, content generation, and scaling, so you can focus on what matters: sharing knowledge.",
+      "primaryCta": "Start Building for Free",
+      "secondaryCta": "Watch Demo",
+      "mockupAlt": "Zidni AI teacher dashboard preview"
+    },
+    "personas": {
+      "title": "Built for Every Kind of Expert",
+      "subtitle": "Whether you're a solo creator or a growing academy, Zidni scales with your ambition.",
+      "items": {
+        "creator": {
+          "title": "The Creator",
+          "description": "Monetize your audience with high-ticket courses and exclusive member-only content communities.",
+          "cta": "Start Creating"
+        },
+        "academy": {
+          "title": "The Academy",
+          "description": "Scale your school with multi-instructor tools, tiered memberships, and deep student analytics.",
+          "cta": "Scale Academy"
+        },
+        "coach": {
+          "title": "The Coach",
+          "description": "Automate your delivery. Focus on high-level strategy while AI manages your curriculum flow.",
+          "cta": "Launch Coaching"
+        }
+      }
+    },
+    "formats": {
+      "title": "Teach in every way your students want to learn",
+      "subtitle": "Our products give students more choice in how they engage—live or on-demand, video or text, at home or on-the-go—while giving your business more sustainable ways to grow.",
+      "cta": "Start for free",
+      "items": {
+        "courses": {
+          "title": "Online Courses",
+          "description": "Maximize student engagement with videos, quizzes, drip content, and mobile access."
+        },
+        "coaching": {
+          "title": "Coaching",
+          "description": "Offer one-on-one or group sessions, with easy scheduling and payment management."
+        },
+        "downloads": {
+          "title": "Digital Downloads",
+          "description": "Sell templates, guides, and resources your audience can instantly access and use."
+        },
+        "memberships": {
+          "title": "Memberships",
+          "description": "Build recurring revenue and stronger community with flexible subscription models."
+        }
+      }
+    },
+    "why": {
+      "title": "Why Choose Zidni",
+      "subtitle": "Built to simplify your journey and help you grow faster",
+      "learner": {
+        "title": "Made for the modern learner",
+        "description": "You're serious about education. We're serious about engaging your students and turning them into loyal customers.",
+        "points": {
+          "dashboard": "Innovative student dashboard",
+          "mobileApp": "Highly-rated mobile app",
+          "dripContent": "Drip content",
+          "quizzes": "Quizzes and completion certificates"
+        }
+      },
+      "time": {
+        "title": "More time for what matters",
+        "description": "We automate the operational headaches so you can keep growing your business without adding busywork."
+      },
+      "growth": {
+        "title": "Business growth that lasts",
+        "description": "Scale your academy with powerful tools and zero commissions"
+      },
+      "adapt": {
+        "title": "Made to adapt and evolve",
+        "description": "No two businesses are the same. Our platform flexes to fit your ideal workflow, future goals, and unique student needs."
+      }
+    },
+    "ai": {
+      "title": "AI that works for you",
+      "subtitle": "Smart tools that help you build, manage, and scale your academy faster with less effort",
+      "items": {
+        "builder": {
+          "tag": "AI Module",
+          "title": "AI Course Builder",
+          "description": "Generate structured courses and lessons in seconds using AI-powered tools."
+        },
+        "quiz": {
+          "tag": "Automated",
+          "title": "AI Quiz Generator",
+          "description": "Turn your content into interactive quizzes automatically."
+        },
+        "assistant": {
+          "tag": "Assistant",
+          "title": "Smart Content Assistant",
+          "description": "Enhance your content with AI-generated summaries, subtitles, and insights."
+        }
+      }
+    },
+    "flow": {
+      "steps": {
+        "create": {
+          "title": "Create Effortlessly",
+          "description": "Upload a raw video or outline. Our AI engine builds the structure, creates the assets, and prepares the course environment in minutes, not days."
+        },
+        "publish": {
+          "title": "Publish & Brand",
+          "description": "Customize your theme, connect your domain, and launch. Your platform is optimized for every device and built for speed."
+        },
+        "earn": {
+          "title": "Earn & Scale",
+          "description": "Monitor growth with high-precision analytics. Use AI insights to identify where students struggle and how to maximize LTV."
+        }
+      }
+    },
+    "reach": {
+      "title": "Expand your reach across the Middle East",
+      "subtitle": "Reach students across the region and grow your academy without limits — from local classrooms to a regional presence.",
+      "cta": "Start Expanding Today",
+      "countries": {
+        "saudiArabia": "Saudi Arabia",
+        "uae": "UAE",
+        "egypt": "Egypt",
+        "qatar": "Qatar",
+        "kuwait": "Kuwait",
+        "morocco": "Morocco",
+        "jordan": "Jordan"
+      }
+    },
+    "cta": {
+      "title": "Ready to Build Your Brand?",
+      "subtitle": "Join 2,500+ creators who have already built their dreams on Zidni AI. Start your 14-day free trial today.",
+      "primaryCta": "Get Started Now",
+      "secondaryCta": "Book a Strategy Call",
+      "strategyCallMessage": "Hello! I'd like to book a strategy call about Zidni AI."
+    },
+    "testimonials": {
+      "items": {
+        "sarah": {
+          "author": "Sarah Chen",
+          "role": "Verified Creator",
+          "quote": "\"Zidni allowed me to launch my marketing academy in 3 days. The AI course generator is like having a full production team in my pocket.\"",
+          "metric": "$120k",
+          "metricLabel": "in 6 months"
+        },
+        "james": {
+          "author": "James Wilson",
+          "role": "Tech Educator",
+          "quote": "\"Zidni allowed me to launch my marketing academy in 3 days. The AI course generator is like having a full production team in my pocket.\"",
+          "metric": "$250k",
+          "metricLabel": "total earnings"
+        },
+        "elena": {
+          "author": "Elena Rodriguez",
+          "role": "Solo Coach",
+          "quote": "\"Finally, a platform that doesn't feel like it was built in 2005. My brand looks premium, and my students love the experience.\"",
+          "metric": "4.9/5",
+          "metricLabel": "student rating"
+        }
+      }
+    },
+    "integrations": {
+      "title": "Play Nice With Your Current Stack"
+    },
+    "newsletter": {
+      "title": "Stay updated with Zidni insights",
+      "subtitle": "Get the latest platform updates, architectural blueprints, and growth tips delivered directly to your inbox.",
+      "placeholder": "Enter your email address",
+      "cta": "Subscribe",
+      "comingSoon": "Newsletter subscriptions are coming soon. Stay tuned!"
+    }
+  },
   "hero": {
     "eyebrow": "Zidni AI Learning OS",
     "title": "Run every cohort from one AI-enabled workspace",
@@ -472,6 +690,3 @@
     "qa": "Qatar"
   }
 }
-
-
-

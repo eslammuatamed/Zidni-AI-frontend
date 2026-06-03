@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"kill %1 2>/dev/null; pkill -f \\\"vite --port 5199\\\" 2>/dev/null; sleep 1; cd /home/eslam-muatamed/Work/zidni/Zidni-AI-frontend && (npx vite --port 5199 --strictPort > /tmp/zidni-figma/vite....",
+  "error": "Exit code 144",
+  "timestamp": "2026-06-03T21:21:38.428Z",
+  "retry_count": 1
+}
