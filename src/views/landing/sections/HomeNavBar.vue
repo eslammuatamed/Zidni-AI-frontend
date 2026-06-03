@@ -18,20 +18,28 @@
         class="home-nav__links hidden items-center gap-8 md:flex"
         :aria-label="t('landing.home.nav.primaryLabel')"
       >
-        <a
-          v-for="item in navItems"
-          :key="item.id"
-          :href="item.href"
-          class="home-nav__link text-base no-underline transition-colors"
-          :class="
-            activeSection === item.id
-              ? 'pb-1 font-bold text-sakai-primary [border-bottom:2px_solid_rgb(var(--sakai-primary-rgb))]'
-              : 'font-medium text-sakai-brand-deepest hover:text-sakai-primary'
-          "
-          :aria-current="activeSection === item.id ? 'true' : undefined"
-        >
-          {{ item.label }}
-        </a>
+        <template v-for="item in navItems" :key="item.id">
+          <RouterLink
+            v-if="item.to"
+            :to="item.to"
+            class="home-nav__link text-base font-medium text-sakai-brand-deepest no-underline transition-colors hover:text-sakai-primary"
+          >
+            {{ item.label }}
+          </RouterLink>
+          <a
+            v-else
+            :href="item.href"
+            class="home-nav__link text-base no-underline transition-colors"
+            :class="
+              activeSection === item.id
+                ? 'pb-1 font-bold text-sakai-primary [border-bottom:2px_solid_rgb(var(--sakai-primary-rgb))]'
+                : 'font-medium text-sakai-brand-deepest hover:text-sakai-primary'
+            "
+            :aria-current="activeSection === item.id ? 'true' : undefined"
+          >
+            {{ item.label }}
+          </a>
+        </template>
       </nav>
 
       <div class="home-nav__actions flex items-center gap-3 lg:gap-6">
@@ -166,20 +174,29 @@
       class="home-nav__mobile flex flex-col gap-1 px-4 pb-4 md:hidden"
       :aria-label="t('landing.home.nav.primaryLabel')"
     >
-      <a
-        v-for="item in navItems"
-        :key="item.id"
-        :href="item.href"
-        class="home-nav__mobile-link rounded-lg px-3 py-2.5 text-base no-underline"
-        :class="
-          activeSection === item.id
-            ? 'bg-sakai-primary/5 font-bold text-sakai-primary'
-            : 'font-medium text-sakai-brand-deepest'
-        "
-        @click="navOpen = false"
-      >
-        {{ item.label }}
-      </a>
+      <template v-for="item in navItems" :key="item.id">
+        <RouterLink
+          v-if="item.to"
+          :to="item.to"
+          class="home-nav__mobile-link rounded-lg px-3 py-2.5 text-base font-medium text-sakai-brand-deepest no-underline"
+          @click="navOpen = false"
+        >
+          {{ item.label }}
+        </RouterLink>
+        <a
+          v-else
+          :href="item.href"
+          class="home-nav__mobile-link rounded-lg px-3 py-2.5 text-base no-underline"
+          :class="
+            activeSection === item.id
+              ? 'bg-sakai-primary/5 font-bold text-sakai-primary'
+              : 'font-medium text-sakai-brand-deepest'
+          "
+          @click="navOpen = false"
+        >
+          {{ item.label }}
+        </a>
+      </template>
       <a
         :href="teacherLoginHref"
         class="home-nav__mobile-link rounded-lg px-3 py-2.5 text-base font-medium text-sakai-brand-deepest no-underline sm:hidden"
@@ -232,18 +249,24 @@ const toggleLanguage = async () => {
 
 const navOpen = ref(false);
 
-// Section anchors rendered by LandingHome; pricing/resources have no sections yet
-// (placeholder targets — see migration_notes.md).
-const sectionIds = ['home', 'solutions', 'pricing', 'resources'] as const;
+// Anchor items scroll-spy sections on this page; route items navigate to
+// standalone pages (routes ship with their upcoming page tasks).
+const sectionIds = ['home', 'solutions'] as const;
 type SectionId = (typeof sectionIds)[number];
 
-const navItems = computed(() =>
-  sectionIds.map((id) => ({
-    id,
-    href: `#${id}`,
-    label: t(`landing.home.nav.${id}`),
-  })),
-);
+interface NavItem {
+  id: string;
+  label: string;
+  href?: string;
+  to?: string;
+}
+
+const navItems = computed<NavItem[]>(() => [
+  { id: 'home', href: '#home', label: t('landing.home.nav.home') },
+  { id: 'solutions', href: '#solutions', label: t('landing.home.nav.solutions') },
+  { id: 'pricing', to: '/pricing', label: t('landing.home.nav.pricing') },
+  { id: 'resources', to: '/resources', label: t('landing.home.nav.resources') },
+]);
 
 const activeSection = ref<SectionId>('home');
 

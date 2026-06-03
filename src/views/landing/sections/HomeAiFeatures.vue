@@ -49,7 +49,7 @@
             <img
               :src="feature.icon"
               alt=""
-              class="h-[18px] w-auto"
+              class="h-[18px] w-auto shrink-0"
               loading="lazy"
               decoding="async"
             />

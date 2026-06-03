@@ -41,7 +41,7 @@
             <img
               :src="iconSendSquare"
               alt=""
-              class="h-6 w-6"
+              class="h-6 w-6 shrink-0"
               loading="lazy"
               decoding="async"
             />

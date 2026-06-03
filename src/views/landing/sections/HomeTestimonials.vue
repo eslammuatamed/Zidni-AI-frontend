@@ -40,7 +40,7 @@
               <img
                 :src="iconVerified"
                 alt=""
-                class="h-3 w-auto"
+                class="h-3 w-auto shrink-0"
                 loading="lazy"
                 decoding="async"
               />

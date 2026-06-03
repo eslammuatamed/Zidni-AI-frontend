@@ -33,7 +33,7 @@
           <img
             :src="persona.icon"
             alt=""
-            class="h-6 w-auto"
+            class="h-6 w-auto shrink-0"
             loading="lazy"
             decoding="async"
           />

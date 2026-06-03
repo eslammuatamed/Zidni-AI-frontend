@@ -30,7 +30,7 @@
             <img
               :src="social.icon"
               alt=""
-              class="h-[15px] w-auto"
+              class="h-[15px] w-auto shrink-0"
               loading="lazy"
               decoding="async"
             />
@@ -132,7 +132,7 @@ interface FooterColumn {
 }
 
 // Items without a real destination yet use '#' placeholders — logged in
-// migration_notes.md (pricing page, docs, case studies, community, about, careers).
+// migration_notes.md (docs, case studies, community, about, careers).
 const linkColumns: FooterColumn[] = [
   {
     id: 'product',
@@ -144,7 +144,7 @@ const linkColumns: FooterColumn[] = [
         labelKey: 'landing.home.footer.product.integrations',
         href: '#integrations',
       },
-      { labelKey: 'landing.home.footer.product.pricing', href: '#' },
+      { labelKey: 'landing.home.footer.product.pricing', to: '/pricing' },
     ],
   },
   {
